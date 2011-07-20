@@ -1,0 +1,126 @@
+﻿<!-- ###KONTAKT_STEP_1### -->
+<div class="kontakt kontaktNormal">
+	<h1 class="csc-firstHeader">###HEADER###</h1>
+
+	<form method="post" action="">
+		<input type="hidden" name="submitted" value="1" />
+		<input type="hidden" name="step" value="1" />
+		<div class="address">
+			<table class="addressTable">
+				<tr>
+					<td class="addressList"><label for="subject" class="###error:subject:class###">###LLL:subject###</label></td>
+					<td class="addressListFillin">
+						<input type="text" id="subject" name="subject" value="###value_subject###" />
+					</td>
+				</tr>
+				<tr>
+					<td class="addressList addressListMessage"><label for="message" class="###error:message:class###">###LLL:message###</label></td>
+					<td class="addressListFillin addressListFillinMessage">
+						###error:message:obligatory###
+						<textarea name="message" cols="35" rows="8">###value_message###</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td class="addressList"><label for="title_1" class="###error:title:class###">###LLL:title###</label></td>
+					<td class="addressListFillin group">
+						###error:title:obligatory###
+						<input type="radio" id="title_1" name="title" value="###LLL:title_1###" ###checked_title_###LLL:title_1###### />
+						<label for="title_1">###LLL:title_1###</label>
+						<input type="radio" id="title_2" name="title" value="###LLL:title_2###" ###checked_title_###LLL:title_2###### />
+						<label for="title_2">###LLL:title_2###</label>
+					</td>
+				</tr>
+				<tr>
+					<td class="addressList"><label for="firstname" class="###error:firstname:class###">###LLL:firstname###</label></td>
+					<td class="addressListFillin">
+						###error:firstname:obligatory###
+						<input type="text" id="firstname" name="firstname" value="###value_firstname###" />
+					</td>
+				</tr>
+				<tr>
+					<td class="addressList"><label for="lastname" class="###error:lastname:class###">###LLL:lastname###</label></td>
+					<td class="addressListFillin">
+						###error:lastname:obligatory###
+						<input type="text" id="lastname" name="lastname" value="###value_lastname###" />
+					</td>
+				</tr>
+				<tr>
+					<td class="addressList"><label for="email" class="###error:email:class###">###LLL:email###</label></td>
+					<td class="addressListFillin">
+						###error:email:email###
+						<input type="text" id="email" name="email" value="###value_email###" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="submit-box">
+			<table class="addressTable">
+				<tr>
+					<td>
+						<span class="obligatory">###LLL:obligatory###</span>
+						<div class="formButtonWrap"><a class="formButton"><span><input type="submit" name="nextStep[2]" class="submit-button" value="###LLL:submit###"/></span></a></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</form>
+</div>
+<!-- ###KONTAKT_STEP_1### -->
+
+<!-- ###CONFIRMATION### -->
+<h1 class="csc-firstHeader">###LLL:header_confirmation###</h1>
+<div class="contact_confirmation">
+	<p>###LLL:text_confirmation###</p>
+</div>
+<!-- ###CONFIRMATION### -->
+
+<!-- ###EMAIL_USER### -->
+###LLL:header_email_user###
+
+###LLL:text_email_user###
+
+==================================================
+
+###value_subject###
+
+###value_message###
+
+==================================================
+
+###LLL:footer_email_user###
+<!-- ###EMAIL_USER### -->
+
+<!-- ###EMAIL_ADMIN### -->
+###LLL:text_email_admin###
+
+==================================================
+
+###value_subject###
+
+###value_message###
+
+==================================================
+
+###value_title### ###value_firstname### ###value_lastname###
+###LLL:email###: ###value_email###
+
+<!-- ###EMAIL_ADMIN### -->
+
+<!-- ###EMAIL_NEWSLETTER### -->
+###LLL:header_newsletter### ###value_title### ###value_firstname### ###value_lastname###,
+
+###LLL:text_newsletter###
+###LINK_NEWSLETTER###
+
+###LLL:footer_newsletter###
+<!-- ###EMAIL_NEWSLETTER### -->
+
+<!-- ###NEWSLETTER_OK### -->
+OK
+<!-- ###NEWSLETTER_OK### -->
+
+<!-- ###NEWSLETTER_ERROR### -->
+ERROR
+<!-- ###NEWSLETTER_ERROR### -->
+

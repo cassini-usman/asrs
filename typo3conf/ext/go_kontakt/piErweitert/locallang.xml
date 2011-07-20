@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_gobebequizz_piErweitert&quot;</description>
+		<generator>LFEditor</generator>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="anrede_confirmation">Sehr geehrte/r</label>
+			<label index="back">Zurück</label>
+			<label index="city">PLZ* / Ort*</label>
+			<label index="close">Schließen</label>
+			<label index="continue">Weiter</label>
+			<label index="email">E-Mail*</label>
+			<label index="error_class">errorHighlight</label>
+			<label index="error_email">&lt;div class=&quot;errorEmail&quot;&gt;Bitte korrekte Email-Adresse angeben&lt;/div&gt;</label>
+			<label index="error_obligatory">&lt;div class=&quot;errorObligatory&quot;&gt;Dies ist ein Pflichtfeld&lt;/div&gt;</label>
+			<label index="error_plz">&lt;div class=&quot;errorObligatory&quot;&gt;Bitte gültige PLZ eingeben&lt;/div&gt;</label>
+			<label index="exemplare">Mehr Exemplare</label>
+			<label index="exemplare.default">Ein Exemplar ist kostenlos.&lt;br /&gt;Bitte geben Sie eine kurze Begründung an, wenn Sie mehrere Exemplare wünschen.</label>
+			<label index="fax">Telefax</label>
+			<label index="firstname">Vorname*</label>
+			<label index="footer_email_user">Mit freundlichen Grüßen!&lt;br /&gt;Ihr Team</label>
+			<label index="footer_newsletter">Mit freundlichen Grüßen!&lt;br /&gt;Ihr Team</label>
+			<label index="header_confirmation">Vielen Dank für Ihre Anfrage</label>
+			<label index="header_email_user">Sie haben uns eine Kontaktanfrage geschichkt.</label>
+			<label index="header_newsletter">Sehr geehrte/r</label>
+			<label index="lastname">Nachname*</label>
+			<label index="message">Nachricht*</label>
+			<label index="newsletter">Ich möchte den Newsletter erhalten.</label>
+			<label index="obligatory">* Pflichtfelder bitte ausfüllen</label>
+			<label index="newsletterCheck.0">Nein</label>
+			<label index="newsletterCheck.1">Ja</label>
+			<label index="newsletterCheck">Ich möchte den Newsletter erhalten.</label>
+			<label index="price_confirmation">zum Preis von</label>
+			<label index="redaction">Redaktion*</label>
+			<label index="region">Bundesland*</label>
+			<label index="company">Firma*</label>
+			<label index="street">Straße*/Nr.*</label>
+			<label index="subject">Betreff</label>
+			<label index="subject_email_admin">Neue Kontakt-Anfrage</label>
+			<label index="subject_email_user">Ihre Kontaktanfrage</label>
+			<label index="subject_newsletter_confirmation">Ihre Newsletterbestellung</label>
+			<label index="submit">Abschicken</label>
+			<label index="tax_confirmation">7% MwSt.</label>
+			<label index="telephone">Telefon</label>
+			<label index="text_email_admin">Eine neue Kontakt-Anfrage ist eingegangen:</label>
+			<label index="text_email_user">Wir werden Ihr Anliegen schnellstmöglich bearbeiten.</label>
+			<label index="text_newsletter">Um die Registrierung für den Newsletter zu bestätigen, klicken Sie bitte auf folgenden Bestätigungslink:</label>
+			<label index="title">Anrede*</label>
+			<label index="title_1">Herr</label>
+			<label index="title_1.default">Herr</label>
+			<label index="title_2">Frau</label>
+			<label index="title_2.default">Frau</label>
+		</languageKey>
+		<languageKey index="dk"></languageKey>
+		<languageKey index="de" type="array">
+			<label index="error_email">Bitte korrekte E-Mail-Adresse angeben</label>
+			<label index="exemplare.default">Ein Exemplar ist kostenlos. Bitte geben Sie eine kurze Begründung an, wenn Sie mehrere Exemplare wünschen. </label>
+			<label index="footer_email_user">Mit freundlichen Grüßen!/n Ihr Team</label>
+			<label index="header_confirmation">Vielen Dank für Ihre Anfrage</label>
+			<label index="text_confirmation">Sie haben eine Email erhalten.</label>
+			<label index="newsletter.0">Nein</label>
+			<label index="newsletter.1">Ja</label>
+			<label index="submit">Abschicken</label>
+			<label index="tax_confirmation">7% MwSt.</label>
+			<label index="telephone">Telefon</label>
+			<label index="text_newsletter">Um die Registrierung für den Newsletter zu bestätigen, klicken Sie bitte auf folgenden Bestätigungslink:</label>
+			<label index="title">Anrede*</label>
+			<label index="title_1">Herr</label>
+			<label index="title_1.default">Herr</label>
+			<label index="title_2">Frau</label>
+			<label index="title_2.default">Frau</label>
+		</languageKey>
+		<languageKey index="no"></languageKey>
+		<languageKey index="it"></languageKey>
+		<languageKey index="fr"></languageKey>
+		<languageKey index="es"></languageKey>
+		<languageKey index="nl"></languageKey>
+		<languageKey index="cz"></languageKey>
+		<languageKey index="pl"></languageKey>
+		<languageKey index="si"></languageKey>
+		<languageKey index="fi"></languageKey>
+		<languageKey index="tr"></languageKey>
+		<languageKey index="se"></languageKey>
+		<languageKey index="pt"></languageKey>
+		<languageKey index="ru"></languageKey>
+		<languageKey index="ro"></languageKey>
+		<languageKey index="ch"></languageKey>
+		<languageKey index="sk"></languageKey>
+		<languageKey index="lt"></languageKey>
+		<languageKey index="is"></languageKey>
+		<languageKey index="hr"></languageKey>
+		<languageKey index="hu"></languageKey>
+		<languageKey index="gl"></languageKey>
+		<languageKey index="th"></languageKey>
+		<languageKey index="gr"></languageKey>
+		<languageKey index="hk"></languageKey>
+		<languageKey index="eu"></languageKey>
+		<languageKey index="bg"></languageKey>
+		<languageKey index="br"></languageKey>
+		<languageKey index="et"></languageKey>
+		<languageKey index="ar"></languageKey>
+		<languageKey index="he"></languageKey>
+		<languageKey index="ua"></languageKey>
+		<languageKey index="lv"></languageKey>
+		<languageKey index="jp"></languageKey>
+		<languageKey index="vn"></languageKey>
+		<languageKey index="ca"></languageKey>
+		<languageKey index="ba"></languageKey>
+		<languageKey index="kr"></languageKey>
+		<languageKey index="eo"></languageKey>
+		<languageKey index="my"></languageKey>
+		<languageKey index="hi"></languageKey>
+		<languageKey index="fo"></languageKey>
+		<languageKey index="fa"></languageKey>
+		<languageKey index="sr"></languageKey>
+		<languageKey index="sq"></languageKey>
+		<languageKey index="ge"></languageKey>
+		<languageKey index="ga"></languageKey>
+		<languageKey index="km"></languageKey>
+		<languageKey index="qc"></languageKey>
+	</data>
+</T3locallang>

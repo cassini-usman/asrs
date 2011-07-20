@@ -1,0 +1,54 @@
+# NO HEADER - we'll do that in the plugin
+tt_content.go_kontakt_piNormal.10 >
+tt_content.go_kontakt_piErweitert.10 >
+
+plugin.tx_gokontakt_piErweitert.newsletterPID = 6
+
+plugin.tx_gokontakt_piErweitert.errorCheck {
+	1 {
+		obligatory {
+			message = 1
+			title = 1
+			firstname = 1
+			lastname = 1
+			redaction = 1
+		}
+		
+		email {
+			email = 1
+		}
+	}
+}
+
+# Only if delivery checkbox has been enabled
+[globalVar = GP:newsletter > 0]
+plugin.tx_gokontakt_piErweitert.errorCheck {
+	1 {
+		obligatory {
+			company = 1
+			street = 1
+			street_nr = 1
+			city = 1
+		}
+		plz {
+			plz = 1
+		}
+	}
+}
+[end]
+
+
+plugin.tx_gokontakt_piNormal.errorCheck {
+	1 {
+		obligatory {
+			message = 1
+			title = 1
+			firstname = 1
+			lastname = 1
+		}
+		
+		email {
+			email = 1
+		}
+	}
+}

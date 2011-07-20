@@ -1,0 +1,195 @@
+.kontakt {
+	color: #646567;
+}
+
+.kontakt .errorHighlight {
+	color: #E2001A;
+	font-style: italic;
+}
+
+.kontakt .agb-box .errorHighlight {
+	border: 1px solid #E2001A;
+}
+
+.kontakt .errorObligatory,
+.kontakt .errorEmail,
+.kontakt .errorSelect {
+	color: #E2001A;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.kontakt .stepNavigation .step1,
+.kontakt .stepNavigation .step2,
+.kontakt .stepNavigation .step3 {
+	float: left;
+	width: 150px;
+	background-color: #c6c7c8;
+	height: 21px;
+	color: #FFFFFF;
+	margin-top: -5px;
+	padding-top: 2px;
+}
+
+.kontakt .stepNavigation-1 {
+	background: url(navigation-1.jpg) no-repeat;
+	font-size: 14px;
+	text-align: center;
+}
+
+.kontakt .stepNavigation-2 {
+	background: url(navigation-2.jpg) no-repeat;
+}
+
+.kontakt .stepNavigation-3 {
+	background: url(navigation-3.jpg) no-repeat;
+}
+
+.kontakt .clearAll {
+	clear: both;
+}
+
+.kontakt .kontakt-image {
+	float: left;
+	margin-top: 15px;
+}
+
+.kontakt .lightboxHTML {
+	display: none;
+}
+
+/**************
+*Lovely		  *
+*Am 11.1.2011 * 
+***************/
+
+.kontakt h2 {
+	text-align: left;
+}
+
+.kontakt p.subText{
+	margin-top: -13px;
+}
+.kontakt.kontakt-1 form{
+	width: 210px;
+	float: left;
+	margin-left: 14px;
+	line-height: 16px;
+}
+
+.kontakt.kontakt-1 h3{
+	text-align: left;
+	margin-top: -5px;
+}
+
+.kontakt.kontakt-1 form a{
+	background-image: url("link_pfeil.png");
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left: 7px;
+	display: block;
+}
+
+.kontakt.kontakt-1 form label{
+	display: block;
+	margin-top: 44px;
+	float: left;
+}
+
+.kontakt.kontakt-1 form #amount{
+	display: block;
+	margin-top: 44px;
+	float: left;
+	width: 96px;
+	margin-left: 10px;
+	height: 19px;
+}
+
+.kontakt.kontakt-1 .submit-button{
+	background-image: url("nav_picture.png");
+	position:relative;
+	width: 29%;
+	display: block;
+	margin-top: 45px;
+	margin-left: 3px;
+	float: left;
+	border: none;
+	color: #FFFFFF;
+}
+
+.kontakt .addressTable .addressList{
+	text-align: right;
+	padding-right:10px;
+	vertical-align: bottom;
+	padding-bottom: 19px;
+	width: 85px;
+}
+
+.kontakt .addressTable .addressListFillin{
+	vertical-align: top;
+	padding-bottom: 15px;
+	width: 298px;
+	display:block;
+}
+
+.kontakt .addressTable .addressListFillin label{
+	font-weight: bold;
+	padding-right: 10px;
+}
+
+.kontakt .addressTable tr td input#street,
+.kontakt .addressTable tr td input#city{
+	width: 180px;
+}
+
+.kontakt .addressTable tr td input{
+	width: 289px;
+	padding-bottom: 3px;
+}
+
+.kontakt .addressTable tr td input#title_1,
+.kontakt .addressTable tr td input#title_2{
+	width: 10px;
+}
+
+.kontakt .addressTable .addressListMessage {
+	padding-bottom: 193px;
+}
+
+.kontakt .addressTable tr td textarea {
+	width: 289px;
+	height: 190px;
+}
+
+.kontakt .addressTable tr td input#title_2{
+	margin-left: 11px;
+}
+
+
+.kontakt .addressTable tr td input#street_nr, 
+.kontakt .addressTable tr td input#plz{
+	width: 102px;
+}
+
+.kontakt .addressTable .submit-button{
+	width: auto;
+	padding: 1px 0 0 0;
+}
+
+.kontakt .addressTable #presslist {
+	width: auto;
+}
+
+.kontakt .submit-box .addressTable{
+	width: 298px;
+}
+
+.kontaktErweitert .submit-box{
+	margin: 0 0 0 105px;
+	width: 292px;
+}
+
+.kontakt .submit-box .addressTable .borderBottomRightTabel{
+	margin-top: 4px;
+	margin-left: 51px;
+}
