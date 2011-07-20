@@ -1,3 +1,6 @@
+# Add go_kontakt JavaScript files
+page.includeJS.go_kontakt = typo3conf/ext/go_kontakt/res/kontakt.js
+
 # NO HEADER - we'll do that in the plugin
 tt_content.go_kontakt_piNormal.10 >
 tt_content.go_kontakt_piErweitert.10 >

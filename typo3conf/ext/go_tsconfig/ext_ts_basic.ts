@@ -49,11 +49,6 @@ page.includeJS.jQuery = fileadmin/templates/javascript/jquery.js
 page.includeJS.jQueryCookie = fileadmin/templates/javascript/jquery.cookie.js
 page.includeJS.GoLib = fileadmin/templates/javascript/goLib.js
 
-# -- includeJS extensions  typo3conf/ext/..
-page.includeJS.file50 = typo3conf/ext/go_kontakt/res/kontakt.js
-# -- includeJS end
-
-
 # Add page favicon
 page.headerData.10 = TEXT
 page.headerData.10.value (
