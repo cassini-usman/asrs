@@ -29,25 +29,25 @@ config.baseURL = http://ipod.local:8888/project/htdocs/
 
 # Page configuration
 page = PAGE
-page.includeCSS.file1 = fileadmin/templates/css/base_fest.css
-page.includeCSS.file2 = fileadmin/templates/css/top_menu_with_layers.css
-page.includeCSS.file3 = fileadmin/templates/css/left_menu.css
-page.includeCSS.file4 = fileadmin/templates/css/content.css
-page.includeCSS.file5 = fileadmin/templates/css/contentteiler.css
-page.includeCSS.file6 = fileadmin/templates/css/footer_menu.css
+page.includeCSS.base_fest = fileadmin/templates/css/base_fest.css
+page.includeCSS.top_menu_with_layers = fileadmin/templates/css/top_menu_with_layers.css
+page.includeCSS.left_menu = fileadmin/templates/css/left_menu.css
+page.includeCSS.content = fileadmin/templates/css/content.css
+page.includeCSS.contentteiler = fileadmin/templates/css/contentteiler.css
+page.includeCSS.footer_menu = fileadmin/templates/css/footer_menu.css
 
 [useragent = *Mozilla*] && [system = mac]
-	page.includeCSS.file7 = fileadmin/templates/css/firefox_mac.css
+	page.includeCSS.firefox_mac = fileadmin/templates/css/firefox_mac.css
 [global]
 
 [useragent = *Safari*] && [system = mac]
-	page.includeCSS.file7 = fileadmin/templates/css/safari_mac.css
+	page.includeCSS.safari_mac = fileadmin/templates/css/safari_mac.css
 [global]
 
 # includeJS libs fileadmin/templates/javascript/..
-page.includeJS.file01 = fileadmin/templates/javascript/jquery.js
-page.includeJS.file03 = fileadmin/templates/javascript/jquery.cookie.js
-page.includeJS.file04 = fileadmin/templates/javascript/goLib.js
+page.includeJS.jQuery = fileadmin/templates/javascript/jquery.js
+page.includeJS.jQueryCookie = fileadmin/templates/javascript/jquery.cookie.js
+page.includeJS.GoLib = fileadmin/templates/javascript/goLib.js
 
 # -- includeJS extensions  typo3conf/ext/..
 page.includeJS.file50 = typo3conf/ext/go_kontakt/res/kontakt.js
