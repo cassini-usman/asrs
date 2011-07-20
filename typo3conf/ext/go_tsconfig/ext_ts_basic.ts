@@ -45,8 +45,7 @@ page.includeCSS.file6 = fileadmin/templates/css/footer_menu.css
 [global]
 
 # includeJS libs fileadmin/templates/javascript/..
-page.includeJS.file01 = fileadmin/templates/javascript/jquery.min.js
-page.includeJS.file02 = fileadmin/templates/javascript/browser_detect.js
+page.includeJS.file01 = fileadmin/templates/javascript/jquery.js
 page.includeJS.file03 = fileadmin/templates/javascript/jquery.cookie.js
 page.includeJS.file04 = fileadmin/templates/javascript/goLib.js
 
