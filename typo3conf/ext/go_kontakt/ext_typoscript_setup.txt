@@ -13,7 +13,7 @@ plugin.tx_gokontakt_piErweitert.errorCheck {
 			lastname = 1
 			redaction = 1
 		}
-		
+
 		email {
 			email = 1
 		}
@@ -46,7 +46,7 @@ plugin.tx_gokontakt_piNormal.errorCheck {
 			firstname = 1
 			lastname = 1
 		}
-		
+
 		email {
 			email = 1
 		}
