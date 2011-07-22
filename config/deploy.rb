@@ -16,6 +16,9 @@ require 'rainbow'
 abort("Please configure capistrano first!")
 
 
+set :customer "<WICHTIG: Name des Kunden wie in SysCP>"
+
+
 set :stages, %w(production staging)
 set :default_stage, "staging"
 
