@@ -2,8 +2,7 @@
 
 ## Aufsetzen eines neuen Projektes
 
-Um ein neues Projekt auf Basis des Default-Projektes aufzusetzen, müssen folgende
-Schritte durchgeführt werden:
+Um ein neues Projekt auf Basis des Default-Projektes aufzusetzen, müssen folgende Schritte durchgeführt werden:
 
 1. Klonen der [DefaultProjektStruktur](https://github.com/gosign-media/DefaultProjektStruktur).
 
@@ -11,17 +10,23 @@ Schritte durchgeführt werden:
 
 3. Clonen des [Default-Projektes](https://github.com/gosign-media/DefaultProjekt) in den Ordner `htdocs/` (zuvor muss die `index.html` in diesem Ordner gelöscht werden, damit man dorthin clonen kann) der DefaultProjektStruktur.  **Hier sollte der `.git`-Ordner NICHT gelöscht werden, allerdings sollte die README.md gelöscht bzw. geleert werden!**
 
-4. Ändern des Remotes des geklontes DefaultProjektes auf das neue Projekt-Remote (damit ist das tatsächlich Projekt-Repository gemeint):
+4. Clonen des [DataDummies](https://github.com/gosign-media/DataDummy) in den `data/`-Unterordner der DefaultProjekteStruktur (auch hier muss vorher die `data/index.html` gelöscht werden).
+
+5. Löschen des `data/.git` Ordners! Die User-Daten stehen nicht unter Versionskontrolle.
+
+6. Setzen des korrekten Symlinks für `src/`. Dieser muss auf einen Klon des [Typo3Source](https://github.com/gosign-media/Typo3Source) Repositories zeigen.
+
+Diese Punkte werden vom Capistrano task `local:setup` für lokale Projekte bzw. von `deploy:setup` automatisch ausgeführt und sind hier nur zur Referenz noch einmal aufgeführt. Änderungen die hier vorgenommen werden sollten entsprechend auch in der Capistrano Konfiguration unter `config/` geschehen.
+
+---
+
+**Folgende Punkte müssen von Hand ausgeführt werden:**
+
+7. Ändern des Remotes des geklontes DefaultProjektes auf das neue Projekt-Remote (damit ist das tatsächlich Projekt-Repository gemeint). **Natürlich nur beim ersten Erstellen des Projektes, kann sonst übersprungen werden.**:
 
     `git remote set-url origin <projekt-remote-url>`
 
-5. Clonen des [DataDummies](https://github.com/gosign-media/DataDummy) in den `data/`-Unterordner der DefaultProjekteStruktur (auch hier muss vorher die `data/index.html` gelöscht werden).
-
-6. Löschen des `data/.git` Ordners! Die User-Daten stehen nicht unter Versionskontrolle.
-
-7. Setzen des korrekten Symlinks für `src/`. Dieser muss auf einen Klon des [Typo3Source](https://github.com/gosign-media/Typo3Source) Repositories zeigen.
-
-8. Einspielen der Default-Datenbank aus `htdocs/sql/`
+8. Einspielen der Default-Datenbank aus `htdocs/sql/` (bzw. übertragen der Datenbank vom Entwicklungsserver).
 
 9. Erstellen der `localconf.php` (anhand einer Kopie der `localconf.php.sample`) im Ordner `htdocs/typo3conf` und setzen der Datenbank-Einstellungen in dieser Datei.
 
@@ -32,7 +37,7 @@ Schritte durchgeführt werden:
 
 * `htdocs` : Enthält den Projektspezifischen Source-Code (insbesondere Extensions) sowieso alle Templates und Grafiken die für das Projekt wichtig sind. Die Grundstruktur für diesen Ordner ist bereits in diesem Repository enthalten.
 
-* `sql` : Enthält eine SQL-Datei welche zum aufsetzen eines neuen Projektes genutzt wird.
+* `htdocs/sql` : Enthält eine SQL-Datei welche zum aufsetzen eines neuen Projektes genutzt wird.
 
 * `src` : Enthält den Typo3-Sourcecode (`t3lib/` und `typo3/`) und somit auch alle globalen Extensions (e.g. `go_pibase`, `dam`, etc...) welche in `typo3/ext/` liegen. Der aktuelle Inhalt für diesen Ordner kann dem Repository `Typo3Source` entnommen werden.
 
