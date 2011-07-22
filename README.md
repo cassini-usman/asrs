@@ -9,11 +9,13 @@ Schritte durchgeführt werden:
 
 2. Löschen des `.git/`-Ordners des DefaultProjektStruktur-Repositories (da es nur zum Aufsetzen dient, und keiner weiteren Änderungen bedarf).
 
-3. Clonen des [Default-Projektes](https://github.com/gosign-media/DefaultProjekt) in den Ordner `htdocs/` der DefaultProjektStruktur. Anschließend sollte die `htdocs/index.html` Datei gelöscht werden, diese dient nur dazu dass Git diesen Ordner nicht als Leer ansieht, und somit ignoriert.
+3. Clonen des [Default-Projektes](https://github.com/gosign-media/DefaultProjekt) in den Ordner `htdocs/` (zuvor muss die `index.html` in diesem Ordner gelöscht werden, damit man dorthin clonen kann) der DefaultProjektStruktur.  **Hier sollte der `.git`-Ordner NICHT gelöscht werden, allerdings sollte die README.md gelöscht bzw. geleert werden!**
 
-4. Ändern des Remotes des geklontes DefaultProjektes auf das neue Projekt-Remote (damit ist das tatsächlich Projekt-Repository gemeint) (TODO - Weiter ausführen). **Hier sollte der `.git`-Ordner NICHT gelöscht werden.**
+4. Ändern des Remotes des geklontes DefaultProjektes auf das neue Projekt-Remote (damit ist das tatsächlich Projekt-Repository gemeint):
 
-5. Clonen des [DataDummies](https://github.com/gosign-media/DataDummy) in den `data/`-Unterordner der DefaultProjekteStruktur.
+    `git remote set-url origin <projekt-remote-url>`
+
+5. Clonen des [DataDummies](https://github.com/gosign-media/DataDummy) in den `data/`-Unterordner der DefaultProjekteStruktur (auch hier muss vorher die `data/index.html` gelöscht werden).
 
 6. Löschen des `data/.git` Ordners! Die User-Daten stehen nicht unter Versionskontrolle.
 
