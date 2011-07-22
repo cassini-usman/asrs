@@ -42,6 +42,16 @@ task :uname do
 end
 
 
+# Create a symlink from htdocs to current to keep our
+# DefaultProjekt structure intact.
+namespace :deploy do
+  task :resymlink, :roles => :app do
+    run "ln -s #{current_path} #{deploy_to}/htdocs"
+  end
+end
+after "deploy:symlink", "deploy:resymlink"
+
+
 # Because of capistrano's default directory strucuture, which adds
 # one level of depth compared to our default structure, we need to
 # create some extra symlinks so our default project's symlinks don't
