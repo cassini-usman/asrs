@@ -3,13 +3,13 @@ require 'rubygems'
 begin
 	gem 'railsless-deploy'
 	gem 'capistrano-ext'
+	gem 'rainbow'
     rescue Gem::LoadError => e
 	puts "--- " + e.to_s
 	exit
 end
 
-require 'railsless-deploy'
-require 'capistrano/ext/multistage'
+require 'rainbow'
 
 # After you have configured capistrano, you can
 # uncomment or remove the following line:
@@ -49,3 +49,59 @@ namespace :setup do
     end
 end
 after "deploy:setup", "setup:extra_symlinks"
+
+
+
+
+namespace :local do
+
+
+  # Used to create the correct project structure after cloning the project.
+  # This script executes the commands according to the "tutorial" located
+  # in the DefaultProjekt readme file:
+  # https://github.com/gosign-media/DefaultProjekt/blob/master/README.md
+  task :setup do
+    Gosign::Util.notice("About to create default project structure...")
+
+    if Dir.exists?("../data") and Dir.exists?("../htdocs") and File.symlink?("../src")
+      Gosign::Util.error("The folder structure seems to be set up already! Aborting...")
+      exit
+    end
+
+    Gosign::Util.exec("Moving files to htdocs/ subfolder:") do
+      <<-eos
+        mkdir htdocs &&
+        find . -depth 1 -not -name "htdocs" -exec mv {} htdocs/ \\; -prune
+      eos
+    end
+
+    Gosign::Util.exec("Cloning default project structure: ") do
+      <<-eos
+        git clone -q git@github.com:gosign-media/DefaultProjektStruktur.git &&
+        rm -Rf DefaultProjektStruktur/.git &&
+        rm -Rf DefaultProjektStruktur/htdocs &&
+        find ./DefaultProjektStruktur -depth 1 -exec mv {} ./ \\; -prune &&
+        rm -Rf DefaultProjektStruktur
+      eos
+    end
+
+    Gosign::Util.exec("Cloning data folder structure: ") do
+      <<-eos
+        cd data/ &&
+        rm index.html &&
+        git clone -q git@github.com:gosign-media/DataDummy.git . &&
+        rm -Rf ./.git
+      eos
+    end
+
+    Gosign::Util.exec("Cleaning up: ") do
+      <<-eos
+        rm README.md &&
+        rm data/README.md
+      eos
+    end
+
+  end
+
+
+end
