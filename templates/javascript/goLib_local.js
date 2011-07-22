@@ -29,8 +29,10 @@ var GosignLocal;
  */
 if(typeof Gosign === "undefined") {
 	Gosign = GosignLocal;
-	console.log("goLib_local.js: go_pibase seems be loaded after go_tsconfig.");
-	console.log("This should not be the case.");
+	if(typeof console !== "undefined") {
+		console.log("goLib_local.js: go_pibase seems be loaded after go_tsconfig.");
+		console.log("This should not be the case.");
+	}
 } else {
 	Gosign.extend(GosignLocal);
 }
