@@ -1,4 +1,5 @@
 require 'rubygems'
+require './config/util.rb' # Utility methods
 
 begin
 	gem 'railsless-deploy'
@@ -9,30 +10,21 @@ begin
 	exit
 end
 
-require 'rainbow'
+require 'rainbow' # Shell font colorization support.
+require 'railsless-deploy'
+require 'capistrano/ext/multistage'
+require './config/project.rb' # Include Project Configuration
 
-# After you have configured capistrano, you can
-# uncomment or remove the following line:
-abort("Please configure capistrano first!")
-
-
-set :customer "<WICHTIG: Name des Kunden wie in SysCP>"
-
-
-set :stages, %w(production staging)
-set :default_stage, "staging"
-
-
-# The application name, which is also used as
-# the applications folder name on the remote server
-# and therefore should not contains whitespaces,
-# special characters, etc...
-set :application, "<PROJECT FOLDER NAME>"
 
 set :scm, :git
-set :repository, "<GITHUB REPOSITORY URL>"
 set :deploy_via, :remote_cache
 set :use_sudo, false
+
+
+# Load project configuration
+self.extend Gosign::Config
+loadConfig()
+
 
 
 # Task to test our server configuration, using
@@ -60,17 +52,19 @@ namespace :setup do
     task :extra_symlinks do
         run "cd #{deploy_to}/releases && ln -s ../src src && ln -s ../data data"
     end
+
+    task :create_structure do
+      setupDefaultStructure(deploy_to + "/", false)
+    end
 end
-after "deploy:setup", "setup:extra_symlinks"
+after "deploy:setup", "setup:create_structure", "setup:extra_symlinks"
 
 
-
-
+# Namespace for local tasks
 namespace :local do
 
-
   # Used to create the correct project structure after cloning the project.
-  # This script executes the commands according to the "tutorial" located
+  # This script capExecutes the commands according to the "tutorial" located
   # in the DefaultProjekt readme file:
   # https://github.com/gosign-media/DefaultProjekt/blob/master/README.md
   task :setup do
@@ -81,40 +75,81 @@ namespace :local do
       exit
     end
 
-    Gosign::Util.exec("Moving files to htdocs/ subfolder:") do
+    cwd = Dir.pwd + "/"
+
+    capExec("Moving files to htdocs/ subfolder:") do
       <<-eos
-        mkdir htdocs &&
-        find . -depth 1 -not -name "htdocs" -exec mv {} htdocs/ \\; -prune
+        mkdir #{cwd}htdocs &&
+        find #{cwd} -mindepth 1 -maxdepth 1 -not -name "htdocs" -exec mv {} #{cwd}htdocs/ \\; -prune
       eos
     end
 
-    Gosign::Util.exec("Cloning default project structure: ") do
-      <<-eos
-        git clone -q git@github.com:gosign-media/DefaultProjektStruktur.git &&
-        rm -Rf DefaultProjektStruktur/.git &&
-        rm -Rf DefaultProjektStruktur/htdocs &&
-        find ./DefaultProjektStruktur -depth 1 -exec mv {} ./ \\; -prune &&
-        rm -Rf DefaultProjektStruktur
-      eos
-    end
-
-    Gosign::Util.exec("Cloning data folder structure: ") do
-      <<-eos
-        cd data/ &&
-        rm index.html &&
-        git clone -q git@github.com:gosign-media/DataDummy.git . &&
-        rm -Rf ./.git
-      eos
-    end
-
-    Gosign::Util.exec("Cleaning up: ") do
-      <<-eos
-        rm README.md &&
-        rm data/README.md
-      eos
-    end
+    setupDefaultStructure(cwd)
 
   end
 
+end
+
+
+# This method encapsules the commands needed to set up the project structure
+# according to the instructions located in
+# https://github.com/gosign-media/DefaultProjekt/blob/master/README.md
+# If changes are needed, you should also make these changes in the README file.
+def setupDefaultStructure(path, local=true)
+
+  capExec("Cloning default project structure: ", local) do
+    <<-eos
+      git clone -q git@github.com:gosign-media/DefaultProjektStruktur.git #{path}DefaultProjektStruktur &&
+      rm -Rf #{path}DefaultProjektStruktur/.git &&
+      rm -Rf #{path}DefaultProjektStruktur/htdocs &&
+      find #{path}DefaultProjektStruktur -prune -mindepth 1 -maxdepth 1 -exec mv {} #{path} \\; -prune &&
+      rm -Rf #{path}DefaultProjektStruktur
+    eos
+  end
+
+  capExec("Cloning data folder structure: ", local) do
+    <<-eos
+      rm #{path}data/index.html &&
+      git clone -q git@github.com:gosign-media/DataDummy.git #{path}data/ &&
+      rm -Rf #{path}data/.git
+    eos
+  end
+
+  capExec("Cleaning up: ", local) do
+    <<-eos
+      rm #{path}README.md &&
+      rm #{path}data/README.md &&
+      rm #{path}.gitignore &&
+      rm #{path}data/.gitignore
+    eos
+  end
+
+end
+
+
+# Execute a shell command, either locally or remotely according to the
+# "local" flag. When executing locally, a check whether or not a command
+# succeeded is made, this check is done automatically by capistrano when
+# executing remotely.
+def capExec(msg, local=true, &block)
+
+  x = block.call
+  Gosign::Util.notice(msg, false)
+
+  if local
+    out = %x[#{x}]
+
+    if($? != 0)
+      Gosign::Util.error(" failed")
+      Gosign::Util.error("Aborting...")
+      exit
+    end
+
+    Gosign::Util.msg(" success")
+
+    out
+  else
+    run(x)
+  end
 
 end
