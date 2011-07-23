@@ -45,6 +45,8 @@ Diese Punkte werden vom Capistrano task `local:setup` f체r lokale Projekte bzw. 
 
 * `htdocs/sql` : Enth채lt eine SQL-Datei welche zum aufsetzen eines neuen Projektes genutzt wird.
 
+* `htdocs/config/local/` : Enth홯t alle Dateien welche lokale Konfigurationen enthalten. Mehr Informationen dazu in der README-Datei des Ordners.
+
 * `src` : Enth채lt den Typo3-Sourcecode (`t3lib/` und `typo3/`) und somit auch alle globalen Extensions (e.g. `go_pibase`, `dam`, etc...) welche in `typo3/ext/` liegen. Der aktuelle Inhalt f체r diesen Ordner kann dem Repository `Typo3Source` entnommen werden.
 
 
