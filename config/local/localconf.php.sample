@@ -1,5 +1,5 @@
 <?php
-require_once('localconf_global.php');
+require_once( PATH_site . 'typo3conf/localconf_global.php');
 
 ## INSTALL SCRIPT EDIT POINT TOKEN - all lines after this points may be changed by the install script!
 
