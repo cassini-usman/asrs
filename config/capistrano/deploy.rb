@@ -1,5 +1,5 @@
 require 'rubygems'
-require './config/util.rb' # Utility methods
+require './config/capistrano/util.rb' # Utility methods
 
 begin
 	gem 'railsless-deploy'
@@ -10,10 +10,15 @@ begin
 	exit
 end
 
+# Configure directory where stage configurations are located. This has
+# to be done before requiring "multistage", because otherwise the
+# configuration is ignored.
+set :stage_dir, './config/capistrano/stages/'
+
 require 'rainbow' # Shell font colorization support.
 require 'railsless-deploy'
 require 'capistrano/ext/multistage'
-require './config/project.rb' # Include Project Configuration
+require './config/capistrano/project.rb' # Include Project Configuration
 
 
 set :scm, :git
