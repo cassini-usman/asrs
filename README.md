@@ -1,5 +1,11 @@
 # Default Projekt
 
+## Anpassen eines alten Projektes auf die neue Struktur
+
+### Dinge die es zu beachten gilt
+
+* `templavoila/` muss im `typo3conf/ext/`-Ordner vorhanden sein, da es nicht in den Sources mitgeliefert wird.
+
 ## Aufsetzen eines neuen Projektes
 
 Um ein neues Projekt auf Basis des Default-Projektes aufzusetzen, müssen folgende Schritte durchgeführt werden:
