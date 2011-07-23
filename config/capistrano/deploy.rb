@@ -85,7 +85,7 @@ namespace :local do
     capExec("Moving files to htdocs/ subfolder:") do
       <<-eos
         mkdir #{cwd}htdocs &&
-        find #{cwd} -mindepth 1 -maxdepth 1 -not -name "htdocs" -exec mv {} #{cwd}htdocs/ \\; -prune
+        find #{cwd} -mindepth 1 -maxdepth 1 -not -name "htdocs" -prune -exec mv {} #{cwd}htdocs/ \\;
       eos
     end
 
@@ -107,7 +107,7 @@ def setupDefaultStructure(path, local=true)
       git clone -q git@github.com:gosign-media/DefaultProjektStruktur.git #{path}DefaultProjektStruktur &&
       rm -Rf #{path}DefaultProjektStruktur/.git &&
       rm -Rf #{path}DefaultProjektStruktur/htdocs &&
-      find #{path}DefaultProjektStruktur -prune -mindepth 1 -maxdepth 1 -exec mv {} #{path} \\; -prune &&
+      find #{path}DefaultProjektStruktur -mindepth 1 -maxdepth 1 -prune -exec mv {} #{path} \\; &&
       rm -Rf #{path}DefaultProjektStruktur
     eos
   end
