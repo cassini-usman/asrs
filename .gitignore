@@ -16,15 +16,15 @@ typo3conf/*
 typo3conf/l10n/*
 !typo3conf/l10n/index.html
 
-# devlog should never be add                                                         
+# devlog should never be add
 typo3conf/ext/devlog/
 
 # Ignore .htaccess because of different .htaccess configurations throughout
 # the different servers
 /.htaccess
 
-config/local/*
-!config/local/*.sample
+config/local.sample/*
+!config/local.sample/*.sample
 
 # Miscellaneous #
 

@@ -22,6 +22,8 @@ Um ein neues Projekt auf Basis des Default-Projektes aufzusetzen, müssen folgen
 
 6. Setzen des korrekten Symlinks für `src/`. Dieser muss auf einen Klon des [Typo3Source](https://github.com/gosign-media/Typo3Source) Repositories zeigen.
 
+7. Kopieren der Dateien aus `/htdocs/config/local.sample/` nach `/local/` und Entfernung des `.sample` Suffix (die `index.html` im Ordner `/local/` kann ebenfalls gelöscht werden).
+
 Diese Punkte werden vom Capistrano task `local:setup` für lokale Projekte bzw. von `deploy:setup` automatisch ausgeführt und sind hier nur zur Referenz noch einmal aufgeführt. Änderungen die hier vorgenommen werden sollten entsprechend auch in der Capistrano Konfiguration unter `config/` geschehen.
 
 ---
@@ -34,7 +36,7 @@ Diese Punkte werden vom Capistrano task `local:setup` für lokale Projekte bzw. 
 
 8. Einspielen der Default-Datenbank aus `htdocs/sql/` (bzw. übertragen der Datenbank vom Entwicklungsserver).
 
-9. Erstellen der `localconf.php` (anhand einer Kopie der `localconf.php.sample`) im Ordner `htdocs/typo3conf` und setzen der Datenbank-Einstellungen in dieser Datei.
+9. Konfigurieren der Datenbank Einstellungen in der `/local/localconf.php` (oder in `htdocs/typo3conf/localconf.php`, da letztere lediglich ein Symlink auf erstere ist).
 
 
 ## Struktur
@@ -43,7 +45,13 @@ Diese Punkte werden vom Capistrano task `local:setup` für lokale Projekte bzw. 
 
 * `htdocs` : Enthält den Projektspezifischen Source-Code (insbesondere Extensions) sowieso alle Templates und Grafiken die für das Projekt wichtig sind. Die Grundstruktur für diesen Ordner ist bereits in diesem Repository enthalten.
 
-* `htdocs/sql` : Enthält eine SQL-Datei welche zum aufsetzen eines neuen Projektes genutzt wird.
+    * `htdocs/sql` : Enthält eine SQL-Datei welche zum aufsetzen eines neuen Projektes genutzt wird.
+
+    * `htdocs/config/capistrano/` : Enthält die Capistrano-Konfiguration des Default-Projektes sowie die projekt spezifischen Einstellungen in der Datei `project.rb`.
+
+    * `htdocs/config/local` : Ein Symlink auf `/local/`, um Server-lokale Konfiguration zu erlauben (BaseURL, Datenbank, etc.).
+
+    * `htdocs/config/local.sample/` : Vorlagen für die Server-lokalen Konfigurations-Dateien, damit diese nicht immer von Hand erstellt werden müssen.
 
 * `src` : Enthält den Typo3-Sourcecode (`t3lib/` und `typo3/`) und somit auch alle globalen Extensions (e.g. `go_pibase`, `dam`, etc...) welche in `typo3/ext/` liegen. Der aktuelle Inhalt für diesen Ordner kann dem Repository `Typo3Source` entnommen werden.
 
