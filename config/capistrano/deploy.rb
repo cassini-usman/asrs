@@ -125,7 +125,15 @@ def setupDefaultStructure(path, local=true)
       rm #{path}README.md &&
       rm #{path}data/README.md &&
       rm #{path}.gitignore &&
-      rm #{path}data/.gitignore
+      rm #{path}data/.gitignore &&
+      rm #{path}local/index.html
+    eos
+  end
+
+  capExec("Moving local configuration items into place: ", local) do
+    <<-eos
+      cp #{path}htdocs/config/local.sample/*.sample #{path}local/ &&
+      for old in #{path}/local/*.sample; do mv $old #{path}local/`basename $old .sample`; done
     eos
   end
 
