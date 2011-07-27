@@ -24,7 +24,7 @@ $TYPO3_CONF_VARS['EXTCONF']['realurl'] = array(
 		'preVars' => array (
 			0 => array (
 				'GETvar' => 'L',
-				'userFunc' => 'EXT:go_language/lib/class.tx_golanguage.php:&tx_golanguage->getRealurlLanguagePrevar',
+				'userFunc' => 'EXT:go_language/pi1/class.tx_golanguage_pi1.php:&tx_golanguage_pi1->getRealurlLanguagePrevar',
 			),
 		),
 	),
