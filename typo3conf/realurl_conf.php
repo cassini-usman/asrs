@@ -1,0 +1,32 @@
+<?php
+$TYPO3_CONF_VARS['EXTCONF']['realurl'] = array(
+	'_DEFAULT' => array(
+		'init' => array(
+			'enableCHashCache' => 1,
+			'appendMissingSlash' => 'ifNotFile,redirect',
+			'adminJumpToBackend' => 1,
+			'enableUrlDecodeCache' => 1,
+			'enableUrlEncodeCache' => 1,
+			'emptyUrlReturnValue' => '/',
+			'disableErrorLog' => 1,
+		),
+		'pagePath' => array(
+			'rootpage_id' => 3,
+			'type' => 'user',
+			'userFunc' => 'EXT:realurl/class.tx_realurl_advanced.php:&tx_realurl_advanced->main',
+			'spaceCharacter' => '-',
+			'languageGetVar' => 'L',
+		),
+		'fileName' => array(
+			'defaultToHTMLsuffixOnPrev' => 1,
+			'acceptHTMLsuffix' => 1,
+		),
+		'preVars' => array (
+			0 => array (
+				'GETvar' => 'L',
+				'userFunc' => 'EXT:go_language/pi1/class.tx_golanguage_pi1.php:&tx_golanguage_pi1->getRealurlLanguagePrevar',
+			),
+		),
+	),
+);
+?>
