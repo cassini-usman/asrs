@@ -1,1 +1,1 @@
-../../../config/local/ext_ts_localconf.ts
+../../../config/local/ext_ts_local.ts
