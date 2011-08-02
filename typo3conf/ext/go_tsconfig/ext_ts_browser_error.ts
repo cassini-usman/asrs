@@ -1,5 +1,4 @@
 [browser = msie] && [system = win] && [version = <8]
-	config.myBrowser = ie6
 	ie6error = HTML
 	ie6error.value(
 		<div class="ie6error" style="width:596px;margin:auto;">
