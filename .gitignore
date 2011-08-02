@@ -36,7 +36,6 @@ Desktop.ini
 
 # Added by gemignore. Snippet 'Global/OSX'
 .DS_Store
-Icon?
 
 # Thumbnails
 ._*
