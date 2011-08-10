@@ -55,7 +55,12 @@ after "deploy:symlink", "deploy:resymlink"
 # break.
 namespace :setup do
     task :extra_symlinks do
-        run "cd #{deploy_to}/releases && ln -s ../src src && ln -s ../data data"
+        run <<-eos
+          cd #{deploy_to}/releases &&
+          ln -s ../src src &&
+          ln -s ../data data &&
+          ln -s ../local local
+        eos
     end
 
     task :create_structure do
