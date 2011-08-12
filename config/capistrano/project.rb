@@ -1,4 +1,4 @@
-module Gosign
+class Gosign
   module Config
 
     def loadConfig
