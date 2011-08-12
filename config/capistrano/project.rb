@@ -8,6 +8,12 @@ module Gosign
 # in config/deploy/.
 abort("Please configure capistrano first!")
 
+# Default permissions which are set on each deploy (by "deploy:permissions")
+# These may be overriden in the stage configuration.
+set :filePermissions, 660
+set :setDirectoryPermissions, 770
+set :phpshPermissions, 770
+
 # The customer config variable is needed for our server directory structure,
 # which looks something like [..]/webs/<customer>/<project>/<stage>/[..]
 set :customer, "WICHTIG: Name des Kunden wie in SysCP"

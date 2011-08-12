@@ -42,18 +42,36 @@ end
 # Create a symlink from htdocs to current to keep our
 # DefaultProjekt structure intact.
 namespace :deploy do
+
   task :resymlink, :roles => :app do
     run "ln -s #{current_path} #{deploy_to}/htdocs"
   end
+
+  task :permissions do
+
+    setPermissions(release_path, false, { chmod: filePermissions, type: "f", chgrp: group })
+    setPermissions(release_path, false, { chmod: setDirectoryPermissions, type: "d", chgrp: group })
+    setPermissions(release_path, false, { chmod: phpshPermissions, type: "f", name: "*.phpsh", chgrp: group })
+
+    # Set permissions for the local/ server-configuration folder too, just in case
+    setPermissions(deploy_to + "/local/", false, { chmod: 660, type: "f", chgrp: group })
+    setPermissions(deploy_to + "/local/", false, { chmod: 770, type: "d", chgrp: group })
+
+  end
+
+
 end
+after "deploy", "deploy:permissions"
 after "deploy:symlink", "deploy:resymlink"
 
 
-# Because of capistrano's default directory strucuture, which adds
-# one level of depth compared to our default structure, we need to
-# create some extra symlinks so our default project's symlinks don't
-# break.
+
 namespace :setup do
+
+    # Because of capistrano's default directory strucuture, which adds
+    # one level of depth compared to our default structure, we need to
+    # create some extra symlinks so our default project's symlinks don't
+    # break.
     task :extra_symlinks do
         run <<-eos
           cd #{deploy_to}/releases &&
@@ -63,11 +81,20 @@ namespace :setup do
         eos
     end
 
+    # Set up the default project structure
+    # See setupDefaultStructure() for more information
     task :create_structure do
       setupDefaultStructure(deploy_to + "/", false)
     end
+
+    task :set_data_permissions do
+      setPermissions(deploy_to + "/data/", false, { chmod: 660, type: "f", chgrp: group })
+      setPermissions(deploy_to + "/data/", false, { chmod: 770, type: "d", chgrp: group })
+      setPermissions(deploy_to + "/data/", false, { chmod: 770, type: "f", name: "*.phpsh", chgrp: group })
+    end
+
 end
-after "deploy:setup", "setup:create_structure", "setup:extra_symlinks"
+after "deploy:setup", "setup:create_structure", "setup:extra_symlinks", "setup:set_data_permissions"
 
 
 # Namespace for local tasks
@@ -80,7 +107,7 @@ namespace :local do
   task :setup do
     Gosign::Util.notice("About to create default project structure...")
 
-    if Dir.exists?("../data") and Dir.exists?("../htdocs") and File.symlink?("../src")
+    if correctDirectoryStructure
       Gosign::Util.error("The folder structure seems to be set up already! Aborting...")
       exit
     end
@@ -95,7 +122,22 @@ namespace :local do
     end
 
     setupDefaultStructure(cwd)
+  end
 
+
+  # Set local permissions to 644 (files) and 755 (directories)
+  # Also make *.phpsh scripts executable (775)
+  task :permissions do
+    cwd = Dir.pwd + "/"
+
+    if not correctDirectoryStructure
+      Gosign::Util.error("The correct directory structure is not yet set up, please run 'local:setup'")
+      exit
+    end
+
+    setPermissions(cwd + "../", true, { chmod: 644, type: "f" })
+    setPermissions(cwd + "../", true, { chmod: 755, type: "d" })
+    setPermissions(cwd + "../", true, { chmod: 775, type: "f", name: "*.phpsh" })
   end
 
 end
@@ -109,7 +151,7 @@ def setupDefaultStructure(path, local=true)
 
   capExec("Cloning default project structure: ", local) do
     <<-eos
-      git clone -q git@github.com:gosign-media/DefaultProjektStruktur.git #{path}DefaultProjektStruktur &&
+      git clone -q git://github.com/gosign-media/DefaultProjektStruktur.git #{path}DefaultProjektStruktur &&
       rm -Rf #{path}DefaultProjektStruktur/.git &&
       rm -Rf #{path}DefaultProjektStruktur/htdocs &&
       find #{path}DefaultProjektStruktur -mindepth 1 -maxdepth 1 -prune -exec mv {} #{path} \\; &&
@@ -119,9 +161,9 @@ def setupDefaultStructure(path, local=true)
 
   capExec("Cloning data folder structure: ", local) do
     <<-eos
-      rm #{path}data/index.html &&
-      git clone -q git@github.com:gosign-media/DataDummy.git #{path}data/ &&
-      rm -Rf #{path}data/.git
+      rm -R #{path}data/ &&
+      git clone -q git@github.com:gosign-media/DataDummy.git #{path}data &&
+      rm -R #{path}data/.git
     eos
   end
 
@@ -134,6 +176,38 @@ def setupDefaultStructure(path, local=true)
     eos
   end
 
+end
+
+# Checks if the correct project structure has been set up already (e.g. through)
+# the "local:setup" task.
+def correctDirectoryStructure
+  Dir.exists?("../data") and Dir.exists?("../htdocs") and
+  File.symlink?("../src") and Dir.exists?("../local")
+end
+
+
+# Sets permissions for the specified path, locally or remotely according
+# to the "local" parameter. You can specify the following options:
+#
+#     type: "d" or "f" for "only directories" and "only files" respectively
+#     name: only change the permissions for matching filenames (e.g "*.phpsh")
+#     chmod: change the file permissions to the value of this options (e.g. 644)
+#     chgrp: change the group of the matching files to the value of this option
+#
+#     e.g. setPermissions("./", true, { chmod: 660, type: "f" })
+def setPermissions(path, local, opts)
+  find = "find #{path} "
+
+  find += "-type #{opts[:type]} " if not opts[:type].nil?
+  find += "-name #{opts[:name]} " if not opts[:name].nil?
+
+  cmds = []
+  cmds.push find + "-exec chmod #{opts[:chmod]}  {} \\; " if not opts[:chmod].nil?
+  cmds.push find + "-exec chgrp #{opts[:chgrp]} {} \\; " if not opts[:chgrp].nil?
+
+  capExec("Executing: " + cmds.join(" && "), local) do
+    cmds.join(" && ")
+  end
 end
 
 
