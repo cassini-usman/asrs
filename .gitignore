@@ -53,8 +53,8 @@ Desktop.ini
 # KDE
 .directory
 
-# Ignore .bak files
 *.bak
+*.swp
 
 # Packages
 # it's better to unpack these files and commit the raw source
