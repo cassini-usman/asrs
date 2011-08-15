@@ -61,7 +61,7 @@ namespace :deploy do
   end
 
 end
-after "deploy", "deploy:permissions"
+before "deploy:symlink", "deploy:permissions"
 after "deploy:symlink", "deploy:resymlink"
 
 
