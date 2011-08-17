@@ -25,6 +25,6 @@ $tempColumns = array (
 
 t3lib_div::loadTCA('pages');
 t3lib_extMgm::addTCAcolumns('pages',$tempColumns,1);
-t3lib_extMgm::addToAllTCAtypes('pages','robots', '', 'before:abstract,after:shortcut_mode,after:mount_pid_ol,after:urltype');
+t3lib_extMgm::addToAllTCAtypes('pages','robots', '1,3,4,6,7', 'before:--palette--;;editorial');
 
 ?>
