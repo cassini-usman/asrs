@@ -27,8 +27,6 @@
  * Hint: use extdeveval to insert/update function index above.
  */
 
-require_once( t3lib_extMgm::extPath('go_pibase') . 'class.tx_gopibase.php' );
-
 /**
  * Plugin 'Contact Form' for the 'go_kontakt' extension.
  *

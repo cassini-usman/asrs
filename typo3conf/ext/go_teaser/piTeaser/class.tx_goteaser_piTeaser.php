@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once( t3lib_extMgm::extPath('go_pibase') . 'class.tx_gopibase.php' );
-
 /**
  * Plugin 'piTeaser' for the 'go_content' extension.
  *

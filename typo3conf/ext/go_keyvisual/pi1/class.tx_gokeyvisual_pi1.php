@@ -27,8 +27,6 @@
  * Hint: use extdeveval to insert/update function index above.
  */
 
-require_once(PATH_typo3conf.'ext/go_pibase/class.tx_gopibase.php');require_once( t3lib_extMgm::extPath('go_pibase') . 'class.tx_gopibase.php' );
-
 /**
  * Plugin 'Gosign Key-Visual' for the 'go_keyvisual' extension.
  *
