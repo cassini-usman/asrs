@@ -35,7 +35,7 @@ $TYPO3_CONF_VARS['BE']['versionNumberInFilename'] = '0';
 
 $TYPO3_CONF_VARS['FE']['disableNoCacheParameter'] = '0';
 $TYPO3_CONF_VARS['FE']['compressionLevel'] = '9';
-$TYPO3_CONF_VARS['FE']['pageNotFound_handling'] = 'USER_FUNCTION:EXT:go_pibase/class.tx_go404handling.php:tx_go404handling->handle404';
+$TYPO3_CONF_VARS['FE']['pageNotFound_handling'] = 'USER_FUNCTION:tx_gopibase_404handling->handle404';
 $TYPO3_CONF_VARS['FE']['defaultTypoScript_constants'] = '[GLOBAL]\' . LF . \'extension.pdf_generator.typeNum = 123';
 $TYPO3_CONF_VARS['FE']['lifetime'] = '86400';
 $TYPO3_CONF_VARS['FE']['dontSetCookie'] = '0';
