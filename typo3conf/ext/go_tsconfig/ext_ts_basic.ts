@@ -26,6 +26,10 @@ config.baseURL = http://ipod.local:8888/project/htdocs/
     config.baseURL = http://CHANGEME
 [global]
 
+# Add https, if SSL is on
+[globalString = _SERVER|HTTPS = on]
+	config.baseURL := replaceString(http|https)
+[global]
 
 # Page configuration
 page = PAGE
