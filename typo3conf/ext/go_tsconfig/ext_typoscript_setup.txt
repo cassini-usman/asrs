@@ -8,5 +8,11 @@
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:go_tsconfig/ext_ts_printMenu.ts">
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:go_tsconfig/ext_ts_browser_error.ts">
 
-# should be always the last include, it is for local development configs only (not included in git!)
+# should be always the next-to-last include, it is for local development configs
+# only (it is a symlink which points to the projectRoot/local/ directory), which
+# is not included in the project repository.
 <INCLUDE_TYPOSCRIPT: source="FILE:EXT:go_tsconfig/ext_ts_local.ts">
+
+# Should always be the last include, and shall only be used for configuration
+# which specifically overwrites or modifies configuration in ext_ts_local.ts
+<INCLUDE_TYPOSCRIPT: source="FILE:EXT:go_tsconfig/ext_ts_afterlocal.ts">
