@@ -19,18 +19,6 @@ config.simulateStaticDocuments = 0
 config.tx_realurl_enable = 1
 
 
-# Baseurls
-config.baseURL = http://projects.dev.gosign.de/current/typo3_4-5_default/
-config.baseURL = http://ipod.local:8888/project/htdocs/
-[globalString = IENV:HTTP_HOST= *CHANGEME]
-    config.baseURL = http://CHANGEME
-[global]
-
-# Add https, if SSL is on
-[globalString = _SERVER|HTTPS = on]
-	config.baseURL := replaceString(http|https)
-[global]
-
 # Page configuration
 page = PAGE
 page.includeCSS.base_fest = fileadmin/templates/css/base_fest.css
