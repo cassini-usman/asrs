@@ -50,18 +50,10 @@ page.headerData.10.value (
 
 
 # Include Templavoila
+# Note that you should not use page.20, as it is reserved for Queo-Speedup
 page.10 = USER
 page.10.userFunc = tx_templavoila_pi1->main_page
 
-
-# QueoSpeedup configuration
-[globalString = IENV:HTTP_HOST= *dev.gosign.de] && [globalVar = GP:sol > 0]
-  page.20 =< plugin.tx_queospeedup_pi1
-[else]
-  [globalString = IENV:HTTP_HOST= *dev.gosign.de] || [globalVar = GP:dd > 0]
-  [else]
-    page.20 =< plugin.tx_queospeedup_pi1
-[global]
 
 
 page.content.RTE_compliant = 0
