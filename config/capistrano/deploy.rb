@@ -42,10 +42,11 @@ task :uname do
 end
 
 
-# Create a symlink from htdocs to current to keep our
-# DefaultProjekt structure intact.
+
 namespace :deploy do
 
+  # Create a symlink from htdocs to current to keep our
+  # DefaultProjekt structure intact.
   task :resymlink, :roles => :app do
     run "ln -s #{current_path} #{deploy_to}/htdocs"
   end
@@ -60,10 +61,24 @@ namespace :deploy do
     Gosign::Perms.set(deploy_to + "/local/", false, { chmod: 770, type: "d", chgrp: group })
   end
 
+  # Synchronizes the remote user_uploads/ folder with the local one. Note that
+  # the synchronization is non-destructive, that is, newer files on the remote
+  # system won't be overwritten and locally deleted files won't be deleted
+  # remotely.
+  task :user_upload do
+    source = Dir.pwd + "/fileadmin/user_upload/"
+    target = deploy_to + "/data/fileadmin/user_upload/"
+    roles[:app].servers.each do |server|
+      Gosign::Util.exec("Transmitting local user_uploads/ to #{server}:") do
+        "rsync -auxzv #{source} #{server}:#{target}"
+      end
+    end
+  end
 end
 before "deploy:symlink", "deploy:permissions"
 after "deploy:symlink", "deploy:resymlink"
 
+after "deploy:user_upload", "setup:set_data_permissions"
 
 namespace :setup do
 
