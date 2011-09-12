@@ -1,33 +1,30 @@
-/** print.css
-* --- Gosign media. ---
-* version 1.0
-* (c) Copyright 2008 Gosign media. All Rights Reserved.
-* 2008-24-01
-*/
-/** Hier:alle Anpassungen für die Druckansicht einfügen.
-  * Die bisherigen CSS-Formatierungen werden von diesem CSS-Skript 
-  * überschrieben.
-  *
-  */
+/**
+ * print.css
+ * --- Gosign media. ---
+ * version 1.0
+ * (c) Copyright 2011 Gosign media. All Rights Reserved.
+ * 2011-09-12
+ */
+
+/**
+ * Include hier all changes for the printview and for the print.
+ * All the previous css formatting will be overwritten by this css-script
+ */
+
 body {
 	width:544px;
 }
 
-/*
-body *{
-	background:#fff;
-	color:#000 !important;
-}
-*/
-/*
-p.bodytext {
-	background:#fff;
-}
-*/
-#left_column, #top_menu, #header, #pdf_button, #left_column, #right_column {
-	display:none;
+#left_column,
+#top_menu,
+#header,
+#pdf_button,
+#left_column,
+#right_column {
+	display: none;
 }
 
-#middle_column, #content_column {
-	margin:0px !important; 
+#middle_column,
+#content_column {
+	margin: 0px !important; 
 }
