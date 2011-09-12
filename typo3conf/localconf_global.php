@@ -41,7 +41,7 @@ $TYPO3_CONF_VARS['FE']['lifetime'] = '86400';
 $TYPO3_CONF_VARS['FE']['dontSetCookie'] = '0';
 
 $TYPO3_CONF_VARS['GFX']['im'] = '1';
-$TYPO3_CONF_VARS['GFX']['im_path'] = '/usr/local/bin/';
+$TYPO3_CONF_VARS['GFX']['im_path'] = '/usr/bin/';
 $TYPO3_CONF_VARS['GFX']['im_version_5'] = 'gm';
 $TYPO3_CONF_VARS['GFX']['TTFdpi'] = '96';
 $TYPO3_CONF_VARS['GFX']['gdlib_png'] = '0';
