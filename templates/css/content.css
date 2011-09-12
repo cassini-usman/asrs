@@ -1,59 +1,102 @@
-/** content.css
-* --- Gosign media. ---
-* version 1.0
-* (c) Copyright 2008 Gosign media. All Rights Reserved.
-* 2008-24-01
-*/
+/** 
+ * content.css
+ * --- Gosign media. ---
+ * version 1.0
+ * (c) Copyright 2011 Gosign media. All Rights Reserved.
+ * 2011-09-12
+ */
+ 
+#content {
+	width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#left_column {
+	width: 180px;
+	float: left;
+}
+
+#right_column {
+	width: 180px;
+	float: right;
+}
+
+#middle_column {
+	margin: 0pt 180px;
+	padding: 0pt 8% 3% 8%;
+	border-style: none solid none solid;
+	border-width: 0 1px 0 1px;
+	border-color: #FFCC66;
+}
+
+
+#content_column {
+	margin: 0pt 0pt 0pt 180px;
+	padding: 0pt 8% 3% 8%;
+	border-style: none none none none;
+	border-width: 0 0 0 1px;
+	border-color: #FFCC66;
+	min-height: 600px;
+}
+
+#two_column_right #content_column {
+	margin: 0pt 180px 0pt 0pt;
+}
+
+#two_column_right #middle_column {
+	margin: 0pt 180px 0pt 0pt;
+}
+
+#left_menu,
+#middle_column_content,
+#right_column_content {
+	overflow: hidden;
+}
+
+#right_column {
+	width: 180px;
+	position: relative;
+	float: right;
+}
+
 p {
 	margin-bottom:0.2em;
+	font-family: Arial;
+	font-size: 1em;
+	line-height: 12px;
 }
 
-
-
-
-
-
-h1,h1,h2,h3,h4,h5,h6 {
-	font-size:1.6em;
-	text-align:center;
-	padding:1em 0 1em 0;
+h1, h2, h3, h4, h5, h6 {
+	font-size: 1.6em;
+	text-align: center;
+	padding: 1em 0 1em 0;
 }
 
-#middle_column_heading{
-	border-bottom:1px solid #FFCC66;
-	margin-bottom:1.2em;
+#middle_column_heading {
+	border-bottom: 1px solid #FFCC66;
+	margin-bottom: 1.2em;
 }
-
 
 h1.contentheading {
-	text-align:center;
-	width:90%;
+	text-align: center;
+	width: 90%;
 }
-.buttonheading {
-	float:right;
-	position:relative;
-	top:-18px;
-}	
-
-#pdf_button {
-	padding-left:10px;
-}
-
 
 #left_content h1, h2, h3, h4, h5{
-	font-size:1em;
-	font-weight:bold;
+	font-size: 1em;
+	font-weight: bold;
 }
 
-div.tx-gofontsize-pi1{
-	float:left;
-	background-color:#CC0000;
-	border-left:0.6em solid #CC0000;	
+div.tx-gofontsize-pi1 {
+	float: left;
+	background-color: #CC0000;
+	border-left: 0.6em solid #CC0000;
 }
 
 div.tx-gofontsize-pi1 a{
-	color:#ffffff;	
-	margin-right:0.4em;	
+	color:#ffffff;
+	margin-right:0.4em;
 }
 
 div.tx-gofontsize-pi1 a .fontsize_inc{
@@ -66,15 +109,7 @@ div.tx-gofontsize-pi1 a .fontsize_dec{
 	font-size:1.6em;
 }
 
-#contentMiniCal{
-	margin-top:40px;
-	background:#ff00ff;
-}
-
-
-div.csc-textpic-center div.csc-textpic-text{
-	
-	margin-top:20px;
-		
+div.csc-textpic-center div.csc-textpic-text {
+	margin-top: 20px;
 }
 
