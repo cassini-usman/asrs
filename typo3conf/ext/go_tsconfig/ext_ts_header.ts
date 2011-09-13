@@ -20,7 +20,8 @@ goheader1 {
 			text.data = field:header
 			text.data.current = 1
 			breakWidth = 500
-			fontFile = fileadmin/templates/fonts/MyriadPro-Regular.otf
+			# Für ein aktuelles Projekt, bitte Schriftartendatei einfügen
+			# fontFile = fileadmin/templates/fonts/MyriadPro-Regular.otf
 			fontColor = #000000
 			fontSize = 24
 			offset = 0,20
