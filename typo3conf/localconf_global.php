@@ -20,7 +20,7 @@ $TYPO3_CONF_VARS['SYS']['compat_version'] = '4.5';
 $TYPO3_CONF_VARS['SYS']['setDBinit'] = 'SET NAMES utf8';
 $TYPO3_CONF_VARS['SYS']['ddmmyy'] = 'd-m-Y';
 $TYPO3_CONF_VARS['SYS']['forceReturnPath'] = 1;
-$TYPO3_CONF_VARS['SYS']['sqlDebug'] = '1';
+$TYPO3_CONF_VARS['SYS']['sqlDebug'] = '0';
 $TYPO3_CONF_VARS['SYS']['enableDeprecationLog'] = '0';
 
 $TYPO3_CONF_VARS['BE']['sessionTimeout'] = 36000;
@@ -36,7 +36,6 @@ $TYPO3_CONF_VARS['BE']['versionNumberInFilename'] = '0';
 $TYPO3_CONF_VARS['FE']['disableNoCacheParameter'] = '0';
 $TYPO3_CONF_VARS['FE']['compressionLevel'] = '9';
 $TYPO3_CONF_VARS['FE']['pageNotFound_handling'] = 'USER_FUNCTION:tx_gopibase_404handling->handle404';
-$TYPO3_CONF_VARS['FE']['defaultTypoScript_constants'] = '[GLOBAL]\' . LF . \'extension.pdf_generator.typeNum = 123';
 $TYPO3_CONF_VARS['FE']['lifetime'] = '86400';
 $TYPO3_CONF_VARS['FE']['dontSetCookie'] = '0';
 
@@ -74,3 +73,13 @@ $TYPO3_CONF_VARS['EXT']['extConf']['version'] = 'a:1:{s:18:"showDraftWorkspace";
 $TYPO3_CONF_VARS['EXT']['extConf']['dam_index'] = 'a:2:{s:18:"add_media_indexing";s:1:"0";s:23:"add_media_file_indexing";s:1:"1";}';
 $TYPO3_CONF_VARS['EXT']['extConf']['naw_securedl'] = 'a:10:{s:11:"securedDirs";s:29:"fileadmin/user_upload/private";s:8:"filetype";s:40:"pdf|jpe?g|gif|png|doc|xls|rar|tgz|tar|gz";s:13:"forcedownload";s:1:"0";s:17:"forcedownloadtype";s:26:"pdf|doc|xls|rar|tgz|tar|gz";s:6:"domain";s:46:"http://mydomain.com|http://my.other.domain.org";s:12:"cachetimeadd";s:4:"3600";s:5:"debug";s:1:"0";s:3:"log";s:1:"0";s:14:"outputFunction";s:8:"readfile";s:15:"outputChunkSize";s:7:"1048576";}';
 
+$TYPO3_CONF_VARS['EXT']['extConf']['go_language'] = array(
+	'defaultLanguageIsoCode' => 'DE',
+	'defaultLanguageDisabledInMenu' => 0,
+	'defaultLanguageRealurlEncode' => 1,
+	'redirectToPreferredBrowserLanguage' => 1,
+	'sys_language_mode' => 'content_fallback',
+	'sys_language_overlay' => 'hideNonTranslated',
+);
+
+?>
