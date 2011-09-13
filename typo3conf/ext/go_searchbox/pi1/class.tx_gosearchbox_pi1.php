@@ -52,7 +52,6 @@ class tx_gosearchbox_pi1 extends tx_gopibase {
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
 
-
 		return $this->doTemplateParsing();
 	}
 
@@ -64,7 +63,6 @@ class tx_gosearchbox_pi1 extends tx_gopibase {
 	 * @return	string	parsed template
 	 */
 	protected function doTemplateParsing() {
-
 		$markerArray['###SEARCHWORD###'] = $this->pi_getLL('searchword');
 		$markerArray['###SEARCHBOX###'] = nl2br($this->cObj->data['header']);
 		$markerArray['###TEXT###'] = $this->pi_RTEcssText($this->cObj->data['bodytext']);
