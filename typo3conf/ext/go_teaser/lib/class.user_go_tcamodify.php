@@ -29,8 +29,6 @@
  * @author	Caspar Stuebs <caspar@gosign.de>
  */
 class user_go_tcamodify {
-	
-
 	/**
 	 * This function creates colorised gifs for selectbox color, to be shown there
 	 *
@@ -46,7 +44,7 @@ class user_go_tcamodify {
 				if (empty($item[1]) || $item[1] == '--div--') {
 					continue;
 				}
-			
+
 				// check if selecticon [.gif] is not given
 				$tmpImage = NULL;
 				$tmpFileName = '';
@@ -67,8 +65,8 @@ class user_go_tcamodify {
 	}
 }
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_pages/lib/class.user_go_tcamodify.php'])    {
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_pages/lib/class.user_go_tcamodify.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_teaser/lib/class.user_go_tcamodify.php'])    {
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_teaser/lib/class.user_go_tcamodify.php']);
 }
 
 ?>

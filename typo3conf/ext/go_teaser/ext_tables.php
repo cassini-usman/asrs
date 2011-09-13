@@ -57,7 +57,7 @@ $tempColumns = array( 'header_rte' => Array (
 							'softref' => 'email[subst]'
 						)
 					),
-					
+
 					'go_teaser_layout' => array (
 						'exclude' => 0,
 						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.tx_goteaser.piTeaser_layout',
@@ -72,9 +72,9 @@ $tempColumns = array( 'header_rte' => Array (
 							'maxitems' => 1,
 						)
 					),
-					'go_teaser_headercolor' => array (		
-						'exclude' => 0,		
-						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.tx_goteaser_headercolor',		
+					'go_teaser_headercolor' => array (
+						'exclude' => 0,
+						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.tx_goteaser_headercolor',
 						'config' => array (
 							'type' => 'select',
 							'items' => array (
@@ -90,7 +90,7 @@ $tempColumns = array( 'header_rte' => Array (
 							),
 							'itemsProcFunc' => 'EXT:go_pages/lib/class.user_go_tcamodify.php:user_go_tcamodify->getSelectIconColor',
 							'iconsInOptionTags' => 1,
-							'size' => 1,	
+							'size' => 1,
 							'maxitems' => 1,
 						)
 					),
@@ -122,17 +122,17 @@ $tempColumns = array( 'header_rte' => Array (
 							'rows' => '5',
 						)
 					),
-					'go_teaser_line_above' => array (        
-						'exclude' => 0,        
-						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.line_above',        
+					'go_teaser_line_above' => array (
+						'exclude' => 0,
+						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.line_above',
 						'config' => array (
 							'type' => 'check',
 							'default' => 0,
 						)
 					),
-					'go_teaser_line_below' => array (        
-						'exclude' => 0,        
-						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.line_below',        
+					'go_teaser_line_below' => array (
+						'exclude' => 0,
+						'label' => 'LLL:EXT:go_teaser/locallang_db.xml:tt_content.line_below',
 						'config' => array (
 							'type' => 'check',
 							'default' => 1,
@@ -173,38 +173,38 @@ $TCA['tt_content']['types'][$_EXTKEY . '_piTeaser']['showitem'] = 'CType;;;butto
 																	--div--;LLL:EXT:go_teaser/locallang_db.xml:tab_verweis,go_content_linktext, image_link,
 																	--div--;LLL:EXT:cms/locallang_tca.xml:pages.tabs.access, starttime, endtime, fe_group';
 
-																	
+
 $TCA['tt_content']['imageedit'][$_EXTKEY.'_piTeaser']= Array
 											(
 											"debug" => 0,						//gibt einige Debugwerte aus
 											"imgPath" => '../uploads/pics/', 	// vom Backend aus gesehen
 											"rootImgPath" => 'uploads/pics/', 	// vom Frontend aus
-											
+
 											//Backend
 											"selector" => Array(
-												"allowCustomRatio" => 1,		//dieses Flag lässt den benutzer 
+												"allowCustomRatio" => 1,		//dieses Flag lässt den benutzer
 																				//das Format des Selectors frei bestimmen
 											),
-											
-											"menu" => Array(					
-												"displayType" => 0,					// 	1 : HTML-SELECT-BOX;  	
+
+											"menu" => Array(
+												"displayType" => 0,					// 	1 : HTML-SELECT-BOX;
 																					//	0 : BUTTONS (nachfolgende Einstellungen)
 												"showImageName" => 1,				//Zeigt den Namen des Bildes an
-												"showThumbnail" => 1,				//Zeigt ein Thumbnail 
+												"showThumbnail" => 1,				//Zeigt ein Thumbnail
 												"showThumbnail_size" => "150x120",	//diesen Ausmaßes
 												"showResolution" => 1,				//Zeigt die Auflösung der Bilder im Selector an
-												
+
 												"maxImages" =>2,
 											),
-											
+
 											"adjustResolution" => Array(
 												"enabled" => 1,					//Bild runterrechnen ( 1 ) wenn > maxDisplayedWidth & maxDisplayedHeight
 												"maxDisplayedWidth" => "700",		//hoechste unangetastete im Backend Angezeigte Auflösung
 												"maxDisplayedHeight" => "400",
 											),
-	
+
 											);
-																	
+
 t3lib_extMgm::addPlugin(array(
 	'LLL:EXT:go_teaser/locallang_db.xml:tt_content.piTeaser.CType',
 	$_EXTKEY . '_piTeaser',
