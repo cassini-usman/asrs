@@ -7,37 +7,98 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="tt_content.go_kontakt.CType_piNormal">Contact Form</label>
-			<label index="tt_content.go_kontakt.CType_piErweitert">Extended Contact Form</label>
-			<label index="tt_content.image_link">Link zur Detailseite</label>
-			<label index="tt_content.tx_gokontakt_delivery">Versandkosten (Netto)</label>
-			<label index="tt_content.tx_gokontakt_link_agb_1">Link AGB</label>
-			<label index="tt_content.tx_gokontakt_link_agb_2">Link Einwilligung zur Datennutzung</label>
-			<label index="tt_content.tx_gokontakt_link_agb_3">Link Widerrufsrecht</label>
-			<label index="tt_content.tx_gokontakt_link_delivery">Link Versandkosten</label>
-			<label index="tt_content.tx_gokontakt_newsletter">Newsletteroption aktivieren</label>
-			<label index="tt_content.tx_gokontakt_price">Einzelpreis (Netto)</label>
-			<label index="tt_content.tx_gokontakt_emailFrom">Absender Email-Adresse</label>
-			<label index="tt_content.tx_gokontakt_emailFromName">Absender Email-Name</label>
-			<label index="tt_content.tx_gokontakt_emailToAdmin">Admin Email-Adresse</label>
+			<label index="tt_content.go_kontakt.CType_piKontakt">Contact Form</label>
+			<label index="tt_content.image_link">Link to detail page</label>
+			<label index="div.data">Data</label>
+			<label index="div.email">Email-Data</label>
+			<label index="div.emailtext">Email-Text</label>
+			<label index="div.newsletter">Newsletter-Text</label>
+			<label index="tt_content.tx_gokontakt_link_agb_1">Link Conditions</label>
+			<label index="tt_content.tx_gokontakt_newsletter">Activate newsletter option</label>
+			<label index="tt_content.tx_gokontakt_emailFrom">Sender's email address</label>
+			<label index="tt_content.tx_gokontakt_emailFromName">Sender's email name</label>
+			<label index="tt_content.tx_gokontakt_emailToAdmin">Admin's email address</label>
+			<label index="tt_content.tx_gokontakt_emailAdminBody">Admin-Email Text</label>
+			<label index="tt_content.tx_gokontakt_emailAdminSubject">Admin-Email Subject</label>
+			<label index="tt_content.tx_gokontakt_emailBody">User-Email Text</label>
+			<label index="tt_content.tx_gokontakt_emailNewsletterBody">Newsletter-Email Text</label>
+			<label index="tt_content.tx_gokontakt_emailNewsletterSubject">Newsletter-Email Subject</label>
+			<label index="tt_content.tx_gokontakt_emailSubject">User-Email Subject</label>
 			<label index="tt_content.tx_gokontakt_redirect">Redirect (if successfully transmitted)</label>
+
+			<label index="default.tx_gokontakt_emailSubject">TRANSLATE: Ihre Anfrage</label>
+			<label index="default.tx_gokontakt_emailAdminSubject">TRANSLATE: Eine neue Anfrage ist eingegangen</label>
+			<label index="default.tx_gokontakt_emailNewsletterSubject">TRANSLATE: Bitte bestätigen Sie Ihre Newsletteranmeldung</label>
+			<label index="default.tx_gokontakt_emailBody">TRANSLATE: Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+
+Vielen Dank für Ihre Anfrage.
+Wir werden Ihr Anliegen schnellstmöglich bearbeiten.
+
+Mit freundlichen Grüßen!
+Ihr Team</label>
+			<label index="default.tx_gokontakt_emailAdminBody">TRANSLATE: Hallo,
+
+Es ist soeben eine Website-Benutzer Anfrage eingegangen:
+
+Name: ###value_title### ###value_firstname### ###value_lastname###
+Email: ###value_email###
+Betreff: ###value_subject###
+Nachricht:
+###value_message###
+</label>
+			<label index="default.tx_gokontakt_emailNewsletterBody">TRANSLATE: Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+
+Sie haben sich soeben für den Newsletter registriert.
+Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folgenden Link.
+###LINK_NEWSLETTER###
+</label>
 		</languageKey>
 		<languageKey index="dk"></languageKey>
 		<languageKey index="de" type="array">
-			<label index="tt_content.go_kontakt.CType_piNormal">Kontaktformular</label>
-			<label index="tt_content.go_kontakt.CType_piErweitert">Erweitertes Kontaktformular</label>
+			<label index="tt_content.go_kontakt.CType_piKontakt">Kontaktformular</label>
 			<label index="tt_content.image_link">Link zur Detailseite</label>
-			<label index="tt_content.tx_gokontakt_delivery">Versandkosten (Netto)</label>
+			<label index="div.data">Daten</label>
+			<label index="div.email">Email-Daten</label>
+			<label index="div.emailtext">Email-Texte</label>
+			<label index="div.newsletter">Newsletter-Texte</label>
 			<label index="tt_content.tx_gokontakt_link_agb_1">Link AGB</label>
-			<label index="tt_content.tx_gokontakt_link_agb_2">Link Einwilligung zur Datennutzung</label>
-			<label index="tt_content.tx_gokontakt_link_agb_3">Link Widerrufsrecht</label>
-			<label index="tt_content.tx_gokontakt_link_delivery">Link Versandkosten</label>
 			<label index="tt_content.tx_gokontakt_newsletter">Newsletteroption aktivieren</label>
-			<label index="tt_content.tx_gokontakt_price">Einzelpreis (Netto)</label>
 			<label index="tt_content.tx_gokontakt_emailFrom">Absender Email-Adresse</label>
 			<label index="tt_content.tx_gokontakt_emailFromName">Absender Email-Name</label>
 			<label index="tt_content.tx_gokontakt_emailToAdmin">Admin Email-Adresse</label>
+			<label index="tt_content.tx_gokontakt_emailAdminBody">Admin-Email Text</label>
+			<label index="tt_content.tx_gokontakt_emailAdminSubject">Admin-Email Betreff</label>
+			<label index="tt_content.tx_gokontakt_emailBody">User-Email Text</label>
+			<label index="tt_content.tx_gokontakt_emailNewsletterBody">Newsletter-Email Text</label>
+			<label index="tt_content.tx_gokontakt_emailNewsletterSubject">Newsletter-Email Betreff</label>
+			<label index="tt_content.tx_gokontakt_emailSubject">User-Email Betreff</label>
 			<label index="tt_content.tx_gokontakt_redirect">Weiterleitung (wenn erfolgreich übertragen)</label>
+
+			<label index="default.tx_gokontakt_emailSubject">Ihre Anfrage</label>
+			<label index="default.tx_gokontakt_emailAdminSubject">Eine neue Anfrage ist eingegangen</label>
+			<label index="default.tx_gokontakt_emailNewsletterSubject">Bitte bestätigen Sie Ihre Newsletteranmeldung</label>
+			<label index="default.tx_gokontakt_emailBody">Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+
+Vielen Dank für Ihre Anfrage.
+Wir werden Ihr Anliegen schnellstmöglich bearbeiten.
+
+Mit freundlichen Grüßen!
+Ihr Team</label>
+			<label index="default.tx_gokontakt_emailAdminBody">Hallo,
+
+Es ist soeben eine Website-Benutzer Anfrage eingegangen:
+
+Name: ###value_title### ###value_firstname### ###value_lastname###
+Email: ###value_email###
+Nachricht:
+###value_message###
+</label>
+			<label index="default.tx_gokontakt_emailNewsletterBody">Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+
+Sie haben sich soeben für den Newsletter registriert.
+Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folgenden Link.
+###LINK_NEWSLETTER###
+</label>
 		</languageKey>
 		<languageKey index="no"></languageKey>
 		<languageKey index="it"></languageKey>
