@@ -34,9 +34,9 @@
  * @package	TYPO3
  * @subpackage	tx_gokontakt
  */
-class tx_gokontakt_piNormal extends tx_gopibase {
-	var $prefixId      = 'tx_gokontakt_piNormal';		// Same as class name
-	var $scriptRelPath = 'piNormal/class.tx_gokontakt_piNormal.php';	// Path to this script relative to the extension dir.
+class tx_gokontakt_piKontakt extends tx_gopibase {
+	var $prefixId      = 'tx_gokontakt_piKontakt';		// Same as class name
+	var $scriptRelPath = 'piKontakt/class.tx_gokontakt_piKontakt.php';	// Path to this script relative to the extension dir.
 	var $extKey        = 'go_kontakt';	// The extension key.
 	var $pi_checkCHash = true;
 
@@ -360,8 +360,8 @@ class tx_gokontakt_piNormal extends tx_gopibase {
 
 
 
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_kontakt/piNormal/class.tx_gokontakt_piNormal.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_kontakt/piNormal/class.tx_gokontakt_piNormal.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_kontakt/piKontakt/class.tx_gokontakt_piKontakt.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_kontakt/piKontakt/class.tx_gokontakt_piKontakt.php']);
 }
 
 ?>
