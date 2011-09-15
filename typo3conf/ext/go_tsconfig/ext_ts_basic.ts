@@ -1,4 +1,3 @@
-
 # Environment
 config.doctype = xhtml_trans
 config.spamProtectEmailAddresses = 1
@@ -96,10 +95,6 @@ page.meta {
 
 # Mansoor Ahmad - Change the headerparsesing
 lib.stdheader.stdWrap.br = 1
-
-# Mansoor Ahmad - Delete Default Anchor wrap
-tt_content.stdWrap.innerWrap >
-tt_content.stdWrap.prepend >
 
 
 # Javascript Check for CompatMode
