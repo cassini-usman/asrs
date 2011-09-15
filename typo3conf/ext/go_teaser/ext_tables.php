@@ -182,7 +182,7 @@ $TCA['tt_content']['imageedit'][$_EXTKEY.'_piTeaser']= Array
 
 											//Backend
 											"selector" => Array(
-												"allowCustomRatio" => 1,		//dieses Flag lässt den benutzer
+												"allowCustomRatio" => 1,		//dieses Flag lÃ¤sst den benutzer 
 																				//das Format des Selectors frei bestimmen
 											),
 
@@ -191,15 +191,15 @@ $TCA['tt_content']['imageedit'][$_EXTKEY.'_piTeaser']= Array
 																					//	0 : BUTTONS (nachfolgende Einstellungen)
 												"showImageName" => 1,				//Zeigt den Namen des Bildes an
 												"showThumbnail" => 1,				//Zeigt ein Thumbnail
-												"showThumbnail_size" => "150x120",	//diesen Ausmaßes
-												"showResolution" => 1,				//Zeigt die Auflösung der Bilder im Selector an
+												"showThumbnail_size" => "150x120",	//diesen AusmaÃŸes
+												"showResolution" => 1,				//Zeigt die AuflÃ¶sung der Bilder im Selector an
 
 												"maxImages" =>2,
 											),
 
 											"adjustResolution" => Array(
 												"enabled" => 1,					//Bild runterrechnen ( 1 ) wenn > maxDisplayedWidth & maxDisplayedHeight
-												"maxDisplayedWidth" => "700",		//hoechste unangetastete im Backend Angezeigte Auflösung
+												"maxDisplayedWidth" => "700",		//hoechste unangetastete im Backend Angezeigte AuflÃ¶sung
 												"maxDisplayedHeight" => "400",
 											),
 
