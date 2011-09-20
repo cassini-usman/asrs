@@ -1,3 +1,7 @@
+======================================
+Step 1 .. X Templates
+======================================
+
 <!-- ###STEP_1### -->
 <div class="kontakt step-1">
 	<h1 class="csc-firstHeader">###HEADER###</h1>
@@ -12,8 +16,8 @@
 
 			<div class="formElement">
 				<label for="message" class="###ERROR-CLASS:message###">###LLL:message###</label>
+				<textarea id="message" name="###PIVAR-NAME:message###" cols="35" rows="8">###PIVAR-VALUE:message###</textarea>
 				###ERROR-MESSAGE:message=obligatory###
-				<textarea name="###PIVAR-NAME:message###" cols="35" rows="8">###PIVAR-VALUE:message###</textarea>
 			</div>
 
 			<div class="formElement">
@@ -26,30 +30,42 @@
 
 			<div class="formElement">
 				<label for="firstname" class="###ERROR-CLASS:firstname###">###LLL:firstname###</label>
-				###ERROR-MESSAGE:firstname=obligatory###
 				<input type="text" id="firstname" name="###PIVAR-NAME:firstname###" value="###PIVAR-VALUE:firstname###" />
+				###ERROR-MESSAGE:firstname=obligatory###
 			</div>
 
 			<div class="formElement">
 				<label for="lastname" class="###ERROR-CLASS:lastname###">###LLL:lastname###</label>
-				###ERROR-MESSAGE:lastname=obligatory###
 				<input type="text" id="lastname" name="###PIVAR-NAME:lastname###" value="###PIVAR-VALUE:lastname###" />
+				###ERROR-MESSAGE:lastname=obligatory###
 			</div>
 
 			<div class="formElement">
 				<label for="region" class="###ERROR-CLASS:region###">###LLL:region###</label>
-				###ERROR-MESSAGE:region=obligatory###
 				<select id="region" name="###PIVAR-NAME:region###">
 					###OPTIONS:region###
 				</select>
+				###ERROR-MESSAGE:region=obligatory###
 			</div>
 
 			<div class="formElement">
 				<label for="email" class="###ERROR-CLASS:email###">###LLL:email###</label>
-				###ERROR-MESSAGE:email=email###
 				<input type="text" id="email" name="###PIVAR-NAME:email###" value="###PIVAR-VALUE:email###" />
+				###ERROR-MESSAGE:email=email###
 			</div>
+			
+			<!-- ###NEWSLETTER### -->
+			<div class="formElement">
+				<label for="newsletter" class="###ERROR-CLASS:newsletter###">###LLL:newsletter###</label>
+				<input type="checkbox" id="newsletter" name="###PIVAR-NAME:newsletter###" value="1" ###CHECKED:newsletter=1###/>
+			</div>
+			<!-- ###NEWSLETTER### -->
+			
 		</div>
+		
+		###SPAMPROTECT###
+		###ERROR-MESSAGE:recaptcha_response_field=captcha###
+		
 		<div class="submit-box">
 			<table class="addressTable">
 				<tr>
@@ -65,12 +81,96 @@
 </div>
 <!-- ###STEP_1### -->
 
-<!-- ###STEP_2### (CONFIRMATION) -->
+<!-- ###STEP_2### -->
+<div class="kontakt step-2">
+	<h1 class="csc-firstHeader">###HEADER###</h1>
+
+	<form method="post" action="">
+		###FORM_LOGIC_FIELDS###
+		<div class="fillinFields">
+			<div class="formElement">
+				<label>###LLL:subject###</label>
+				###PIVAR-VALUE:subject###
+			</div>
+
+			<div class="formElement">
+				<label>###LLL:message###</label>
+				###PIVAR-VALUE:message###
+			</div>
+
+			<div class="formElement">
+				<label>###LLL:firstname###</label>
+				###PIVAR-VALUE:firstname###
+				###ERROR-MESSAGE:firstname=obligatory###
+			</div>
+
+			<div class="formElement">
+				<label>###LLL:lastname###</label>
+				###PIVAR-VALUE:lastname###
+			</div>
+
+			<div class="formElement">
+				<label>###LLL:region###</label>
+				###PIVAR-VALUE:region###
+			</div>
+
+			<div class="formElement">
+				<label>###LLL:email###</label>
+				###PIVAR-VALUE:email###
+			</div>
+		</div>
+		
+		###SPAMPROTECT###
+		###ERROR-MESSAGE:recaptcha_response_field=captcha###
+		
+		<div class="submit-box">
+			<table class="addressTable">
+				<tr>
+					<td>
+						<span class="obligatory">###LLL:obligatory###</span>
+						<div class="formButtonWrap"><a class="formButton"><span><input type="submit" name="###PIVAR-NAME:nextStep###[1]" class="submit-button" value="###LLL:back###"/></span></a></div>
+						<div class="formButtonWrap"><a class="formButton"><span><input type="submit" name="###PIVAR-NAME:nextStep###[3]" class="submit-button" value="###LLL:submit###"/></span></a></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	</form>
+</div>
+<!-- ###STEP_2### -->
+
+<!-- ###STEP_3### (CONFIRMATION) -->
 <h1 class="csc-firstHeader">###LLL:header_confirmation###</h1>
 <div class="contact_confirmation">
 	<p>###LLL:text_confirmation###</p>
 </div>
-<!-- ###STEP_2### (CONFIRMATION) -->
+<!-- ###STEP_3### (CONFIRMATION) -->
+
+
+======================================
+Sub-Templates
+======================================
+
+<!-- ###ERROR_MESSAGE_WRAP### -->
+<span class="###ERROR_CLASS###">###ERROR_MESSAGE###</span>
+<!-- ###ERROR_MESSAGE_WRAP### -->
+
+<!-- ###CAPTCHA_TEMPLATE### -->
+<script type="text/javascript">
+	var RecaptchaOptions = {
+		lang : '###LANG###',
+		theme : 'clean'
+	};
+</script>
+<div id="recaptcha" class="###ERROR-CLASS:captcha### recaptcha">
+	<script type="text/javascript" src="###PROTOCOL###://www.google.com/recaptcha/api/challenge?k=6Le1R8gSAAAAAK_SfokKREF-xGdNsPHJYbVz1htj"></script>
+</div>
+<!-- ###CAPTCHA_TEMPLATE### -->
+
+
+======================================
+Double-Opt-In Confirmation Templates
+======================================
 
 <!-- ###NEWSLETTER_OK### -->
 OK

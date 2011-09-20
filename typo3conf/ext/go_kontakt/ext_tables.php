@@ -118,7 +118,22 @@ $tempColumns = array (
 			'eval' => 'required',
 			'default' => $LANG->sL('LLL:EXT:go_kontakt/locallang_db.xml:default.tx_gokontakt_emailNewsletterBody')
 		)
-	)
+	),
+	'tx_gokontakt_newsletterUsergroup' => array (        
+        'exclude' => 0,        
+        'label' => 'LLL:EXT:go_kontakt/locallang_db.xml:tt_content.tx_gokontakt_newsletterUsergroup',        
+        'config' => array (
+            'type' => 'select',
+			'items' => array (
+                array('',0),
+            ),
+            'foreign_table' => 'fe_groups',    
+            'foreign_table_where' => 'ORDER BY fe_groups.uid',    
+            'size' => 1,    
+            'minitems' => 0,
+            'maxitems' => 1,
+        )
+    ),
 );
 
 t3lib_div::loadTCA('tt_content');
@@ -128,7 +143,7 @@ $TCA['tt_content']['types'][$_EXTKEY . '_piKontakt']['showitem'] = '
 --div--;LLL:EXT:go_kontakt/locallang_db.xml:div.data, CType;;4;button;1-1-1, header;;3;;2-2-2,pages,
 --div--;LLL:EXT:go_kontakt/locallang_db.xml:div.email, tx_gokontakt_emailFrom,tx_gokontakt_emailFromName,tx_gokontakt_emailToAdmin,
 --div--;LLL:EXT:go_kontakt/locallang_db.xml:div.emailtext, tx_gokontakt_emailSubject,tx_gokontakt_emailBody,tx_gokontakt_emailAdminSubject,tx_gokontakt_emailAdminBody,
---div--;LLL:EXT:go_kontakt/locallang_db.xml:div.newsletter, tx_gokontakt_emailNewsletterSubject,tx_gokontakt_emailNewsletterBody,
+--div--;LLL:EXT:go_kontakt/locallang_db.xml:div.newsletter, tx_gokontakt_newsletterUsergroup;;;;1-1-1,tx_gokontakt_emailNewsletterSubject,tx_gokontakt_emailNewsletterBody,
 ';
 
 // Contact Form
@@ -138,5 +153,7 @@ t3lib_extMgm::addPlugin(array(
 	$_EXTKEY . '_piKontakt',
 	t3lib_extMgm::extRelPath($_EXTKEY) . 'piKontakt/icon.gif'
 ),'CType');
+
+$TCA['pages']['columns']['module']['config']['items']['newsletter'] = array('LLL:EXT:go_kontakt/locallang_db.xml:pages.containsPlugin', 'newsletter', 'EXT:go_kontakt/ext_icon.gif');
 
 ?>

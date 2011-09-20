@@ -11,6 +11,7 @@
 			<label index="back">Back</label>
 			<label index="continue">Continue</label>
 			<label index="email">E-Mail*</label>
+			<label index="formError_captcha">Please retry</label>
 			<label index="formError_email">Please give a correct e-mail address</label>
 			<label index="formError_obligatory">This field is mandatory</label>
 			<label index="formError_plz">Please give a valid postcode</label>
@@ -40,6 +41,7 @@
 			<label index="back">Zurück</label>
 			<label index="continue">Weiter</label>
 			<label index="email">E-Mail*</label>
+			<label index="formError_captcha">Bitte nochmals versuchen</label>
 			<label index="formError_email">Bitte korrekte Email-Adresse angeben</label>
 			<label index="formError_obligatory">Dies ist ein Pflichtfeld</label>
 			<label index="formError_plz">Bitte gültige PLZ eingeben</label>

@@ -11,5 +11,6 @@ CREATE TABLE tt_content (
 	tx_gokontakt_emailAdminSubject tinytext,
 	tx_gokontakt_emailAdminBody text,
 	tx_gokontakt_emailNewsletterSubject tinytext,
-	tx_gokontakt_emailNewsletterBody text
+	tx_gokontakt_emailNewsletterBody text,
+	tx_gokontakt_newsletterUsergroup int(11) DEFAULT '0' NOT NULL
 );

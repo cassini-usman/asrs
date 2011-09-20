@@ -12,7 +12,7 @@
 			<label index="div.data">Data</label>
 			<label index="div.email">Email-Data</label>
 			<label index="div.emailtext">Email-Text</label>
-			<label index="div.newsletter">Newsletter-Text</label>
+			<label index="div.newsletter">Newsletter</label>
 			<label index="tt_content.tx_gokontakt_link_agb_1">Link Conditions</label>
 			<label index="tt_content.tx_gokontakt_newsletter">Activate newsletter option</label>
 			<label index="tt_content.tx_gokontakt_emailFrom">Sender's email address</label>
@@ -24,12 +24,13 @@
 			<label index="tt_content.tx_gokontakt_emailNewsletterBody">Newsletter-Email Text</label>
 			<label index="tt_content.tx_gokontakt_emailNewsletterSubject">Newsletter-Email Subject</label>
 			<label index="tt_content.tx_gokontakt_emailSubject">User-Email Subject</label>
+			<label index="tt_content.tx_gokontakt_newsletterUsergroup">Newsletter-Usergroup (Newsletter registration not possible without this)</label>
 			<label index="tt_content.tx_gokontakt_redirect">Redirect (if successfully transmitted)</label>
 
 			<label index="default.tx_gokontakt_emailSubject">TRANSLATE: Ihre Anfrage</label>
 			<label index="default.tx_gokontakt_emailAdminSubject">TRANSLATE: Eine neue Anfrage ist eingegangen</label>
 			<label index="default.tx_gokontakt_emailNewsletterSubject">TRANSLATE: Bitte bestätigen Sie Ihre Newsletteranmeldung</label>
-			<label index="default.tx_gokontakt_emailBody">TRANSLATE: Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+			<label index="default.tx_gokontakt_emailBody">TRANSLATE: Sehr geehrte/r ###PIVAR-VALUE:title### ###PIVAR-VALUE:firstname### ###PIVAR-VALUE:lastname###
 
 Vielen Dank für Ihre Anfrage.
 Wir werden Ihr Anliegen schnellstmöglich bearbeiten.
@@ -40,17 +41,18 @@ Ihr Team</label>
 
 Es ist soeben eine Website-Benutzer Anfrage eingegangen:
 
-Name: ###value_title### ###value_firstname### ###value_lastname###
-Email: ###value_email###
-Betreff: ###value_subject###
+Name: ###PIVAR-VALUE:title### ###PIVAR-VALUE:firstname### ###PIVAR-VALUE:lastname###
+Email: ###PIVAR-VALUE:email###
+Betreff: ###PIVAR-VALUE:subject###
 Nachricht:
-###value_message###
+###PIVAR-VALUE:message###
 </label>
-			<label index="default.tx_gokontakt_emailNewsletterBody">TRANSLATE: Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+			<label index="default.tx_gokontakt_emailNewsletterBody">TRANSLATE: Sehr geehrte/r ###PIVAR-VALUE:title### ###PIVAR-VALUE:firstname### ###PIVAR-VALUE:lastname###
 
 Sie haben sich soeben für den Newsletter registriert.
 Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folgenden Link.
 ###LINK_NEWSLETTER###
+			<label index="pages.containsPlugin">Newsletter-User</label>
 </label>
 		</languageKey>
 		<languageKey index="dk"></languageKey>
@@ -60,7 +62,7 @@ Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folg
 			<label index="div.data">Daten</label>
 			<label index="div.email">Email-Daten</label>
 			<label index="div.emailtext">Email-Texte</label>
-			<label index="div.newsletter">Newsletter-Texte</label>
+			<label index="div.newsletter">Newsletter</label>
 			<label index="tt_content.tx_gokontakt_link_agb_1">Link AGB</label>
 			<label index="tt_content.tx_gokontakt_newsletter">Newsletteroption aktivieren</label>
 			<label index="tt_content.tx_gokontakt_emailFrom">Absender Email-Adresse</label>
@@ -72,12 +74,13 @@ Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folg
 			<label index="tt_content.tx_gokontakt_emailNewsletterBody">Newsletter-Email Text</label>
 			<label index="tt_content.tx_gokontakt_emailNewsletterSubject">Newsletter-Email Betreff</label>
 			<label index="tt_content.tx_gokontakt_emailSubject">User-Email Betreff</label>
+			<label index="tt_content.tx_gokontakt_newsletterUsergroup">Newsletter-Benutzergruppe (Newsletter-Registrierung ohne diese Angabe nicht möglich)</label>
 			<label index="tt_content.tx_gokontakt_redirect">Weiterleitung (wenn erfolgreich übertragen)</label>
 
 			<label index="default.tx_gokontakt_emailSubject">Ihre Anfrage</label>
 			<label index="default.tx_gokontakt_emailAdminSubject">Eine neue Anfrage ist eingegangen</label>
 			<label index="default.tx_gokontakt_emailNewsletterSubject">Bitte bestätigen Sie Ihre Newsletteranmeldung</label>
-			<label index="default.tx_gokontakt_emailBody">Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+			<label index="default.tx_gokontakt_emailBody">Sehr geehrte/r ###PIVAR-VALUE:title### ###PIVAR-VALUE:firstname### ###PIVAR-VALUE:lastname###
 
 Vielen Dank für Ihre Anfrage.
 Wir werden Ihr Anliegen schnellstmöglich bearbeiten.
@@ -88,17 +91,18 @@ Ihr Team</label>
 
 Es ist soeben eine Website-Benutzer Anfrage eingegangen:
 
-Name: ###value_title### ###value_firstname### ###value_lastname###
-Email: ###value_email###
+Name: ###PIVAR-VALUE:title### ###PIVAR-VALUE:firstname### ###PIVAR-VALUE:lastname###
+Email: ###PIVAR-VALUE:email###
 Nachricht:
-###value_message###
+###PIVAR-VALUE:message###
 </label>
-			<label index="default.tx_gokontakt_emailNewsletterBody">Sehr geehrte/r ###value_title### ###value_firstname### ###value_lastname###
+			<label index="default.tx_gokontakt_emailNewsletterBody">Sehr geehrte/r ###PIVAR-VALUE:title### ###PIVAR-VALUE:firstname### ###PIVAR-VALUE:lastname###
 
 Sie haben sich soeben für den Newsletter registriert.
 Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folgenden Link.
 ###LINK_NEWSLETTER###
 </label>
+			<label index="pages.containsPlugin">Newsletter-User</label>
 		</languageKey>
 		<languageKey index="no"></languageKey>
 		<languageKey index="it"></languageKey>

@@ -27,6 +27,8 @@
  * Hint: use extdeveval to insert/update function index above.
  */
 
+require_once('typo3conf/ext/go_kontakt/lib/recaptchalib.php');
+
 /**
  * Plugin 'Contact Form' for the 'go_kontakt' extension.
  *
@@ -76,13 +78,21 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$this->conf = &$conf;
 		$this->data = &$this->cObj->data;
 
-		$this->submitted = intval($this->piVars['submitted']);
+		$this->newsletterPID = current($GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow( 'uid', 'pages', "module='newsletter'" ));
+		$this->newsletterRegEnabled = $this->newsletterPID && $this->data['tx_gokontakt_newsletterUsergroup'];
+
+		$this->submitted = (int) $this->piVars['submitted'];
 		if ( !$this->submitted ) { // first call
 			// reset session
 			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey, NULL);
+			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_successfully_submitted", 0);
 		}
-
-		$this->mergePiVarsWidthSession();
+		
+		if ( $this->piVars['uid'] == $this->data['uid'] ) { // if this form has been submitted
+			$this->mergePiVarsWidthSession();
+		} else { // if a different form has been submitted
+			$this->piVars = array();
+		}
 	}
 
 	/*
@@ -92,21 +102,26 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	 *
 	 */
 	function stepLogic() {
-		if ( $this->piVars['nlAuth'] ) { // for newsletter confirmation: no step processing
+			// for newsletter confirmation: no step processing
+			// newsletter auth does not use piVars to avoid line breaks in long links
+		if ( t3lib_div::_GP('nlAuth') ) {
+			$this->subpartName = $this->activateNewsletter() ? 'NEWSLETTER_OK' : 'NEWSLETTER_ERROR';
 			return 0;
 		}
 
 		$this->lastStep = isset($this->conf['lastStep']) ? $this->conf['lastStep'] : 2;
 
-		// Current Step initialization
-		$step = intval($this->piVars['step']);
+			// Current Step initialization
+		$step = intval($this->piVars['step'] );
 		$step = ($step==0) ? 1 : $step; // if first visit
+			// The step that we're coming from cannot be the last step.
+		$step = min( $step, $this->lastStep-1 );
 
 		// Next Step initialization
 		// the next step is coded in an array (e.g. nextStep[2]=Weiter)
 		$nextStep = intval(end(array_keys($this->piVars['nextStep'])));
 		// Error checks (if clicking in forward direction)
-		if ( $nextStep > $step ) {
+		if ( ($nextStep > $step) || ($nextStep == $this->lastStep) ) {
 			$this->doErrorChecks($step);
 		}
 
@@ -114,6 +129,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		if ( !$this->errors['any'] && $nextStep ) {
 			$step = min($nextStep, $this->lastStep ); // default last step is 2
 		}
+		$this->subpartName = $step ? 'STEP_' . $step : $this->subpartName;
 		return $step;
 	}
 
@@ -125,10 +141,10 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	function prepareTemplate( $step ) {
 		$this->loadTemplate();
 		// automatically substitute value markers
-		$this->substituteValueMarkers('STEP_' . $step);
+		$this->substituteValueMarkers( array( 'subpartName' => 'STEP_' . $step ) );
 		// automatically substitute language markers
-		$this->substituteLanguageMarkers('STEP_' . $step);
-		$this->substituteFormMarkers(array('templateSubpart' => 'STEP_' . $step));
+		$this->substituteLanguageMarkers(array('subpartName' => 'STEP_' . $step));
+		$this->substituteFormMarkers(array('subpartName' => 'STEP_' . $step));
 	}
 
 	/*
@@ -140,14 +156,25 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	 * @return				the form's HTML
 	*/
 	function renderForm( $step ) {
+		$langObj = t3lib_div::makeInstance('tx_golanguage');
+
 		// load template and substitute the markers
 		$this->prepareTemplate( $step );
+		
 		$this->addMarker('HEADER', $this->cObj->cObjGetSingle($GLOBALS['TSFE']->tmpl->setup['lib.']['stdheader'], $GLOBALS['TSFE']->tmpl->setup['lib.']['stdheader.']));
-		$this->addMarker('FORM_LOGIC_FIELDS', $this->createHiddenField('submitted', 1) . $this->createHiddenField('step', $step));
+		$this->addMarker('FORM_LOGIC_FIELDS', $this->createHiddenField('submitted', 1) . $this->createHiddenField('step', $step) . $this->createHiddenField('uid', $this->data['uid']));
+		$this->addMarker('PROTOCOL', t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https' : 'http');
+		$this->addMarker('LANG', $langObj->getLanguageIso($GLOBALS['TSFE']->sys_language_uid));
+			// hide captcha if already verified, or if spam protection has been disabled
+		$this->addMarker('SPAMPROTECT', ($this->conf['useSpamProtection'] && !$this->captchaVerified()) ? $this->parseTemplate('CAPTCHA_TEMPLATE') : '');
+		if ( !$this->newsletterRegEnabled ) {
+			$this->addSMarker('NEWSLETTER', '');
+		}
+		
 		if ( method_exists($this, $methodName = 'renderStep' . $step) ) {
 			call_user_func( array(&$this, $methodName) );
 		}
-		return $this->parseTemplate('STEP_' . $step);
+		return $this->parseTemplate($this->subpartName);
 	}
 
 	/*
@@ -179,24 +206,30 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	 *
 	 */
 	function processData($step) {
-		// newsletter confirmation: NO FURTHER PROCESSING
-		if ( $this->piVars['nlAuth'] ) {
-			$this->activateNewsletter();
+			// if already successfully submitted, we skip any further processing
+		if ( $GLOBALS["TSFE"]->fe_user->getKey("ses",$this->extKey . "_successfully_submitted") ) {
 			return;
 		}
-
-		// After successful form submission
+		
+			// After successful form submission
 		if( $step == $this->lastStep ) {
 			$this->sendEmails();
 			$this->addNewsletter();
+			
+				// remember that we finished
+			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_successfully_submitted", 1);
+				// clear caches
+			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_captcha_verified", NULL);
 		}
 	}
 
 	function sendEmails() {
-		if ( $GLOBALS["TSFE"]->fe_user->getKey("ses",$this->extKey . "_successfully_submitted") ) { // if already successfully submitted...
-			return false;
-		}
-		// Get Backend-Email-Templates
+		// Get Backend-Email-Templates and replace the markers
+		$this->substituteValueMarkers(array('templateCode' => $this->data['tx_gokontakt_emailBody'] ));
+		$this->substituteLanguageMarkers(array('templateCode' => $this->data['tx_gokontakt_emailBody'] ));
+		$this->substituteValueMarkers(array('templateCode' => $this->data['tx_gokontakt_emailAdminBody'] ));
+		$this->substituteLanguageMarkers(array('templateCode' => $this->data['tx_gokontakt_emailAdminBody'] ));
+		
 		$emailUser = $this->cObj->substituteMarkerArrayCached($this->data['tx_gokontakt_emailBody'], $this->markerArray, $this->subpartMarkerArray, $this->wrappedSubpartMarkerArray);
 		$emailUser = str_replace("<br />", "\n", $emailUser);
 		$emailAdmin = $this->cObj->substituteMarkerArrayCached($this->data['tx_gokontakt_emailAdminBody'], $this->markerArray, $this->subpartMarkerArray, $this->wrappedSubpartMarkerArray);
@@ -207,29 +240,28 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 
 		$this->sendEmail($this->pi_getLL('subject_email_user'), $emailUser, '', $emailFrom, $emailFromName, $this->piVars['email']);
 		$this->sendEmail($this->pi_getLL('subject_email_admin'), $emailAdmin, '', $emailFrom, $emailFromName, $emailToAdmin);
-
-		$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_successfully_submitted", 1);
 	}
 
 	function sendConfirmationLink($emailTo, $emailFrom, $emailFromName) {
+		$this->substituteValueMarkers(array('templateCode' => $this->data['tx_gokontakt_emailNewsletterBody']));
+		$this->substituteLanguageMarkers(array('templateCode' => $this->data['tx_gokontakt_emailNewsletterBody'] ));
+		
 		$emailFrom = $this->data['tx_gokontakt_emailFrom'];
 		$emailFromName = $this->data['tx_gokontakt_emailFromName'];
-		$this->addMarker('LINK_NEWSLETTER', $GLOBALS['TSFE']->baseUrl . '?id=' . $GLOBALS['TSFE']->id . '&' . $this->makePiVar('nlAuth') . '=' . $this->newsletterHash . '&' . $this->makePiVar('u') . '=' . $this->userID);
-		$emailUser = $this->parseTemplate('EMAIL_NEWSLETTER');
+			// newsletter auth does not use piVars to avoid line breaks in long links
+		$this->addMarker('LINK_NEWSLETTER', $GLOBALS['TSFE']->baseUrl . '?id=' . $GLOBALS['TSFE']->id . '&nlAuth=' . $this->newsletterHash . '&u=' . $this->userID);
+		$emailUser = $this->cObj->substituteMarkerArrayCached($this->data['tx_gokontakt_emailNewsletterBody'], $this->markerArray, $this->subpartMarkerArray, $this->wrappedSubpartMarkerArray);
 
 		$this->sendEmail($this->pi_getLL('subject_newsletter_confirmation'), $emailUser, '', $emailFrom, $emailFromName, $emailTo);
 	}
 
 	function addNewsletter() {
-		if ( $GLOBALS["TSFE"]->fe_user->getKey("ses", $this->extKey . "_successfully_submitted") ) { // if already successfully submitted...
-			return false;
-		}
-		if ( empty($this->piVars['newsletter']) ) { // only if newsletter was checked
+		if ( !$this->newsletterRegEnabled || empty($this->piVars['newsletter']) ) { // only if newsletter was checked
 			return;
 		}
 
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery( 'fe_users', array(
-			'pid' => $this->conf['newsletterPID'],
+			'pid' => $this->newsletterPID,
 			'deleted' => '0',
 			'disable' => '1',
 			'tstamp' => time(),
@@ -259,8 +291,9 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	}
 
 	function activateNewsletter() {
-		$hash = $this->piVars['nlAuth'];
-		$userID = $this->piVars['u'];
+			// newsletter auth does not use piVars to avoid line breaks in long links
+		$hash = t3lib_div::_GP('nlAuth');
+		$userID = t3lib_div::_GP('u');
 
 		// get the whole row
 		$row = current($GLOBALS['TYPO3_DB']->exec_SELECTgetRows( '*', 'fe_users', 'uid=' . $userID ));
@@ -270,9 +303,9 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery( 'fe_users', 'uid=' . $userID, array(
 				'uid' => $userID,
 				'disable' => '0' ) );
-			return $this->parseTemplate('NEWSLETTER_OK');
+			return TRUE;
 		} else {
-			return $this->parseTemplate('NEWSLETTER_ERROR');
+			return FALSE;
 		}
 	}
 
@@ -385,21 +418,26 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	 *  and will be replaced if the condition in the second part of the marker is true
 	 *
 	 *
-	 * @param	paramArray					Parameter Array
-	 *			['templateSubpart']			if set, only this subpart will be parsed. Will save time. (default = FALSE)
-	 *			['wrapErrorMessages']		will wrap error Messages with <div class="xxx">|</div> (default = TRUE)
+	 * @param array $options		options array
+	 * 		['subpartName']			the subpart of $this->template to use, if FALSE use complete template (default)
+	 *		['templateCode']		the template code (default is $this->template)
+	 *
 	 */
-	function substituteFormMarkers( $paramArray = array() ) {
-		$defaultValues = array(
-			'templateSubpart' => FALSE,
-			'wrapErrorMessages' => TRUE
+	function substituteFormMarkers($options = array()) {
+		if(!isset($options['templateCode']) && !$this->template) {
+			$this->loadTemplate();
+		}
+			// configuration array
+		$default = array(
+			'subpartName' => FALSE,
+			'templateCode' => $this->template
 		);
-		$paramArray = array_merge( $defaultValues, $paramArray );
-		$localTemplate = ($paramArray[templateSubpart] === FALSE ? $this->template : $this->getSubpart($paramArray[templateSubpart]));
-		$markers = array();
+		$options = array_merge($default, $options);
+		$localTemplate = $options['subpartName'] === FALSE ? $options['subpartCode'] :
+						$this->cObj->getSubpart($options['templateCode'], '###' . strtoupper($options['subpartName']) . '###');
 
 		$allowed = array(
-			'errorMessage' => 'ERROR-MESSAGE:',
+			'putTextOnError' => 'ERROR-MESSAGE:',
 			'putClassOnError' => 'ERROR-CLASS:',
 			'inputFieldChecked' => 'CHECKED:',
 		);
@@ -410,48 +448,19 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 
 		foreach($result[0] as $key => $markerValue) {
 			switch ($result[1][$key]) {
-				case $allowed['errorMessage']:
+				case $allowed['putTextOnError']:
 						// the field name(s) (paying attention to either ###PREFIX:field### or ###PREFIX:field=errorType###)
 					$fieldNames = empty($result[3][$key]) ? $result[2][$key] : $result[3][$key];
-						// split up multiple fields
-					$fieldNames = explode(',',$fieldNames);
 						// if errorType is not defined, we catch all errors
 					$errorType = isset($result[4][$key]) ? $result[4][$key] : 'any';
-
-						// check for each field if there is an error of this type
-					$isError = FALSE;
-					foreach( $fieldNames as $field ) {
-						$isError = $isError || $this->errors[$field][$errorType];
-						if ($isError) {
-							break;
-						}
-					}
-
-					$messageWrap1 = $paramArray['wrapErrorMessages'] ? '<div class="formError-type-' . $errorType . '">' : '';
-					$messageWrap2 = $paramArray['wrapErrorMessages'] ? '</div>' : '';
-					$errorLabel = $isError ? $messageWrap1 . $this->pi_getLL('formError_' . $errorType, '*error label not defined*') . $messageWrap2 : '';
-					$this->markerArray[$markerValue] = $errorLabel;
+					$this->markerArray[$markerValue] = $this->makeErrorText($fieldNames,$errorType,$options);
 					break;
 				case $allowed['putClassOnError']:
-						// split up multiple fields
-					$fieldNames = explode(',',$result[2][$key]);
-
-					$errorClasses = '';
-						// create error classes for each error
-					foreach( $fieldNames as $field ) {
-						$errorClasses .= empty($this->errors[$field]['any']) ? '' : ' formError-name-' . $field;
-						foreach( $this->errors[$field] as $errorType => $errorValue ) {
-							if ( $errorValue && ($errorType != 'any') ) {
-								$errorClasses .= ' formError-type-'.$errorType;
-							}
-						}
-					}
-						// add the general error marker (if there was any)
-					$errorClasses = empty($errorClasses) ? '' : 'formError' . $errorClasses;
-					$this->markerArray[$markerValue] = $errorClasses;
+					$fieldNames = $result[2][$key];
+					$this->markerArray[$markerValue] = $this->makeErrorCssClass($fieldNames,$options);
 					break;
 				case $allowed['inputFieldChecked']:
-						//
+						// fill in if the field is checked or not
 					$this->markerArray[$markerValue] = ($this->piVars[$result[3][$key]] == $result[4][$key]) ? 'checked="checked"' : '';
 					break;
 			}
@@ -459,9 +468,59 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 
 		return;
 	}
+	
+	/**
+	 * Creates error messages for the matched marker
+	 * 
+	 * @param	string		$fieldNames				the comma separated list of field names
+	 * @param	string		$errorType				the error Type
+	 * @param	array		$options				the options (inherited from calling function)
+	 */
+	function makeErrorText( $fieldNames, $errorType, $options ) {
+			// split up multiple fields
+		$fieldNames = explode(',',$fieldNames);
+
+			// check for each field if there is an error of this type
+		$isError = FALSE;
+		foreach( $fieldNames as $field ) {
+			$isError = $isError || $this->errors[$field][$errorType];
+			if ($isError) {
+				break;
+			}
+		}
+		$this->addMarker('ERROR_CLASS','formError-type-' . $errorType);
+		$this->addMarker('ERROR_MESSAGE',$this->pi_getLL('formError_' . $errorType, '*error label not defined*'));
+		$errorLabel = $isError ? $this->parseTemplate('ERROR_MESSAGE_WRAP') : '';
+		return $errorLabel;
+	}
+	
+	/**
+	 * Creates error CSS classes for the matched marker
+	 * 
+	 * @param	string		$fieldNames				the comma separated list of field names
+	 * @param	array		$options				the options (inherited from calling function)
+	 */
+	function makeErrorCssClass( $fieldNames, $options ) {
+			// split up multiple fields
+		$fieldNames = explode(',',$fieldNames);
+
+		$errorClasses = '';
+			// create error classes for each error
+		foreach( $fieldNames as $field ) {
+			$errorClasses .= empty($this->errors[$field]['any']) ? '' : ' formError-name-' . $field;
+			foreach( $this->errors[$field] as $errorType => $errorValue ) {
+				if ( $errorValue && ($errorType != 'any') ) {
+					$errorClasses .= ' formError-type-'.$errorType;
+				}
+			}
+		}
+			// add the general error marker (if there was any)
+		$errorClasses = empty($errorClasses) ? '' : 'formError' . $errorClasses;
+		return $errorClasses;
+	}
 
 	/*
-	 * Checks for errors in this step of the form
+	 * Checks for errors in this step and all the preceeding steps of the form
 	 *
 	 * The Typoscript will be parsed for that reason
 	 * Put the error handling configuration into errorCheck.step_X in TS
@@ -489,21 +548,17 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	 */
 
 	function doErrorChecks($step) {
-		if ( !$this->submitted ) { // no error check if not submitted
-			return;
-		}
-		// parse the TS error handlig configuration for each field
-		foreach( $this->conf['errorCheck.']['step_' . $step . '.'] as $field => $errorTypes ) {
-			if ( is_array($errorTypes) ) { // it is just a configuration array, not a field definition
-				continue;
-			}
-			foreach( explode(',', $errorTypes) as $errorType ) {
-				$errorType = trim($errorType);
-				// error handlers will be called here
-				if ( method_exists($this, $methodName = 'checkError_' . $errorType) ) {
-					$this->errors[$field][$errorType] = call_user_func( array(&$this, $methodName), $field, $this->conf['errorCheck.']['step_' . $step . '.'][$field . '.'][$errorType . '.'] ) ? 1 : 0;
-				} else {
-					$this->errors[$field][$errorType] = 1;
+			// check for each preceeding AND for the required step
+		for ( $currentStep = 1; $currentStep <= $step; $currentStep++ ) {
+				// parse the TS error handlig configuration for each field
+			foreach( $this->conf['errorCheck.']['step_' . $currentStep . '.'] as $field => $errorTypes ) {
+				if ( is_array($errorTypes) ) { // it is just a configuration array and not a field definition
+					continue;
+				}
+				foreach( explode(',', $errorTypes) as $errorType ) {
+					$errorType = trim($errorType);
+					// error handlers will be called here
+					$this->errors[$field][$errorType] = $this->callErrorHandler($field, $errorType, $this->conf['errorCheck.']['step_' . $step . '.'][$field . '.'][$errorType . '.']);
 				}
 			}
 		}
@@ -519,6 +574,21 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 					break;
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Calls the error handler functions dynamically
+	 *
+	 * @param	$field			the name of the field to be checked
+	 * @param	$errorType		the type of the error check (will result in the function's name)
+	 * @param	$errorConf		the TS config of this error check type
+	 */
+	function callErrorHandler($field,$errorType,$errorConf) {
+		if ( method_exists($this, $methodName = 'checkError_' . $errorType) ) {
+			return call_user_func( array(&$this, $methodName), $field, $errorConf ) ? 1 : 0;
+		} else {
+			return 1;
 		}
 	}
 
@@ -551,6 +621,31 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	function checkError_zip($field, $conf) {
 	 	return preg_match ("/^[0-9]{5}/", trim( $this->piVars[$field] ));
 	}
+	
+	function checkError_captcha($field, $conf) {
+		if ( !$this->conf['useSpamProtection'] || $this->captchaVerified() ) {
+				// skip if no check necessary
+			return FALSE;
+		}
+		if ( !t3lib_div::_GP("recaptcha_challenge_field") || !t3lib_div::_GP("recaptcha_response_field") ) {
+				// if not filled in
+			return TRUE;
+		}
+		
+		$resp = recaptcha_check_answer( $conf['privateKey'],
+				t3lib_div::getIndpEnv('REMOTE_ADDR'),
+				t3lib_div::_GP("recaptcha_challenge_field"),
+				t3lib_div::_GP("recaptcha_response_field") );
+
+		if ( $resp->is_valid ) {
+				// if already successfully entered OR valid
+			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_captcha_verified", 1);
+			return FALSE;
+		} else {
+				// error
+			return TRUE;
+		}		
+	}
 
 	/*
 	 * The custom error handlers go here ...
@@ -575,6 +670,15 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey, $values);
 		$GLOBALS["TSFE"]->fe_user->fetchSessionData();
 		$this->piVars = $values;
+	}
+	
+	/*
+	 * Checks if the captcha has already been verified
+	 */
+	
+	function captchaVerified() {
+		$GLOBALS["TSFE"]->fe_user->fetchSessionData();
+		return ((int) $GLOBALS["TSFE"]->fe_user->sesData[$this->extKey . "_captcha_verified"]) ? TRUE : FALSE;
 	}
 }
 
