@@ -87,7 +87,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey, NULL);
 			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_successfully_submitted", 0);
 		}
-		
+
 		if ( $this->piVars['uid'] == $this->data['uid'] ) { // if this form has been submitted
 			$this->mergePiVarsWidthSession();
 		} else { // if a different form has been submitted
@@ -160,7 +160,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 
 		// load template and substitute the markers
 		$this->prepareTemplate( $step );
-		
+
 		$this->addMarker('HEADER', $this->cObj->cObjGetSingle($GLOBALS['TSFE']->tmpl->setup['lib.']['stdheader'], $GLOBALS['TSFE']->tmpl->setup['lib.']['stdheader.']));
 		$this->addMarker('FORM_LOGIC_FIELDS', $this->createHiddenField('submitted', 1) . $this->createHiddenField('step', $step) . $this->createHiddenField('uid', $this->data['uid']));
 		$this->addMarker('PROTOCOL', t3lib_div::getIndpEnv('TYPO3_SSL') ? 'https' : 'http');
@@ -170,7 +170,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		if ( !$this->newsletterRegEnabled ) {
 			$this->addSMarker('NEWSLETTER', '');
 		}
-		
+
 		if ( method_exists($this, $methodName = 'renderStep' . $step) ) {
 			call_user_func( array(&$this, $methodName) );
 		}
@@ -210,12 +210,12 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		if ( $GLOBALS["TSFE"]->fe_user->getKey("ses",$this->extKey . "_successfully_submitted") ) {
 			return;
 		}
-		
+
 			// After successful form submission
 		if( $step == $this->lastStep ) {
 			$this->sendEmails();
 			$this->addNewsletter();
-			
+
 				// remember that we finished
 			$GLOBALS["TSFE"]->fe_user->setKey("ses", $this->extKey . "_successfully_submitted", 1);
 				// clear caches
@@ -229,7 +229,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$this->substituteLanguageMarkers(array('templateCode' => $this->data['tx_gokontakt_emailBody'] ));
 		$this->substituteValueMarkers(array('templateCode' => $this->data['tx_gokontakt_emailAdminBody'] ));
 		$this->substituteLanguageMarkers(array('templateCode' => $this->data['tx_gokontakt_emailAdminBody'] ));
-		
+
 		$emailUser = $this->cObj->substituteMarkerArrayCached($this->data['tx_gokontakt_emailBody'], $this->markerArray, $this->subpartMarkerArray, $this->wrappedSubpartMarkerArray);
 		$emailUser = str_replace("<br />", "\n", $emailUser);
 		$emailAdmin = $this->cObj->substituteMarkerArrayCached($this->data['tx_gokontakt_emailAdminBody'], $this->markerArray, $this->subpartMarkerArray, $this->wrappedSubpartMarkerArray);
@@ -245,7 +245,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	function sendConfirmationLink($emailTo, $emailFrom, $emailFromName) {
 		$this->substituteValueMarkers(array('templateCode' => $this->data['tx_gokontakt_emailNewsletterBody']));
 		$this->substituteLanguageMarkers(array('templateCode' => $this->data['tx_gokontakt_emailNewsletterBody'] ));
-		
+
 		$emailFrom = $this->data['tx_gokontakt_emailFrom'];
 		$emailFromName = $this->data['tx_gokontakt_emailFromName'];
 			// newsletter auth does not use piVars to avoid line breaks in long links
@@ -468,10 +468,10 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 
 		return;
 	}
-	
+
 	/**
 	 * Creates error messages for the matched marker
-	 * 
+	 *
 	 * @param	string		$fieldNames				the comma separated list of field names
 	 * @param	string		$errorType				the error Type
 	 * @param	array		$options				the options (inherited from calling function)
@@ -493,10 +493,10 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$errorLabel = $isError ? $this->parseTemplate('ERROR_MESSAGE_WRAP') : '';
 		return $errorLabel;
 	}
-	
+
 	/**
 	 * Creates error CSS classes for the matched marker
-	 * 
+	 *
 	 * @param	string		$fieldNames				the comma separated list of field names
 	 * @param	array		$options				the options (inherited from calling function)
 	 */
@@ -576,7 +576,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 			}
 		}
 	}
-	
+
 	/**
 	 * Calls the error handler functions dynamically
 	 *
@@ -621,7 +621,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	function checkError_zip($field, $conf) {
 	 	return preg_match ("/^[0-9]{5}/", trim( $this->piVars[$field] ));
 	}
-	
+
 	function checkError_captcha($field, $conf) {
 		if ( !$this->conf['useSpamProtection'] || $this->captchaVerified() ) {
 				// skip if no check necessary
@@ -631,7 +631,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 				// if not filled in
 			return TRUE;
 		}
-		
+
 		$resp = recaptcha_check_answer( $conf['privateKey'],
 				t3lib_div::getIndpEnv('REMOTE_ADDR'),
 				t3lib_div::_GP("recaptcha_challenge_field"),
@@ -644,7 +644,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		} else {
 				// error
 			return TRUE;
-		}		
+		}
 	}
 
 	/*
@@ -671,11 +671,11 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$GLOBALS["TSFE"]->fe_user->fetchSessionData();
 		$this->piVars = $values;
 	}
-	
+
 	/*
 	 * Checks if the captcha has already been verified
 	 */
-	
+
 	function captchaVerified() {
 		$GLOBALS["TSFE"]->fe_user->fetchSessionData();
 		return ((int) $GLOBALS["TSFE"]->fe_user->sesData[$this->extKey . "_captcha_verified"]) ? TRUE : FALSE;

@@ -7,27 +7,27 @@ $LANG = t3lib_div::makeInstance('language');
 $LANG->init($BE_USER->uc['lang']);
 
 $tempColumns = array (
-    'tx_gokontakt_redirect' => array (        
-        'exclude' => 0,        
-        'label' => 'LLL:EXT:go_kontakt/locallang_db.xml:tt_content.tx_gokontakt_redirect',        
-        'config' => array (
-            'type'     => 'input',
-            'size'     => '15',
-            'max'      => '255',
-            'checkbox' => '',
-            'eval'     => 'trim',
-            'wizards'  => array(
-                '_PADDING' => 2,
-                'link'     => array(
-                    'type'         => 'popup',
-                    'title'        => 'Link',
-                    'icon'         => 'link_popup.gif',
-                    'script'       => 'browse_links.php?mode=wizard',
-                    'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
-                )
-            )
-        )
-    ),
+	'tx_gokontakt_redirect' => array (
+		'exclude' => 0,
+		'label' => 'LLL:EXT:go_kontakt/locallang_db.xml:tt_content.tx_gokontakt_redirect',
+		'config' => array (
+			'type'	 => 'input',
+			'size'	 => '15',
+			'max'	  => '255',
+			'checkbox' => '',
+			'eval'	 => 'trim',
+			'wizards'  => array(
+				'_PADDING' => 2,
+				'link'	 => array(
+					'type'		 => 'popup',
+					'title'		=> 'Link',
+					'icon'		 => 'link_popup.gif',
+					'script'	   => 'browse_links.php?mode=wizard',
+					'JSopenParams' => 'height=300,width=500,status=0,menubar=0,scrollbars=1'
+				)
+			)
+		)
+	),
 	/* EMAIL FIELDS */
 	'tx_gokontakt_emailFrom' => array (
 		'exclude' => 0,
@@ -119,21 +119,21 @@ $tempColumns = array (
 			'default' => $LANG->sL('LLL:EXT:go_kontakt/locallang_db.xml:default.tx_gokontakt_emailNewsletterBody')
 		)
 	),
-	'tx_gokontakt_newsletterUsergroup' => array (        
-        'exclude' => 0,        
-        'label' => 'LLL:EXT:go_kontakt/locallang_db.xml:tt_content.tx_gokontakt_newsletterUsergroup',        
-        'config' => array (
-            'type' => 'select',
+	'tx_gokontakt_newsletterUsergroup' => array (
+		'exclude' => 0,
+		'label' => 'LLL:EXT:go_kontakt/locallang_db.xml:tt_content.tx_gokontakt_newsletterUsergroup',
+		'config' => array (
+			'type' => 'select',
 			'items' => array (
-                array('',0),
-            ),
-            'foreign_table' => 'fe_groups',    
-            'foreign_table_where' => 'ORDER BY fe_groups.uid',    
-            'size' => 1,    
-            'minitems' => 0,
-            'maxitems' => 1,
-        )
-    ),
+				array('',0),
+			),
+			'foreign_table' => 'fe_groups',
+			'foreign_table_where' => 'ORDER BY fe_groups.uid',
+			'size' => 1,
+			'minitems' => 0,
+			'maxitems' => 1,
+		)
+	),
 );
 
 t3lib_div::loadTCA('tt_content');

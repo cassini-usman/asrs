@@ -6,7 +6,7 @@ tt_content.go_kontakt_piKontakt.10 >
 
 plugin.tx_gokontakt_piKontakt{
 	lastStep = 3
-	
+
 	# bitte vorher mit Projektleiter absprechen, wenn du vor hast, useSpamProtection auszuschalten.
 	# Wir haben beschlossen, dass das Spam-Protection Pflicht ist
 	useSpamProtection = 1
@@ -18,9 +18,9 @@ plugin.tx_gokontakt_piKontakt{
 			firstname = obligatory
 			lastname = obligatory
 			email = obligatory, email
-			
+
 			recaptcha_response_field = captcha
-			recaptcha_response_field.captcha.privateKey = 6Le1R8gSAAAAAIb4qR3gohwoiriVA__7bUhj6b3B 
+			recaptcha_response_field.captcha.privateKey = 6Le1R8gSAAAAAIb4qR3gohwoiriVA__7bUhj6b3B
 		}
 		step_2 {
 		}
