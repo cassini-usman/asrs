@@ -51,9 +51,8 @@ Nachricht:
 
 Sie haben sich soeben für den Newsletter registriert.
 Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folgenden Link.
-###LINK_NEWSLETTER###
+###LINK_NEWSLETTER###</label>
 			<label index="pages.containsPlugin">Newsletter-User</label>
-</label>
 		</languageKey>
 		<languageKey index="dk"></languageKey>
 		<languageKey index="de" type="array">
@@ -100,8 +99,7 @@ Nachricht:
 
 Sie haben sich soeben für den Newsletter registriert.
 Um die Anmeldung abzuschließen bestätigen Sie diese durch einen Klick auf folgenden Link.
-###LINK_NEWSLETTER###
-</label>
+###LINK_NEWSLETTER###</label>
 			<label index="pages.containsPlugin">Newsletter-User</label>
 		</languageKey>
 		<languageKey index="no"></languageKey>
