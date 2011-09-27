@@ -144,7 +144,9 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$this->substituteValueMarkers( array( 'subpartName' => 'STEP_' . $step ) );
 		// automatically substitute language markers
 		$this->substituteLanguageMarkers(array('subpartName' => 'STEP_' . $step));
+		$this->substituteLanguageMarkers(array('subpartName' => 'CAPTCHA_TEMPLATE'));
 		$this->substituteFormMarkers(array('subpartName' => 'STEP_' . $step));
+		$this->substituteFormMarkers(array('subpartName' => 'CAPTCHA_TEMPLATE'));
 	}
 
 	/*
