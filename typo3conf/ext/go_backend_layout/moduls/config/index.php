@@ -78,7 +78,7 @@ class go_backend_module2 extends t3lib_SCbase {
 	private $backupObj;
 	/**#@-*/
 
-	
+
 	#######################################
 	############ main functions ###########
 	#######################################
@@ -92,8 +92,8 @@ class go_backend_module2 extends t3lib_SCbase {
 		global $AB,$BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$HTTP_GET_VARS,$HTTP_POST_VARS,$CLIENT,$TYPO3_CONF_VARS;
 		parent::init();
 	}
-	
-	
+
+
 	/**
 	 * Main function of the module. Writes the content to $this->content
 	 *
@@ -200,7 +200,7 @@ class go_backend_module2 extends t3lib_SCbase {
 		echo $this->content;
 	}
 
-	
+
 }
 
 // Default-Code for using XCLASS (dont touch)

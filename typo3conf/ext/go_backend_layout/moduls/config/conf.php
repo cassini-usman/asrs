@@ -5,7 +5,7 @@ define('TYPO3_MOD_PATH', '../typo3conf/ext/go_backend_layout/moduls/config/');
 $BACK_PATH='../../../../../typo3/';
 $MCONF['name']='user_gobeconfig';
 
-	
+
 $MCONF['access']='admin';
 $MCONF['script']='index.php';
 

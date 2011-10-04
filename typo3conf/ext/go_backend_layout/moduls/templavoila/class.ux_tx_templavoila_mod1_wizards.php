@@ -59,7 +59,7 @@
  * @package		TYPO3
  * @subpackage	tx_templavoila
  */
- 
+
 
 class ux_tx_templavoila_mod1_wizards extends tx_templavoila_mod1_wizards {
 
@@ -81,7 +81,7 @@ class ux_tx_templavoila_mod1_wizards extends tx_templavoila_mod1_wizards {
 
 		$storageFolderPID = $this->apiObj->getStorageFolderPid($positionPid);
 		$tmplHTML = array();
-		
+
 		switch ($templateType) {
 			case 'tmplobj':
 						// Create the "Default template" entry
@@ -119,14 +119,14 @@ class ux_tx_templavoila_mod1_wizards extends tx_templavoila_mod1_wizards {
 					'description' => $LANG->getLL('wizard.page.new.notemplate.description'),
 				);
 				// end elio@gosign
-				
+
 				foreach ( $rows as $row ) {
-					
-					
+
+
 					// #
 					// ### Mansoor Ahmad - I deselected here some TV Pagetemplates
 					// #
-					
+
 					//echo $row['uid'] . '<br />';
 					//$ignoreList	=	'6,9,11';
 					//if(!in_array($row['uid'],explode(',',$ignoreList)))
@@ -134,17 +134,17 @@ class ux_tx_templavoila_mod1_wizards extends tx_templavoila_mod1_wizards {
 						// Check if preview icon exists, otherwise use default icon:
 						$tmpFilename = 'uploads/tx_templavoila/'.$row['previewicon'];
 						$previewIconFilename = (@is_file(PATH_site.$tmpFilename)) ? ($GLOBALS['BACK_PATH'].'../'.$tmpFilename) : ($GLOBALS['BACK_PATH'].'../'.t3lib_extMgm::siteRelPath($this->extKey).'res1/default_previewicon.gif');
-						
+
 						// Note: we cannot use value of image input element because MSIE replaces this value with mouse coordinates! Thus on click we set value to a hidden field. See http://bugs.typo3.org/view.php?id=3376
 						$previewIcon = '<input type="image" class="c-inputButton" name="i' .$row['uid'] . '" onclick="document.getElementById(\'data_tx_templavoila_to\').value='.$row['uid'].'" src="'.$previewIconFilename.'" title="" />';
 						$description = $row['description'] ? htmlspecialchars($row['description']) : $LANG->getLL ('template_nodescriptionavailable');
 						$tmplHTML [] = '<table style="width: 100%;" valign="top"><tr><td colspan="2" nowrap="nowrap"><h3 class="bgColor3-20">'.htmlspecialchars($row['title']).'</h3></td></tr>'.
 						'<tr><td valign="top">'.$previewIcon.'</td><td width="120" valign="top"><p>'.$description.'</p></td></tr></table>';
 					//}
-				
+
 				}
-				
-				
+
+
 				$tmplHTML[] = '<input type="hidden" id="data_tx_templavoila_to" name="data[tx_templavoila_to]" value="0" />';
 				break;
 

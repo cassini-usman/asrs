@@ -34,7 +34,7 @@
  *
  * @author	Elio Wahlen <vorname@gosign.de>
  */
- 
+
 class ux_localRecordList extends localRecordList{
 	/**
 	 * Makes the list of fields to select for a table
@@ -44,11 +44,11 @@ class ux_localRecordList extends localRecordList{
 	 * @param	boolean		If set, also adds crdate and tstamp fields (note: they will also be added if user is admin or dontCheckUser is set)
 	 * @return	array		Array, where values are fieldnames to include in query
 	 */
-	
+
 	// THUMB HANDLING
 
 	var $DAMimageFields = array();
-	
+
 	function getTable($table,$id,$rowlist)	{
 		global $TCA;
 		t3lib_div::loadTCA($table);
@@ -78,7 +78,7 @@ class ux_localRecordList extends localRecordList{
 		$html = parent::renderListRow($table,$row,$cc,$titleCol,$thumbsCol,$indent);
 		return $html;
 	}
-	
+
 	function thumbCode($row,$table,$field) { // this is done for all db_list items
 		if ( t3lib_extMgm::isLoaded('dam_ttcontent') && is_numeric($row[$this->thumbsCol])) { // if it is a dam image
 			// get the dam image and put file link into the row, so that thumbCode can handle it
@@ -89,5 +89,5 @@ class ux_localRecordList extends localRecordList{
 		}
 		// normal handling
 		return parent::thumbCode($row,$table,$field);
-	}	
+	}
 }

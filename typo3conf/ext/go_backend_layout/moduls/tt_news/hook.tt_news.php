@@ -9,7 +9,7 @@ class user_go_backend_layout_modify implements t3lib_localRecordListGetTableHook
 
 	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject) {
 		global $GBL;
-		
+
 		if($table == 'tt_news' && $GBL['tt_news.']['uidList']) {
 			$additionalWhereClause .= ' AND tt_news.uid IN(' . $GBL['tt_news.']['uidList'] . ')';
 		}

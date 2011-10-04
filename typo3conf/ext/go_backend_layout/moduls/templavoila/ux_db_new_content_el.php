@@ -37,13 +37,13 @@
 
 
 
-class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel { 
+class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 
 	protected $myLanguageFiles = array();
 	private $coreCTypeList = 'header,text,textpic,image,table,bullets,html';
 
-	
-	
+
+
 	/**
 	 * Initialize internal variables.
 	 *
@@ -52,22 +52,30 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 	function init()	{
 		global $BE_USER,$BACK_PATH,$TBE_MODULES_EXT;
 
+		if(t3lib_div::_GP('type') == 'ajax'){
+			echo $this->saveRights();
+			die();
+		}
+
 			// Setting class files to include:
 		if (is_array($TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']))	{
 			$this->include_once = array_merge($this->include_once,$TBE_MODULES_EXT['xMOD_db_new_content_el']['addElClasses']);
 		}
 
 			// Setting internal vars:
-		$this->id = intval(t3lib_div::GPvar('id'));
-		$this->parentRecord = t3lib_div::GPvar('parentRecord');
-		$this->altRoot = t3lib_div::GPvar('altRoot');
-		$this->defVals = t3lib_div::GPvar('defVals');
+		$this->id = intval(t3lib_div::_GP('id'));
+		$this->parentRecord = t3lib_div::_GP('parentRecord');
+		$this->altRoot = t3lib_div::_GP('altRoot');
+		$this->defVals = t3lib_div::_GP('defVals');
 
 			// Starting the document template object:
 		$this->doc = t3lib_div::makeInstance('mediumDoc');
 		$this->doc->docType= 'xhtml_trans';
 		$this->doc->backPath = $BACK_PATH;
-		$this->doc->JScode='';
+		$this->doc->JScode = '
+		<script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/jQuery.js"></script>
+		<script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/wizardList.js"></script>';
+
 		#
 		### Mansoor Ahmad - Dont know why it used
 		#
@@ -89,9 +97,9 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Creating the module output.
 	 *
@@ -100,24 +108,42 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 	 */
 	function main()	{
 		global $LANG,$BACK_PATH,$BE_USER;
+
 		if ($this->id && $this->access)	{
 
+			$GOBACKEND = $LANG;
+			$GOBACKEND->includeLLFile('EXT:go_backend_layout/moduls/templavoila/locallang.xml');
 				// Creating content
 			$this->content='';
 			$this->content.=$this->doc->startPage($LANG->getLL('newContentElement'));
-			$this->content.=$this->doc->header($LANG->getLL('newContentElement'));
+			//$this->content.=$this->doc->header($LANG->getLL('newContentElement'));
 			$this->content.=$this->doc->spacer(5);
 
 			$elRow = t3lib_BEfunc::getRecordWSOL('pages',$this->id);
-			$header= t3lib_iconWorks::getIconImage('pages',$elRow,$BACK_PATH,' title="'.htmlspecialchars(t3lib_BEfunc::getRecordIconAltText($elRow,'pages')).'" align="top"');
-			$header.= t3lib_BEfunc::getRecordTitle('pages',$elRow,1);
-			$this->content.=$this->doc->section('',$header,0,1);
-			$this->content.=$this->doc->spacer(10);
+			$header = '<span>' . $GOBACKEND->getLL('wizardList.page.header') . '<br /></span>';
+			$header .= '<img src="../../../../typo3/sysext/t3skin/icons/module_doc.gif" />';//t3lib_iconWorks::getIconImage('pages',$elRow,$BACK_PATH,' title="'.htmlspecialchars(t3lib_BEfunc::getRecordIconAltText($elRow,'pages')).'" align="top"');
+			$header .= t3lib_BEfunc::getRecordTitle('pages',$elRow,1);
+
+			$this->content.=$this->doc->section('','<h1 class="wizardListCEHeader">'.$header.'</h1>',0,1);
+			//$this->content.=$this->doc->spacer(10);
 
 				// Wizard
+			$ignoreList = 'list,templavoila_pi1';
 			$wizardCode='';
-			$tableRows=array();
+			$fieldName = $this->getFieldName();
 			$wizardItems = $this->getWizardItems();
+			$tableRows=array();
+			$tableRows[] = '<tr class="wizardHeadline">
+								<td colspan="2">'.$GOBACKEND->getLL('wizardList.ce.header').'</td>
+							';
+			if($BE_USER->isAdmin() && !in_array($wizardItem['tt_content_defValues']['CType'],explode(',', $ignoreList))){
+				$tableRows[] = '
+								<td><img src="../../../../typo3/sysext/t3skin/icons/module_tools_config.gif" /></td>
+								<td><img src="../../../../typo3/sysext/t3skin/icons/module_web_perms.png" /></td>
+							';
+			}
+			$tableRows[] = '</tr>';
+
 
 				// Traverse items for the wizard.
 				// An item is either a header or an item rendered with a title/description and icon:
@@ -125,18 +151,33 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 			// #
 			// ### Mansoor Ahmad @ Gosign media. GmbH - Set it for ...
 			// #
-			$ignoreList = 'list,templavoila_pi1';
+			$stopF = 0;
+			$stopP = 0;
 			foreach($wizardItems as $key => $wizardItem){
-				if ($wizardItem['header'])	{
+				if(preg_match('/fce/', $key) === 1 && $stopF == 0){
+					$stopF++;
 					if ($counter>0) $tableRows[]='
 						<tr>
 							<td colspan="3"><br /></td>
 						</tr>';
 					$tableRows[]='
-						<tr class="bgColor5">
-							<td colspan="3"><strong>'.htmlspecialchars($wizardItem['header']).'</strong></td>
+						<tr class="wizardHeadline">
+							<td colspan="3"><strong>'.$GOBACKEND->getLL('wizardList.ff.header').'</strong></td>
 						</tr>';
-				} else {
+				}
+				elseif(preg_match('/plugins/', $key) === 1 && $stopP == 0){
+					$stopP++;
+					if ($counter>0) $tableRows[]='
+						<tr>
+							<td colspan="3"><br /></td>
+						</tr>';
+					$tableRows[]='
+						<tr class="wizardHeadline">
+							<td colspan="3"><strong>'.$GOBACKEND->getLL('wizardList.pi.header').'</strong></td>
+						</tr>';
+				}
+
+				if($key != 'fce' && $key != 'plugins'){
 					$tableLinks=array();
 
 						// href URI for icon/title:
@@ -150,14 +191,13 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					$tableLinks[]='<a href="'.$newRecordLink.'"><strong>'.htmlspecialchars($wizardItem['title']).'</strong><br />'.nl2br(htmlspecialchars(trim($wizardItem['description']))).'</a>';
 
 						// Finally, put it together in a table row:
-					
-					
+
+
 					// #
 					// ### Mansoor Ahmad @ Gosign media. GmbH - start
-					// #	
-						//print_r($wizardItems);
-					$actionForm = 'db_new_content_el.php?'.$this->linkParams().'&parentRecord='.t3lib_div::GPvar('parentRecord');
-					if(t3lib_div::GPvar('count') == $counter && t3lib_div::GPvar('go_backend_layout_edit') == 1){	
+					// #
+					$actionForm = 'db_new_content_el.php?'.$this->linkParams().'&parentRecord='.t3lib_div::_GP('parentRecord');
+					if(t3lib_div::_GP('count') == $counter && t3lib_div::_GP('go_backend_layout_edit') == 1){
 						$tableRows[]='
 						<tr>
 							<td valign="top" colspan="3">'.
@@ -168,31 +208,39 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 						</tr>';
 					}
 					else{
+						$rightsChecked = '';
+						$data = array('fieldName' => $fieldName, 'elementKey' => $key);
+						if($this->checkRights($data)){
+							$rightsChecked = 'checked="checked"';
+						}
+
 						$tableRows[]='
 							<tr>
 								<td valign="top"><a name="'.$wizardItem['tt_content_defValues']['CType'].'" />'.implode('</td>
 								<td valign="top">',$tableLinks).'</td>
-								<td valign="top">'.(($BE_USER->isAdmin() && !in_array($wizardItem['tt_content_defValues']['CType'],explode(',', $ignoreList)))?'<a href="db_new_content_el.php?'.$this->linkParams().'&parentRecord='.t3lib_div::GPvar('parentRecord').'&go_backend_layout_edit=1&count='.$counter.'#'.$wizardItem['tt_content_defValues']['CType'].'"><img src="../../../../typo3/sysext/t3skin/icons/gfx/edit2.gif" /></a>':'').'</td>
+								<td valign="top">'.(($BE_USER->isAdmin() && !in_array($wizardItem['tt_content_defValues']['CType'],explode(',', $ignoreList)))?'<a href="db_new_content_el.php?'.$this->linkParams().'&parentRecord='.t3lib_div::_GP('parentRecord').'&go_backend_layout_edit=1&count='.$counter.'#'.$wizardItem['tt_content_defValues']['CType'].'"><img src="../../../../typo3/sysext/t3skin/icons/gfx/edit2.gif" /></a>':'').'</td>
+								<td valign="top">'.(($BE_USER->isAdmin())?'<input type="checkbox" class="fieldrightsCheckbox" name="'.$this->getFieldName().'" value="'.$key.'" '.$rightsChecked.' />':'').'</td>
 							</tr>';
-						$editData = array(	'CType' => t3lib_div::GPvar('CType'),
-											'title'	=> t3lib_div::GPvar('title'),
-											'desc'	=> t3lib_div::GPvar('desc'));
+						$editData = array(	'CType' => t3lib_div::_GP('CType'),
+											'title'	=> t3lib_div::_GP('title'),
+											'desc'	=> t3lib_div::_GP('desc'));
 						if($editData['CType'] == $wizardItem['tt_content_defValues']['CType']){
 							$this->saveEditTableData($editData, $wizardItem);
 						}
-						elseif(t3lib_div::GPvar('submit')){
-							header('location:'.$actionForm.'#'.t3lib_div::GPvar('CType'));
+						elseif(t3lib_div::_GP('submit')){
+							header('location:'.$actionForm.'#'.t3lib_div::_GP('CType'));
 						}
 					}
 					// #
 					// ### Mansoor Ahmad @ Gosign media. GmbH - end
-					// #	
-						
+					// #
+
 					$counter++;
 				}
+
 			}
 				// Add the wizard table to the content:
-			$wizardCode .= $LANG->getLL('sel1',1).'<br /><br />
+			$wizardCode .= '<br /><br />
 
 			<!--
 				Content Element wizard table:
@@ -201,7 +249,7 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					'.implode('',$tableRows).'
 				</table>
 				';
-			$this->content .= $this->doc->section($LANG->getLL('1_selectType'), $wizardCode, 0, 1);
+			$this->content .= $wizardCode;//$this->doc->section($LANG->getLL('1_selectType'), $wizardCode, 0, 1);
 
 		} else {		// In case of no access:
 			$this->content='';
@@ -225,7 +273,7 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					<h3>Elementinfo bearbeiten:</h3>
 				</td>
 			</tr>
-			
+
 			<tr>
 				<td>
 					<span>Name:</span>
@@ -234,7 +282,7 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					<input type="text" name="title" size="25" value="'.$wizardItem['title'].'" />
 				</td>
 			</tr>
-			
+
 			<tr>
 				<td>
 					<span>Beschreibung:</span>
@@ -243,7 +291,7 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					<input type="text" name="desc" size="40" value="'.$wizardItem['description'].'" />
 				</td>
 			</tr>
-			
+
 			<tr>
 				<td>
 					<span>Wizard:</span>
@@ -252,7 +300,7 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					<input type="file" name="wizard" />
 				</td>
 			</tr>
-			
+
 			<tr>
 				<td>
 					<span>Pageview:</span>
@@ -261,22 +309,22 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 					<input type="file" name="pageview"/>
 				</td>
 			</tr>
-			
+
 			<tr>
 				<td>
-					
+
 				</td>
 				<td>
-					<input type="hidden" name="id" value="'.t3lib_div::GPvar('id').'" />
+					<input type="hidden" name="id" value="'.t3lib_div::_GP('id').'" />
 					<input type="hidden" name="CType" value="'.$wizardItem['tt_content_defValues']['CType'].'" />
-					<input type="hidden" name="parentRecord" value="'.t3lib_div::GPvar('parentRecord').'" />
+					<input type="hidden" name="parentRecord" value="'.t3lib_div::_GP('parentRecord').'" />
 					<input type="submit" name="submit" value="Speichern"/>
-					
+
 				</td>
 			</tr>
 		</table>
 		</form>
-		
+
 		';
 		return $content;
 	}
@@ -316,23 +364,23 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 			else{
 				list($LLFile, $LLFName) = each($this->myLanguageFiles[$editData['CType']]);
 				$fileObj->init(basename($LLFile), str_replace('EXT:', PATH_typo3conf.'ext/', dirname($LLFile)));
-				
+
 				// #wizard
 				$this->setImageForCType($editData['CType'] ,$_FILES["wizard"]["tmp_name"], $_FILES["wizard"]["name"], $LLFile, 'wizard', 125);
-		
+
 				// #pageview
 				$this->setImageForCType($editData['CType'], $_FILES["pageview"]["tmp_name"], $_FILES["pageview"]["name"], $LLFile, 'pageview', 257);
 			}
 
 			$fileObj->readFile();
-			
+
 			if(!empty($editData['title']) && $editData['title'] != $wizardItem['title'] && !($wizardItem['tt_content_defValues']['CType'] == 'templavoila_pi1')) {
 				$fileObj->setLocalLangData($LLFName[0], $editData['title'], $LANG->lang);
 			}
 			if(!empty($editData['desc']) && $editData['desc'] != $wizardItem['description'] && !($wizardItem['tt_content_defValues']['CType'] == 'templavoila_pi1')) {
 				$fileObj->setLocalLangData($LLFName[1], $editData['desc'], $LANG->lang);
 			}
-			
+
 			// write new language data
 			try {
 				$fileObj->writeFile();
@@ -368,22 +416,6 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
 	 * Returns the array of elements in the wizard display.
 	 * For the plugin section there is support for adding elements there from a global variable.
@@ -393,7 +425,9 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 	 * @return	array
 	 */
 	function wizardArray()	{
-		global $LANG,$TBE_MODULES_EXT,$TYPO3_DB,$TCA;
+		global $LANG,$TBE_MODULES_EXT,$TYPO3_DB,$TCA,$BE_USER;
+
+		$fieldName = $this->getFieldName();
 
 		$GOBACKEND = $LANG;
 		$GOBACKEND->includeLLFile('EXT:go_backend_layout/locallang.xml');
@@ -402,43 +436,43 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 
 		$wizardItems = array(
 			//'common' => array('header'=>$LANG->getLL('common')),
-			'gosign_1' => array(
+			'header' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_header.png',
 				'title'=>$GOBACKEND->getLL('wizard.header'),
 				'description'=>$GOBACKEND->getLL('wizard.header.description'),
 				'params'=>'&defVals[tt_content][CType]=header'.$defVals,
 			),
-			'gosign_2' => array(
+			'text' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_text.png',
 				'title'=>$GOBACKEND->getLL('wizard.text'),
 				'description'=>$GOBACKEND->getLL('wizard.text.description'),
 				'params'=>'&defVals[tt_content][CType]=text'.$defVals,
 			),
-			'gosign_3' => array(
+			'textpic' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_textpic2.png',
 				'title'=>$GOBACKEND->getLL('wizard.textpic2'),
 				'description'=>$GOBACKEND->getLL('wizard.textpic2.description'),
 				'params'=>'&defVals[tt_content][CType]=textpic&defVals[tt_content][imageorient]=2'.$defVals,
 			),
-			'gosign_4' => array(
+			'image' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_image2.png',
 				'title'=>$GOBACKEND->getLL('wizard.image2'),
 				'description'=>$GOBACKEND->getLL('wizard.image2.description'),
 				'params'=>'&defVals[tt_content][CType]=image&defVals[tt_content][imageorient]=2'.$defVals,
 			),
-			'gosign_5' => array(
+			'table' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_table.png',
 				'title'=>$GOBACKEND->getLL('wizard.table'),
 				'description'=>$GOBACKEND->getLL('wizard.table.description'),
 				'params'=>'&defVals[tt_content][CType]=table'.$defVals,
 			),
-			'gosign_6' => array(
+			'bullets' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_bullets.png',
 				'title'=>$GOBACKEND->getLL('wizard.bullets'),
 				'description'=>$GOBACKEND->getLL('wizard.bullets.description'),
 				'params'=>'&defVals[tt_content][CType]=bullets'.$defVals,
 			),
-			'gosign_7' => array(
+			'html' => array(
 				'icon'=>'../typo3conf/ext/go_backend_layout/images/wizard_html.png',
 				'title'=>$GOBACKEND->getLL('wizard.html'),
 				'description'=>$GOBACKEND->getLL('wizard.html.description'),
@@ -516,6 +550,18 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 			}
 		}
 
+		// Rightsmanagment by Mansoor Ahmad
+		if(!$BE_USER->isAdmin()){
+			$wizardItemsTemp = $wizardItems;
+			$wizardItems = array();
+			foreach($wizardItemsTemp as $elementKey => $elementData){
+				$data = array('fieldName' => $fieldName, 'elementKey' => $elementKey);
+				if($this->checkRights($data)){
+					$wizardItems[$elementKey] = $wizardItemsTemp[$elementKey];
+				}
+			}
+		}
+
 		// Remove elements where preset values are not allowed:
 		$this->removeInvalidElements($wizardItems);
 		return $wizardItems;
@@ -560,16 +606,16 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 	// #
 	function getLLValue($LLValue, $plugin) {
 		global $LANG;
-		
+
 		$LLArray = explode(':', $LLValue);
-		
+
 		if(count($LLArray) == 4 && $LLArray[0] = 'LLL' && $LLArray[1] = 'EXT') {
 			$LLFile = 'EXT:'.$LLArray[2];
 			$LLFName = $LLArray[3];
 
 			$this->myLanguageFiles[$plugin][$LLFile][] = $LLFName;
 			$this->myLanguageFiles[$plugin][$LLFile][] = $LLFName.'.description';
-			
+
 			$locallang = $LANG;
 			$locallang->includeLLFile($LLFile);
 			$return = array($locallang->getLL($LLFName), $locallang->getLL($LLFName.'.description'));
@@ -577,8 +623,68 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 		else {
 			$return = array($LLValue, '');
 		}
-		
+
 		return $return;
+	}
+
+	/**
+	 * Get the name of the field where the Element will be paste
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @return		String		Name of the Field
+	 */
+	function getFieldName(){
+		$parentRecord = explode(':', t3lib_div::_GP('parentRecord'));
+		return $parentRecord[4];
+	}
+
+	/**
+	 * Get Data from AJAX Request and insert into Databasetable gbl_fliedrights
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @return		array	JSON Array of the saved data
+	 */
+	function saveRights(){
+		$data = array();
+		$data['fieldName'] = htmlspecialchars(t3lib_div::_GP('fieldName'));
+		$data['elementKey'] = htmlspecialchars(t3lib_div::_GP('elementKey'));
+
+		if(!$this->checkRights($data)){
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery('gbl_fieldrights', $data);
+		}
+		else{
+			$this->deleteRights($data);
+		}
+
+		return json_encode($data);
+	}
+
+	/**
+	 * Check access right of the element
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @param		array	data of fieldName and elementKey
+	 *
+	 * @return		boolean	in value as TRUE or FALSE
+	 */
+	function checkRights($data){
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'gbl_fieldrights', 'fieldName="'.$data['fieldName'].'" AND elementKey="'.$data['elementKey'].'" AND deleted="0"');
+		$row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
+		return ($row['uid'] > 0)?TRUE:FALSE;
+	}
+
+	/**
+	 * Delete the access right
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @param		array	data of fieldName and elementKey
+	 */
+	function deleteRights($data){
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('gbl_fieldrights', 'fieldName="'.$data['fieldName'].'" AND elementKey="'.$data['elementKey'].'"', array("deleted" => "1"));
 	}
 }
 

@@ -2,7 +2,7 @@
 <T3locallang>
 	<meta type="array">
 		<type>database</type>
-		<description>Language labels for database tables/fields belonging to extension 'go_contentelements'</description>
+		<description>Language labels for database tables/fields belonging to extension 'go_backend_layout'</description>
 		<generator>LFEditor</generator>
 	</meta>
 	<data type="array">
@@ -26,6 +26,7 @@
 			<label index="wizard.text.description"></label>
 			<label index="wizard.textpic2"></label>
 			<label index="wizard.textpic2.description"></label>
+			<label index="pages.doktypes.pagecontainer">Page Container</label>
 		</languageKey>
 		<languageKey index="dk"></languageKey>
 		<languageKey index="de" type="array">
@@ -40,16 +41,17 @@
 			<label index="wizard.html.description">Dieses Element ist für den User nicht zugänglich.</label>
 			<label index="wizard.image2">Bild</label>
 			<label index="wizard.image2.description">Fügt ein Bild mit Überschrift und Bildunterschrift auf der Seite ein. Optional kann ein weißer Rahmen hinzugefügt werden.</label>
+			<label index="wizard.page.doktype">Dokument-Typ</label>
+			<label index="wizard.page.new">Seite erstellen</label>
+			<label index="wizard.page.new.notemplate">Kein neues Seitenlayout</label>
+			<label index="wizard.page.new.notemplate.description">Übernimmt das Layout der übergeordneten Seite</label>
 			<label index="wizard.table">Tabelle</label>
 			<label index="wizard.table.description">Dieses Element ist für den User nicht zugänglich.</label>
 			<label index="wizard.text">Text</label>
 			<label index="wizard.text.description">Fügt eine Überschrift mit darunter liegendem normalen Text auf der Webseite ein.</label>
 			<label index="wizard.textpic2">Text mit Bild</label>
 			<label index="wizard.textpic2.description">Fügt eine Überschrift mit darunter liegendem normalen Text ein, an dessen Seite ein Bild positioniert werden kann. </label>
-			<label index="wizard.page.doktype">Dokument-Typ</label>
-			<label index="wizard.page.new">Seite erstellen</label>
-			<label index="wizard.page.new.notemplate">Kein neues Seitenlayout</label>
-			<label index="wizard.page.new.notemplate.description">Übernimmt das Layout der übergeordneten Seite</label>
+			<label index="pages.doktypes.pagecontainer">Seitencontainer</label>
 		</languageKey>
 		<languageKey index="no"></languageKey>
 		<languageKey index="it"></languageKey>

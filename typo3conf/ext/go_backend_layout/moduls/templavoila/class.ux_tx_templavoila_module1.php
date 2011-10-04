@@ -50,6 +50,246 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 
 	private $stop = 0;
 
+
+
+	/**
+	 * Main function of the module.
+	 *
+	 * @author	Lucas Jen√ü <lucas@gosign.de> & Mansoor Ahmad <mansoor@gosign.de>
+	 *
+	 * @return	void
+	 * @access public
+	 */
+	function main()    {
+		global $BE_USER,$LANG,$BACK_PATH;
+
+		//process Notes Managment
+		$this->content .= $this->ajaxNotes();
+
+		if (!is_callable(array('t3lib_div', 'int_from_ver')) || t3lib_div::int_from_ver(TYPO3_version) < 4000000) {
+			$this->content = 'Fatal error:This version of TemplaVoila does not work with TYPO3 versions lower than 4.0.0! Please upgrade your TYPO3 core installation.';
+			return;
+		}
+
+			// Access check! The page will show only if there is a valid page and if this page may be viewed by the user
+		if (is_array($this->altRoot))	{
+			$access = true;
+		} else {
+			$pageInfoArr = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
+			$access = (intval($pageInfoArr['uid'] > 0));
+		}
+
+		if ($access)    {
+
+			$this->calcPerms = $GLOBALS['BE_USER']->calcPerms($pageInfoArr);
+
+				// Define the root element record:
+			$this->rootElementTable = is_array($this->altRoot) ? $this->altRoot['table'] : 'pages';
+			$this->rootElementUid = is_array($this->altRoot) ? $this->altRoot['uid'] : $this->id;
+			$this->rootElementRecord = t3lib_BEfunc::getRecordWSOL($this->rootElementTable, $this->rootElementUid, '*');
+			$this->rootElementUid_pidForContent = $this->rootElementRecord['t3ver_swapmode']==0 && $this->rootElementRecord['_ORIG_uid'] ? $this->rootElementRecord['_ORIG_uid'] : $this->rootElementRecord['uid'];
+
+				// Check if we have to update the pagetree:
+			if (t3lib_div::_GP('updatePageTree')) {
+				t3lib_BEfunc::getSetUpdateSignal('updatePageTree');
+			}
+
+				// Draw the header.
+			$this->doc = t3lib_div::makeInstance('noDoc');
+			$this->doc->docType= 'xhtml_trans';
+			$this->doc->backPath = $BACK_PATH;
+			$this->doc->divClass = '';
+			$this->doc->form='<form action="'.htmlspecialchars('index.php?'.$this->link_getParameters()).'" method="post" autocomplete="off">';
+
+				// Adding classic jumpToUrl function, needed for the function menu. Also, the id in the parent frameset is configured.
+			$this->doc->JScode = $this->doc->wrapScriptTags('
+				function jumpToUrl(URL)	{ //
+					document.location = URL;
+					return false;
+				}
+				if (top.fsMod) top.fsMod.recentIds["web"] = '.intval($this->id).';
+			' . $this->doc->redirectUrls() . '
+							function jumpToUrl(URL)	{	//
+								window.location.href = URL;
+								return false;
+							}
+							function jumpExt(URL,anchor)	{	//
+								var anc = anchor?anchor:"";
+								window.location.href = URL+(T3_THIS_LOCATION?"&returnUrl="+T3_THIS_LOCATION:"")+anc;
+								return false;
+							}
+							function jumpSelf(URL)	{	//
+								window.location.href = URL+(T3_RETURN_URL?"&returnUrl="+T3_RETURN_URL:"");
+								return false;
+							}
+
+							function setHighlight(id)	{	//
+								top.fsMod.recentIds["web"]=id;
+								top.fsMod.navFrameHighlightedID["web"]="pages"+id+"_"+top.fsMod.currentBank;	// For highlighting
+
+								if (top.content && top.content.nav_frame && top.content.nav_frame.refresh_nav)	{
+									top.content.nav_frame.refresh_nav();
+								}
+							}
+
+							function editRecords(table,idList,addParams,CBflag)	{	//
+								window.location.href="'.$BACK_PATH.'alt_doc.php?returnUrl='.rawurlencode(t3lib_div::getIndpEnv('REQUEST_URI')).
+									'&edit["+table+"]["+idList+"]=edit"+addParams;
+							}
+							function editList(table,idList)	{	//
+								var list="";
+
+									// Checking how many is checked, how many is not
+								var pointer=0;
+								var pos = idList.indexOf(",");
+								while (pos!=-1)	{
+									if (cbValue(table+"|"+idList.substr(pointer,pos-pointer))) {
+										list+=idList.substr(pointer,pos-pointer)+",";
+									}
+									pointer=pos+1;
+									pos = idList.indexOf(",",pointer);
+								}
+								if (cbValue(table+"|"+idList.substr(pointer))) {
+									list+=idList.substr(pointer)+",";
+								}
+
+								return list ? list : idList;
+							}
+
+							if (top.fsMod) top.fsMod.recentIds["web"] = '.intval($this->id).';
+						'
+
+			);
+			// #
+			// ### Mansoor Ahmad - I need this for my Drag & Drop - start
+			// #
+			$this->doc->JScode = '<script type="text/javascript" src="../../../../typo3/contrib/scriptaculous/scriptaculous.js?load=effects,dragdrop"></script>
+								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/draganddrop.js"></script>
+								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/jQuery.js"></script>
+								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/jQueryUi.js"></script>
+								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/jQuery.stickynotes.js"></script>
+								   <script type="text/javascript">
+									//<![CDATA[
+										jQuery.noConflict();
+									//]]>
+									</script>
+								   ';
+			// #
+			// ### Mansoor Ahmad - I need this for my Drag & Drop - end
+			// #
+				// Set up JS for dynamic tab menu and side bar
+			$this->doc->JScode .= $this->doc->getDynTabMenuJScode();
+			$this->doc->JScode .= $this->modTSconfig['properties']['sideBarEnable'] ? $this->sideBarObj->getJScode() : '';
+
+				// Setting up support for context menus (when clicking the items icon)
+			$CMparts = $this->doc->getContextMenuCode();
+			$this->doc->bodyTagAdditions = $CMparts[1];
+			$this->doc->JScode.= $CMparts[0];
+			$this->doc->postCode.= $CMparts[2];
+
+
+			if (t3lib_extMgm::isLoaded('t3skin')) {
+				// Fix padding for t3skin in disabled tabs
+				$this->doc->inDocStyles .= '
+table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, table.typo3-dyntabmenu td.disabled:hover { padding-left: 10px; }
+				';
+			}
+
+			$this->handleIncomingCommands();
+
+				// Start creating HTML output
+			$this->content .= $this->doc->startPage($LANG->getLL('title'));
+			$render_editPageScreen = true;
+				// Show message if the page is of a special doktype:
+			if ($this->rootElementTable == 'pages') {
+				// #
+				// ### Mansoor Ahmad - Add div board for notes functions
+				// #
+				$this->content .= $this->getNotes(array('pageId'=>intval(t3lib_div::_GP('id'))));
+				$this->content .= '<div id="notes" style="display:none;position:absolute;z-index:99999999;width:100%;height:100%;"></div>';
+					// Initialize the special doktype class:
+				$specialDoktypesObj =& t3lib_div::getUserObj ('&tx_templavoila_mod1_specialdoktypes','');
+				$specialDoktypesObj->init($this);
+
+				$methodName = 'renderDoktype_'.$this->rootElementRecord['doktype'];
+				if (method_exists($specialDoktypesObj, $methodName)) {
+					$result = $specialDoktypesObj->$methodName($this->rootElementRecord);
+					if ($result !== FALSE) {
+						$this->content .= $result;
+						if ($GLOBALS['BE_USER']->isPSet($this->calcPerms, 'pages', 'edit')) {
+							// Edit icon only if page can be modified by user
+							$this->content .= '<br/><br/><strong>'.$this->link_edit('<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/edit2.gif','').' title="'.htmlspecialchars($LANG->sL('LLL:EXT:lang/locallang_mod_web_list.xml:editPage')).'" alt="" style="border: none; vertical-align: middle" /> '.$LANG->sL('LLL:EXT:lang/locallang_mod_web_list.xml:editPage'),'pages',$this->id).'</strong>';
+						}
+						$render_editPageScreen = false; // Do not output editing code for special doctypes!
+					}
+				}
+
+				// Display editPageScreen even if page is of type shortcut (4) - Lucas Jen√ü
+				if($this->rootElementRecord['doktype'] == 4) {
+					$this->content .= '<br/><br/><br/>';
+					$render_editPageScreen = true;
+				}
+			}
+
+			if ($render_editPageScreen) {
+					// Render "edit current page" (important to do before calling ->sideBarObj->render() - otherwise the translation tab is not rendered!
+				$editCurrentPageHTML = $this->render_editPageScreen();
+
+					// Hook for adding new sidebars or removing existing
+				$sideBarHooks = $this->hooks_prepareObjectsArray('sideBarClass');
+				foreach ($sideBarHooks as $hookObj)	{
+					if (method_exists($hookObj, 'main_alterSideBar')) {
+						$hookObj->main_alterSideBar($this->sideBarObj, $this);
+					}
+				}
+
+					// Show the "edit current page" screen along with the sidebar
+				$shortCut = ($BE_USER->mayMakeShortcut() ? '<br /><br />'.$this->doc->makeShortcutIcon('id,altRoot',implode(',',array_keys($this->MOD_MENU)),$this->MCONF['name']) : '');
+				if ($this->sideBarObj->position == 'left' && $this->modTSconfig['properties']['sideBarEnable']) {
+					$this->content .= '
+						<table cellspacing="0" cellpadding="0" style="width:100%; height:550px; padding:0; margin:0;">
+							<tr>
+								<td style="vertical-align:top;">'.$this->sideBarObj->render().'</td>
+								<td style="vertical-align:top; padding-bottom:20px;" width="99%">'.$editCurrentPageHTML.$shortCut;'</td>
+							</tr>
+						</table>
+					';
+				} else {
+					$sideBarTop = $this->modTSconfig['properties']['sideBarEnable']  && ($this->sideBarObj->position == 'toprows' || $this->sideBarObj->position == 'toptabs') ? $this->sideBarObj->render() : '';
+					$this->content .= $sideBarTop.$editCurrentPageHTML.$shortCut;
+				}
+			}
+
+		} else {	// No access or no current page uid:
+
+			$this->doc = t3lib_div::makeInstance('mediumDoc');
+			$this->doc->docType= 'xhtml_trans';
+			$this->doc->backPath = $BACK_PATH;
+			$this->content.=$this->doc->startPage($LANG->getLL('title'));
+
+			$cmd = t3lib_div::_GP ('cmd');
+			switch ($cmd) {
+
+					// Create a new page
+				case 'crPage' :
+						// Output the page creation form
+					$this->content .= $this->wizardsObj->renderWizard_createNewPage (t3lib_div::_GP ('positionPid'));
+					break;
+
+					// If no access or if ID == zero
+				default:
+					$this->content.=$this->doc->header($LANG->getLL('title'));
+					$this->content.=$LANG->getLL('default_introduction');
+			}
+		}
+		$this->content.=$this->doc->endPage();
+	}
+
+
+
+
+
+
 	/**
 	 * Renders the display framework of a single sheet. Calls itself recursively
 	 *
@@ -64,7 +304,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 	 */
 	function render_framework_singleSheet($contentTreeArr, $languageKey, $sheet, $parentPointer=array(), $parentDsMeta=array()) {
 		global $LANG, $TYPO3_CONF_VARS;
-		
+
 		$elementBelongsToCurrentPage = $contentTreeArr['el']['table'] == 'pages' || $contentTreeArr['el']['pid'] == $this->rootElementUid_pidForContent;
 
 		$canEditPage = $GLOBALS['BE_USER']->isPSet($this->calcPerms, 'pages', 'edit');
@@ -99,7 +339,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				$viewPageOnClick = 'onclick= "'.htmlspecialchars(t3lib_BEfunc::viewOnClick($contentTreeArr['el']['uid'], $this->doc->backPath, t3lib_BEfunc::BEgetRootLine($contentTreeArr['el']['uid']),'','',$addGetVars)).'"';
 				$viewPageIcon = '<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/zoom.gif','width="12" height="12"').' title="'.$LANG->sL('LLL:EXT:lang/locallang_core.xml:labels.showPage',1).'" hspace="3" alt="" style="text-align: center; vertical-align: middle;" />';
 				$titleBarLeftButtons .= '<a href="#" '.$viewPageOnClick.'>'.$viewPageIcon.'</a>';
-				
+
 				#
 				### Mansoor Ahmad - JavaScript for making CEs Draggable
 				#
@@ -107,7 +347,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				if((strstr($_SERVER["HTTP_USER_AGENT"], "Firefox")) && (strstr($_SERVER["HTTP_USER_AGENT"], "Gecko")) || (strstr($_SERVER["HTTP_USER_AGENT"], "Chrome"))) {
 					$dragAndDropEnable = 1;
 				}
-				
+
 			break;
 
 			case 'tt_content' :
@@ -131,7 +371,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					else {
 						$linkEdit = '';
 					}
-					
+
 					// #
 					// ### Mansoor Ahmad - I deactivated it for safty way, but now is it active
 					// #
@@ -141,8 +381,8 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				else {
 					$titleBarRightButtons = $this->clipboardObj->element_getSelectButtons($parentPointer, 'copy');
 				}
-				
-				
+
+
 				#
 				### Mansoor Ahmad - JavaScript for making CEs Draggable
 				#
@@ -154,8 +394,8 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					});</script>';
 					$dragAndDropEnable = 1;
 				}
-				
-				
+
+
 				// #
 				// ### Mansoor Ahmad - I disable the Buttons of CE's in Flexform Elements
 				// #
@@ -170,21 +410,23 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					$backLinkToParentCe		=	'<a href="index.php?id='.$contentTreeArr['el']['pid'].'"><u>Springe zum Mutterelement in Seite:</u> <br/><span style="float:left;">' . $this->getPagename($contentTreeArr['el']['pid']) . '</span></a>';
 					$makeDraggable			=	'';
 				}
-				foreach($flexData['data']['sDEF']['lDEF'] as $fieldName => $fieldArray) {
-					$uidsLevel1 = explode(',',$fieldArray['vDEF']);
-					if(empty($elementBelongsToCurrentPage) && (in_array($contentTreeArr['el']['uid'], $uidsLevel1) == FALSE)) {
-						$titleBarLeftButtons	=	'';
-						//# Bugfix for 4.4.6
-						//$titleBarRightButtons	=	'';
-					}
-					else {
-						break;
+				if(is_array($flexData)) {
+					foreach($flexData['data']['sDEF']['lDEF'] as $fieldName => $fieldArray) {
+						$uidsLevel1 = explode(',',$fieldArray['vDEF']);
+						if(empty($elementBelongsToCurrentPage) && (in_array($contentTreeArr['el']['uid'], $uidsLevel1) == FALSE)) {
+							$titleBarLeftButtons	=	'';
+							//# Bugfix for 4.4.6
+							//$titleBarRightButtons	=	'';
+						}
+						else {
+							break;
+						}
 					}
 				}
-				
+
 				$tableWrap1 = '<table id="'.$contentTreeArr['el']['CType'].'-'.$contentTreeArr['el']['uid'].'" style="width: 100%;" class="go_backend_layout_draggable '.$classBe.'" cellspacing="0" cellpadding="0" onmouseup="dropareaPosClass = \'go_backend_layout_droppables_position\'; ceIdForPos = \'\';" onmousedown="ceIdForPos = \''.$contentTreeArr['el']['CType'].'-'.$contentTreeArr['el']['uid'].'\';dropareaPosClass = \'go_backend_layout_droppables_position_act\';"><tr><td>'.$makeDraggable;
 				$tableWrap2 = '</td></tr></table>';
-				
+
 			break;
 		}
 
@@ -254,9 +496,9 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			'.$tableWrap2.'
 		';
 		return $finalContent;
-	
+
 	}
-	
+
 	/**
 	 * Returns an HTMLized preview of a certain content element. If you'd like to register a new content type, you can easily use the hook
 	 * provided at the beginning of the function.
@@ -268,7 +510,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 	 */
 	function render_previewContent($row) {
 		global $TYPO3_CONF_VARS, $LANG, $LANGPLUGIN, $TCA;
-		
+
 		$hookObjectsArr = $this->hooks_prepareObjectsArray ('renderPreviewContentClass');
 		$alreadyRendered = FALSE;
 		$output = '';
@@ -282,7 +524,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				$output .= $hookObj->renderPreviewContent_preProcess ($row, 'tt_content', $alreadyRendered, $this);
 			}
 		}
-		
+
 		if (!$alreadyRendered) {
 				// Preview content for non-flexible content elements:
 			switch($row['CType'])	{
@@ -298,7 +540,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					$output='<table><tr><td valign="top">'.$text.'</td><td valign="top">'.$thumbnail.'</td></tr></table>'.'<br />';
 					break;
 				case 'list':		//	Insert Plugin
-					
+
 						switch($row['list_type']) {
 							case '9':
 								$html	=	$this->getTTNews($row);
@@ -312,7 +554,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 											'<br /><br /><strong style="margin:2px;padding:2px;border:1px solid #bfbfbf; background-color:#FFFFFF;">'.$LANG->sL(t3lib_BEfunc::getLabelFromItemlist('tt_content','list_type',$row['list_type'])).'</strong><br /><br />';
 											// ELIO@GOSIGN 13/08/09 START
 											// LFE-Link: we have to set the langfile like this for this plugin
-											$typoscript = $this->loadTS($row['pid']); 
+											$typoscript = $this->loadTS($row['pid']);
 											$langFile = $typoscript->setup['plugin.']['tx_thmailformplus_pi1.']['langFile'];
 											// ELIO@GOSIGN 13/08/09 END
 								break;
@@ -325,7 +567,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 							$output = $this->link_edit('<strong>'.$LANG->sL(t3lib_BEfunc::getItemLabel('tt_content','list_type')).'</strong> ' . htmlspecialchars($LANG->sL(t3lib_BEfunc::getLabelFromItemlist('tt_content','list_type',$row['list_type']))).' &ndash; '.htmlspecialchars($extraInfo ? $extraInfo : $row['list_type']), 'tt_content', $row['uid']).'<br />';
 						}
 					break;
-					
+
 				case 'div':				//	Divider
 				case 'templavoila_pi1': //	Flexible Content Element: Rendered directly in getContentTree*()
 
@@ -335,14 +577,14 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 							$html	=	$this->renderFlex($row);
 							break;
 					}
-					
+
 					$output = $html;
 					break;
 				default:
 					// Render the Rest CType Elements
 					$output	=	$this->renderPi($row);
 			}
-			
+
 		}
 		// ELIO@GOSIGN 13/08/09 START
 		// Add LFEditor link
@@ -353,13 +595,13 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		// ELIO@GOSIGN 13/08/09 END
 		return $output;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Renders a little table containing previews of translated version of the current content element.
 	 *
-	 * @author: Mansoor Ahmad - I do some modifications 
+	 * @author: Mansoor Ahmad - I do some modifications
 	 * @param	array		$contentTreeArr: Part of the contentTreeArr for the element
 	 * @param	string		$parentPointer: Flexform pointer pointing to the current element (from the parent's perspective)
 	 * @param	array		$parentDsMeta: Meta array from parent DS (passing information about parent containers localization mode)
@@ -477,7 +719,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 						$flagLink_begin = '';
 						$flagLink_end = '';
 					}
-					
+
 					if ($l10nInfo && $BE_USER->checkLanguageAccess($sys_language_uid))	{
 						$tRows[]='
 							<tr class="bgColor4">
@@ -499,17 +741,17 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		}
 		return $output;
 	}
-	
-	
-	
+
+
+
 	// #
-	// ### Mansoor Ahmad - render Pi in the Backendlistview 
+	// ### Mansoor Ahmad - render Pi in the Backendlistview
 	// #
 	function renderPi($row) {
 		global $TCA;
-		
+
 		$rowCType = $row['CType'];
-		
+
 		foreach($TCA['tt_content']['types'] as $k => $v) {
 			$cElements .= $k.',';
 		}
@@ -526,14 +768,14 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					$output	=	$this->getCSS($rowCType, $imageFilePath);
 
 					$output .= $this->getParsedFields($TCA['tt_content']['types'][$rowCType]['showitem'], $row);
-					$output	.=	$this->getPiName($this->getLLValue($TCA['tt_content']['columns']['CType']['config']['items'][$k]['0']), $rowCType, $row['uid']); 
+					$output	.=	$this->getPiName($this->getLLValue($TCA['tt_content']['columns']['CType']['config']['items'][$k]['0']), $rowCType, $row['uid']);
 				}
-			}		
+			}
 		}
-		
+
 		return $output;
 	}
-	
+
 	// #
 	// ### Mansoor Ahmad - render TV Flexform in the Backendlistview
 	// #
@@ -565,7 +807,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 									break;
 							}
 							$wrap = explode ('|',trim($wrap));
-						
+
 							$row[$v] = $langValue;
 							$output .= $wrap[0] . $this->getWrapedField($key,$v,$row,0) . $wrap[1];
 						}
@@ -578,32 +820,32 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				$output	.=	$this->getPiName($rowDS['title'], $typeCE, $row['uid']);
 			}
 		}
-		
-		return $output;	
+
+		return $output;
 	}
-	
+
 	// #
 	// ### Mansoor Ahmad - Split and arrange Fields, which gets from the $TCA
 	// #
 	function getParsedFields($Items, $row) {
 		global $TCA;
-		
+
 		$output = '';
-		
+
 		// get TSconfig
 		$TSconfig = t3lib_BEfunc::getPagesTSconfig(3,$rootLine='',$returnPartArray=0);
 		$TCEFORM	=	$TSconfig['TCEFORM.']['tt_content.'];
 		$border = 0;
 		foreach(t3lib_div::trimExplode(',', $Items) as $v) {
 			list($field,$label,$palettes,$config,$style) = t3lib_div::trimExplode(';',$v);
-			
+
 			if(!empty($field) && $field != 'CType') {
 				$output .= '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="width:100%;border:0px solid #CCCCCC;padding-left:2px;">';
 				//echo $v . '*_*' . $style . '*_*' . $border . '<br/>';
 				if($style && $border > 0) {
 					$output .= '<tr><td style="border-bottom:1px solid #CCCCCC;" colspan="8">&nbsp;</td></tr>';
 				}
-				
+
 				// # Level1
 				$output .= '<tr><td>';
 				$key = $TCA['tt_content']['columns'][$field]['config']['type'];
@@ -611,7 +853,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				$output .= $wrapedField;
 				$border = ($wrapedField)?1:0;
 				$output .= '</td></tr>';
-				
+
 				// # Level 2
 				if($palettes) {
 					$output .= '<tr>';
@@ -632,17 +874,17 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		}
 		return $output;
 	}
-	
-	
+
+
 	// #
 	// ### Mansoor Ahmad - return formated and wrapped Fieldstypes
 	// #
 	function getWrapedField($key, $v, $row, $TCEFORM, $LLName='') {
 		global $TCA;
 		//echo $v.'<br/>';
-		
+
 		$output = '';
-		$ignoreList = 'colPos,section_frame,sys_language_uid,l18n_parent,module_sys_dmail_category'; 
+		$ignoreList = 'colPos,section_frame,sys_language_uid,l18n_parent,module_sys_dmail_category';
 		if(in_array($v,explode(',',$ignoreList)) === FALSE) {
 			($TCA['tt_content']['columns'][$v]['config']['internal_type'] == 'file' && $TCA['tt_content']['columns'][$v]['config']['show_thumbs'] == '1') ? $key = 'image' : '' ;
 			//echo $v . '--' . $row[$v] . '<br /><br />';
@@ -661,7 +903,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					foreach($TCA['tt_content']['columns'][$v]['config']['items'] as $sk => $sv) {
 						($TCA['tt_content']['columns'][$v]['config']['items'][$sk]['1'] == $row[$v]) ? $selectValue = $TCA['tt_content']['columns'][$v]['config']['items'][$sk]['0']:'';
 					}
-					
+
 					$output .= ($row[$v]) ?  '<br /><strong>'.$this->getLLValue($TCA['tt_content']['columns'][$v]['label'], $v, $TCEFORM).'</strong><br />'.$this->getLLValue($selectValue, $v, $TCEFORM).'<br />': '' ;
 					break;
 				case 'group':
@@ -673,22 +915,22 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		}
 		return $output;
 	}
-	
-	
-	
-	
+
+
+
+
 	// #
 	// ### Mansoor Ahmad - parse the LL Array
 	// #
 	function getLLValue($LLValue, $type = '', $TCEFORM = array('')) {
 		global $LANG;
-		
+
 		// parse Labels over TSconfig
 		$TSaltLabel =  $TCEFORM[$type.'.']['altLabels.'][trim(substr(strrchr($LLValue,'.')+1,2))];
 		$TSLabel = ($TSaltLabel)?$TSaltLabel:$TCEFORM[$type.'.']['label'];
 		$LLValue = (strpos($TSLabel, '.xml') || strpos($TSLabel, '.xml'))?$LLValue = $TSLabel:$LLValue;
 		$TSLabel = ($TSLabel == $LLValue)?$TSLabel = '':$TSLabel;
-		
+
 		if(strpos($LLValue, '.xml')) {
 			$LLFile		=	strstr(substr($LLValue, 0, strrpos($LLValue, '.xml:')), 'EXT:') . '.xml';
 			$LLFName	=	str_replace('.xml:', '', strstr($LLValue, '.xml:'));
@@ -710,9 +952,9 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			return $LLValue;
 		}
 	}
-	
 
-	
+
+
 	// #
 	// ### Mansoor Ahmad - Wrap the $name
 	// #
@@ -730,14 +972,14 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 								'</strong><br /><br />';
 				break;
 		}
-		
+
 		return $content;
 	}
-	
-	
-	
+
+
+
 	// #
-	// ### Mansoor Ahmad - Formate the Pagelink, if is a one, otherweise get you the rowcontent 
+	// ### Mansoor Ahmad - Formate the Pagelink, if is a one, otherweise get you the rowcontent
 	// #
 	function getPagename($id) {
 		if (is_numeric($id)){
@@ -755,9 +997,9 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		}
 		return $output;
 	}
-	
-	
-	
+
+
+
 	// #
 	// ### Mansoor Ahmad - convert Image to an Icon for the Backendpreview
 	// #
@@ -776,9 +1018,9 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		}
 		return  $output;
 	}
-	
-	
-	
+
+
+
 	// #
 	// ### Mansoor Ahmad - support DAM image_field
 	// #
@@ -791,30 +1033,30 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			$isImage = $TCA['tt_content']['columns'][$key]['config']['allowed_types'];
 			while($row	=	$GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				if($isImage) {
-						$images .= $this->getThumbNail($row['file_name'],'../'.$row['file_path']);	
+						$images .= $this->getThumbNail($row['file_name'],'../'.$row['file_path']);
 				}
 				else {
 						$images .= $this->getPagename($row['file_path'] . $row['file_name']) . '<hr />,';
 				}
 			}
-			return $images; 
+			return $images;
 		}
 		else {
 			return $imagerow[$key];
 		}
-		
+
 	}
-	
-	
-	
-	
+
+
+
+
 	// #
 	// ### Mansoor Ahmad - get CSS for the BG Image
 	// #
 	function getCSS($piName, $imageFilePath) {
 		$imgRelPath	=	'../../../' . $imageFilePath;
 		$imgAbsPath	=	PATH_site . 'fileadmin/' . $imageFilePath;
-		
+
 		if($piName && file_exists($imgAbsPath)) {
 			$imgInfo = getimagesize($imgAbsPath);
 			$output	=	'<style type="text/css">
@@ -833,10 +1075,10 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			return $output;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	// #
 	// ### Mansoor Ahmad - get the Droppable Code
 	// #
@@ -852,18 +1094,18 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 							margin:5px 0px 5px 0px;
 							border: 3px solid #ccc;
 						}
-							
+
 						div#go_backend_layout_droppable_'.$ID.'.hover{
 							border: 3px dashed #aaa;
 							background-color:transparent;
 						}
 					</style>
-					
+
 					<script type="text/javascript">
 						startDroppable( \''.$ID.'\' );
 					</script>
 					';
-					
+
 		return $dropabble;
 	}
 
@@ -923,7 +1165,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 	// ADD LF-Editor link
 	function addLFEditLink ( $ext_type, $ll_fileName = '' ) {
 		global $TYPO3_CONF_VARS, $LANG, $LANGPLUGIN, $TCA;
-		
+
 		// get ext name and pi nr
 //		$LLValue = t3lib_BEfunc::getLabelFromItemlist('tt_content','list_type',$ext_type );
 		$extKey = substr($ext_type, 0, strrpos($ext_type, '_pi'));
@@ -933,12 +1175,12 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		$extPath = t3lib_extMgm::extPath($extKey);
 		$extPath = ($extPath[strlen($extPath)-1] == '/') ? substr( $extPath, 0, strlen($extPath)-1 ) : $extPath; // Trim last slash
 		$extPath = substr_replace( $extPath, '/', strrpos( $extPath, '/' ), 0 ); // double slash e.g.: typo3conf/ext//extension_name
-		
+
 		if ( empty( $ll_fileName ) ) // if not defined, we use the standard locallang.xml in the pi folder
 			$ll_fileName = $piNr.'/locallang.xml';
 		else {
 			// create file name relative to ext dir
-			
+
 			$ll_fileName = t3lib_div::getFileAbsFileName( $ll_fileName ); // interpret "EXT:"
 			$ep = t3lib_extMgm::extPath($extKey);
 			if ( strpos( $ll_fileName, $ep ) !== FALSE ) // if in extension directory
@@ -948,7 +1190,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		}
 		if (!file_exists(t3lib_extMgm::extPath($extKey).$ll_fileName)) // No link if no locallang
 			return '';
-		
+
 		// LFE link variables
 		$addGetVars = '&id=0&SET[langList]=de&SET[function]=langfile.edit'.($extPath?'&SET[extList]='.$extPath:'').($ll_fileName?'&SET[langFileList]='.$ll_fileName:'');
 		$onClick = 'onclick="top.goToModule(\'user_txlfeditorM1\', 0, \''.$addGetVars.'\');this.blur();return false;"';
@@ -959,10 +1201,10 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		return $output;
 	}
 	// ELIO@GOSIGN 13/08/2009 END
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * @author	Mansoor Ahmad
 	 * @company Gosign media. GmbH
@@ -973,20 +1215,20 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 	 */
 	function getTTNews($row){
 		global $GBL, $TCA;
-		
+
 		$flexArrayTTNews = t3lib_div::xml2array($row['pi_flexform']);
 		$displayTyp = $flexArrayTTNews['data']['sDEF']['lDEF']['what_to_display']['vDEF'];
-		
+
 		if($displayTyp == 'LIST'){
 			//# Make Instance
 			require_once(PATH_typo3 . 'class.db_list_extra.inc');
 			$dbList = t3lib_div::makeInstance('localRecordList');
 			//require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_recordlist.php');
 			//$dbList = t3lib_div::makeInstance('tx_ttnews_recordlist');
-			
+
 			//# Set Attribute
 			$dbList->tableList = 'tt_news';
-			$dbList->showLimit = ($flexArrayTTNews['data']['s_template']['lDEF']['listLimit']['vDEF'])?$flexArrayTTNews['data']['s_template']['lDEF']['listLimit']['vDEF']:10;				
+			$dbList->showLimit = ($flexArrayTTNews['data']['s_template']['lDEF']['listLimit']['vDEF'])?$flexArrayTTNews['data']['s_template']['lDEF']['listLimit']['vDEF']:10;
 			$dbList->id = $flexArrayTTNews['data']['s_misc']['lDEF']['pages']['vDEF'];
 			$dbList->table = 'tt_news';
 			$dbList->setFields = array('uid','title');
@@ -998,55 +1240,55 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			$dbList->thumbs = 1;
 			$dbList->calcPerms = 16;
 			$dbList->fieldArray = array('_LOCALIZATION_');
-			
+
 			//# Fill the $GBL
 			//print_r($flexArrayTTNews);
 			$archiv = ($flexArrayTTNews['data']['sDEF']['lDEF']['archive']['vDEF'] == 1) ? 'archivdate > datetime' : '';
-			
+
 			$uidList = '0';
 			$uidCatList = $flexArrayTTNews['data']['sDEF']['lDEF']['categorySelection']['vDEF'];
 			//$titleCatList = '';
-			
-			
+
+
 			$resTTNews = $GLOBALS['TYPO3_DB']->exec_SELECTquery('d.uid, c.title', 'tt_news AS d INNER JOIN tt_news_cat_mm AS cm ON d.uid = cm.uid_local INNER JOIN tt_news_cat AS c ON c.uid = cm.uid_foreign LEFT JOIN tt_news_related_mm AS m ON d.uid = m.uid_local', 'd.pid IN(" '. $dbList->id .'",126) AND cm.uid_foreign IN("'.$uidCatList.'") ',  '',  '');
 			while($rowTTNews	=	$GLOBALS['TYPO3_DB']->sql_fetch_assoc($resTTNews)) {
 				$uidList .=  ','.$rowTTNews['uid'];
 				//$titleCatList .=  $rowTTNews['title'] . ', ';
 			}
-			
-			
+
+
 			$GBL['tt_news.']['uidList'] = $uidList;
-			
+
 			//print_r($GBL);
-			
+
 			//# Run Instancefunction
 			//$dbList->makeQueryArray('tt_news',14,'uid=103','*');
 			//$dbList->doEdit = $this->mayUserEditArticles;
-			
+
 			$dbList->start($dbList->id,$dbList->table,0,$dbList->search_field,'-1',$dbList->showLimit);
-			
+
 			$dbList->sortField = ($flexArrayTTNews['data']['sDEF']['lDEF']['listOrderBy']['vDEF'])?$flexArrayTTNews['data']['sDEF']['lDEF']['listOrderBy']['vDEF']:'sorting';
 			$dbList->sortRev = ($flexArrayTTNews['data']['sDEF']['lDEF']['ascDesc']['vDEF'] == 'desc')?TRUE:FALSE;
-			
+
 			$dbList->generateList();
 
 			//$buttons = $dbList->getButtons();
-			
+
 			$dbList->backPath = '../../../../typo3/';
-			
+
 			/*
 			$paramsNew = '&edit['.$dbList->table.']['.$dbList->id.']=new';
 			$onClickNew = htmlspecialchars(t3lib_BEfunc::editOnClick($paramsNew,$dbList->backPath,$this->returnUrl));
 			$buttons['new_record'] = '<a href="#" class="newWizard" onclick="'.$onClickNew.'">' .
 									'<img' . t3lib_iconWorks::skinImg($dbList->backPath, 'gfx/new_el.gif') . ' title="" alt="" />' .
 									'</a>';
-									
+
 			$paramsEdit = '&edit['.$dbList->table.']['.$dbList->id.']=new';
 			$onClickEdit = htmlspecialchars(t3lib_BEfunc::editOnClick($paramsEdit,$dbList->backPath,$this->returnUrl));
 			$buttons['edit_record'] = '<a href="#" class="editWizard" onclick="'.$onClickEdit.'">' .
 									'<img' . t3lib_iconWorks::skinImg($dbList->backPath, 'gfx/edit_el.gif') . ' title="" alt="" />' .
 									'</a>';
-			*/						
+			*/
 			//print_r($buttons['new_record']);
 			$output = '	<div class="list_options_header">Plugin Einstellungen</div>
 						<div class="list_options">
@@ -1060,51 +1302,51 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 							<br />
 							<span>Nachrichtenordner:</span> '.$this->getPagename($flexArrayTTNews['data']['s_misc']['lDEF']['pages']['vDEF']).'
 						</div>';
-						
+
 			$output .= $dbList->getTable('tt_news',$dbList->id,'title,bodytext,datetime,archivedate,_LOCALIZATION_') . $this->getPiName('News');
 			$output = str_replace('typo3/gfx/','../../../typo3/gfx/',$output);
 			$output = str_replace('href="tce_db.php','href="../../../../typo3/tce_db.php',$output);
 			$output = str_replace('db_list.php?id=','../../../../typo3/db_list.php?id=',str_replace('showLimit=2','showLimit=500',$output));
-			
-			
-			
-			
+
+
+
+
 			//print_r();
-			
+
 			//print_r(t3lib_xml::output($row['pi_flexform']));
 			//print_r(t3lib_TCEmain::checkValue('tt_content', 'pi_flexform', 'archive'));
 			//$ff_tools = t3lib_div::makeInstance('t3lib_flexformtools');
 			//print_r($ff_tools->getAvailableLanguages());
 			//print_r($ff_tools->traverseFlexFormXMLData_recurse($row['pi_flexform'],$row['pi_flexform']));
 			//$this->pi_getFFvalueFromSheetArray();
-			//$output = 
+			//$output =
 		}
 		else {
 			$output = $this->getPiName('News');
 		}
-		
-		
+
+
 			//$output = str_replace('<tr class="c-headLine"><td nowrap="nowrap" class="col-icon"></td>','<tr class="c-headLine"><td nowrap="nowrap" class="col-icon">'.$buttons['new_record'].'</td>',$output);
 			//$output = str_replace('../typo3conf','../../../../typo3conf', str_replace('sysext/t3skin/','../../../../typo3/sysext/t3skin/', str_replace('db_list.php', '../../../../typo3/db_list.php', $output)));
 
-			
+
 			/*
 			require_once(t3lib_extMgm::extPath('tt_news').'lib/class.tx_ttnews_recordlist.php');
 			$listObject = t3lib_div::makeInstance('tx_ttnews_recordlist');
 			$listObject->id = $flexArrayTTNews['data']['s_misc']['lDEF']['pages']['vDEF'];
 			$listObject->pidList = $dbList->id;
 			*/
-			
+
 			//$output =  $dbList->HTMLcode;//$listObject->makeOrdinaryList($dbList->table,$dbList->id,'uid,title,datetime,archivedate,tstamp',1,'');
-			
-		
+
+
 		return $output;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * Renders the sub elements of the given elementContentTree array. This function basically
 	 * renders the "new" and "paste" buttons for the parent element and then traverses through
@@ -1113,7 +1355,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 	 *
 	 * Calls render_framework_allSheets() and therefore generates a recursion.
 	 *
-	 * @author	Lucas Jenﬂ <lucas@gosign.de>
+	 * @author	Lucas Jen√ü <lucas@gosign.de>
 	 *
 	 * @param	array		$elementContentTreeArr: Content tree starting with the element which possibly has sub elements
 	 * @param	string		$languageKey: Language key for current display
@@ -1163,14 +1405,14 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		// ### Mansoor Ahmad - Caspar add this, because the default templavoila engine is to slow for big pages :-) - end
 		// #
 
-		
-		// Check for breakField. If it is set, insert go_stopcslide_pi1 into the selected column and reload. - Lucas Jenﬂ
+
+		// Check for breakField. If it is set, insert go_stopcslide_pi1 into the selected column and reload. - Lucas Jen√ü
 		$id = intval($_GET['id']);
-		
+
 		if(isset($_GET['breakField'])) {
-			mysql_query('INSERT INTO tt_content (`pid`, `tstamp`, `crdate`, `sorting`, `CType`) VALUES ('.$id.', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 200, "go_stopcslide_pi1")');  
+			mysql_query('INSERT INTO tt_content (`pid`, `tstamp`, `crdate`, `sorting`, `CType`) VALUES ('.$id.', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 200, "go_stopcslide_pi1")');
 			$flex = mysql_fetch_assoc(mysql_query('SELECT tx_templavoila_flex FROM pages WHERE uid = '.$id));
-			
+
 			if(!$flex['tx_templavoila_flex']) {
 				$flex = array();
 			}
@@ -1186,10 +1428,10 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			// # Since T3 4.4 I commetet this out!
 			//if(is_array($flex['data']['sDEF']['lDEF'][$_GET['breakField']])) {
 				$flex['data']['sDEF']['lDEF'][$_GET['breakField']]['vDEF'] = $insertId;
-				
+
 				$ff_tools = t3lib_div::makeInstance('t3lib_flexformtools');
 				$flex = $ff_tools->flexArray2xml($flex, TRUE);
-				
+
 				mysql_query('UPDATE pages SET tx_templavoila_flex = "'.mysql_real_escape_string($flex).'" WHERE uid = '.$id);
 				header('Location: '.$_SERVER['PHP_SELF'].'?id='.$id);
 			//}
@@ -1197,25 +1439,25 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			// ### Mansoor Ahmad - Caspar fix the Lucas Code for T3 4.3 - end
 			// #
 		}
-		
-		// Step up the rootline in order to find source of inheritance. - Lucas Jenﬂ
+
+		// Step up the rootline in order to find source of inheritance. - Lucas Jen√ü
 		$sourcePages = array();
 		$row = mysql_fetch_assoc(mysql_query('SELECT pid, tx_templavoila_ds FROM pages WHERE uid = '.$id));
 		$pid = $row['pid'];
 		$dataStructure = intval($row['tx_templavoila_ds']);
-		
+
 		while($pid > 0) {
 			$row = mysql_fetch_assoc(mysql_query('SELECT uid, pid, tx_templavoila_flex, tx_templavoila_ds FROM pages WHERE uid = '.$pid));
-			
+
 			if(!$dataStructure && $row['tx_templavoila_ds']) {
 				$dataStructure = ($row['tx_templavoila_ds']);
 			}
-			
+
 			if(!$row['tx_templavoila_flex']) {
 				$pid = $row['pid'];
 				continue;
 			}
-			
+
 			$flex = t3lib_div::xml2array($row['tx_templavoila_flex']);
 			foreach($flex['data']['sDEF']['lDEF'] as $key => $value) {
 				if($value['vDEF'] && !isset($sourcePages[$key])) {
@@ -1224,8 +1466,8 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			}
 			$pid = $row['pid'];
 		}
-		
-		// Fetch current page datastructure, in order to determine for which columns contentslide is enabled. - Lucas Jenﬂ
+
+		// Fetch current page datastructure, in order to determine for which columns contentslide is enabled. - Lucas Jen√ü
 		$row = mysql_fetch_assoc(mysql_query('SELECT dataprot FROM tx_templavoila_datastructure WHERE uid = '.$dataStructure));
 		$dataStructure = t3lib_div::xml2array($row['dataprot']);
 		$contentSlideEnabled = array();
@@ -1234,7 +1476,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				$contentSlideEnabled[$field] = true;
 			}
 		}
-		
+
 			// Traverse container fields:
 		foreach($elementContentTreeArr['sub'][$sheet][$lKey] as $fieldID => $fieldValuesContent)	{
 			if ($elementContentTreeArr['previewData']['sheets'][$sheet][$fieldID]['isMapped'] && is_array($fieldValuesContent[$vKey]))	{
@@ -1255,7 +1497,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 
 				$canCreateNew = $GLOBALS['BE_USER']->isPSet($this->calcPerms, 'pages', 'new');
 
-				
+
 				// #
 				// ### Mansoor Ahmad - Generate infokey - start
 				// #
@@ -1266,7 +1508,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 				// #
 				// ### Mansoor Ahmad - Generate infokey - end
 				// #
-				
+
 				if (!$this->translatorMode && $canCreateNew)	{
 						// "New" and "Paste" icon:
 					$newIcon = ($elementBelongsToCurrentPage)?'<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/new_el.gif','').' style="text-align: center; vertical-align: middle;" vspace="5" hspace="1" border="0" title="'.$LANG->getLL ('createnewrecord').'" alt="" />':'';
@@ -1314,8 +1556,8 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					}
 				}
 				else if(isset($contentSlideEnabled[$fieldID])) {
-					
-					// Show notice of inheritance if there are no content elements. - Lucas Jenﬂ
+
+					// Show notice of inheritance if there are no content elements. - Lucas Jen√ü
 					$cellContent .= '
 <table cellspacing="0" cellpadding="0" style="width: 100%; margin-bottom: 5px;">
 		<tr style="background-color: rgb(248, 249, 251);">
@@ -1332,7 +1574,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 		</tr>
 </table>';
 				}
-					
+
 					// Add cell content to registers:
 				if ($flagRenderBeLayout==TRUE){
 					// #
@@ -1374,21 +1616,21 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 						//require (PATH_typo3 . 'mod/web/list/conf.php');
 						//require (PATH_typo3 . 'init.php');
 						//require (PATH_typo3 . 'template.php');
-					
+
 						// require_once(PATH_t3lib.'class.t3lib_page.php');
 						// require_once(PATH_t3lib.'class.t3lib_pagetree.php');
 						// require_once(PATH_t3lib.'class.t3lib_recordlist.php');
 						// require_once(PATH_t3lib.'class.t3lib_clipboard.php');
 						// require_once(PATH_t3lib.'class.t3lib_parsehtml.php');
 						// require_once(PATH_typo3 . 'class.db_list.inc');
-						
-						
-						
+
+
+
 						//$dbList->tested();
-						
-						//$dblist->allowedNewTables 
+
+						//$dblist->allowedNewTables
 						//$dbList->pidSelect = 14;
-						
+
 						//$dbList->counter++;
 
 						//print_r($dbList->HTMLcode);
@@ -1397,9 +1639,9 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 
 						$this->stop = 1;
 					}
-					
-					
-					
+
+
+
 					// #
 					// ### Mansoor Ahmad - This adding is a part of Caspars Optimiezing - start
 					// #
@@ -1407,7 +1649,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 					// #
 					// ### Mansoor Ahmad - This adding is a part of Caspars Optimiezing - end
 					// #
-					
+
 				} else {
 					// Add cell content to registers:
 					$headerCells[]='<td valign="top" width="'.round(100/count($elementContentTreeArr['sub'][$sheet][$lKey])).'%" style="background-color: '.$this->doc->bgColor4.'; padding-top:0; padding-bottom:0;">'.$LANG->sL($fieldContent['meta']['title'],1).'</td>';
@@ -1443,231 +1685,138 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 
 		return $output;
 	}
-	
-	
 
-
-	
-	
 	/**
-	 * Main function of the module.
+	 * Get Data from AJAX Request and insert into Databasetable gbl_notes
 	 *
-	 * @author	Lucas Jenﬂ <lucas@gosign.de> & Mansoor Ahmad <mansoor@gosign.de>
-	 *
-	 * @return	void
-	 * @access public
+	 * @author		Mansoor Ahmad
 	 */
-	function main()    {
-		global $BE_USER,$LANG,$BACK_PATH;
+	function ajaxNotes(){
+		$notesData['pageId'] = intval(t3lib_div::_GP('id'));
+		if(t3lib_div::_GP('type') == 'ajax'){
+			$notesData['noteId'] = intval(t3lib_div::_GP('noteId'));
 
-		if (!is_callable(array('t3lib_div', 'int_from_ver')) || t3lib_div::int_from_ver(TYPO3_version) < 4000000) {
-			$this->content = 'Fatal error:This version of TemplaVoila does not work with TYPO3 versions lower than 4.0.0! Please upgrade your TYPO3 core installation.';
-			return;
-		}
-
-			// Access check! The page will show only if there is a valid page and if this page may be viewed by the user
-		if (is_array($this->altRoot))	{
-			$access = true;
-		} else {
-			$pageInfoArr = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
-			$access = (intval($pageInfoArr['uid'] > 0));
-		}
-
-		if ($access)    {
-
-			$this->calcPerms = $GLOBALS['BE_USER']->calcPerms($pageInfoArr);
-
-				// Define the root element record:
-			$this->rootElementTable = is_array($this->altRoot) ? $this->altRoot['table'] : 'pages';
-			$this->rootElementUid = is_array($this->altRoot) ? $this->altRoot['uid'] : $this->id;
-			$this->rootElementRecord = t3lib_BEfunc::getRecordWSOL($this->rootElementTable, $this->rootElementUid, '*');
-			$this->rootElementUid_pidForContent = $this->rootElementRecord['t3ver_swapmode']==0 && $this->rootElementRecord['_ORIG_uid'] ? $this->rootElementRecord['_ORIG_uid'] : $this->rootElementRecord['uid'];
-
-				// Check if we have to update the pagetree:
-			if (t3lib_div::_GP('updatePageTree')) {
-				t3lib_BEfunc::getSetUpdateSignal('updatePageTree');
-			}
-
-				// Draw the header.
-			$this->doc = t3lib_div::makeInstance('noDoc');
-			$this->doc->docType= 'xhtml_trans';
-			$this->doc->backPath = $BACK_PATH;
-			$this->doc->divClass = '';
-			$this->doc->form='<form action="'.htmlspecialchars('index.php?'.$this->link_getParameters()).'" method="post" autocomplete="off">';
-
-				// Adding classic jumpToUrl function, needed for the function menu. Also, the id in the parent frameset is configured.
-			$this->doc->JScode = $this->doc->wrapScriptTags('
-				function jumpToUrl(URL)	{ //
-					document.location = URL;
-					return false;
-				}
-				if (top.fsMod) top.fsMod.recentIds["web"] = '.intval($this->id).';
-			' . $this->doc->redirectUrls() . '
-							function jumpToUrl(URL)	{	//
-								window.location.href = URL;
-								return false;
-							}
-							function jumpExt(URL,anchor)	{	//
-								var anc = anchor?anchor:"";
-								window.location.href = URL+(T3_THIS_LOCATION?"&returnUrl="+T3_THIS_LOCATION:"")+anc;
-								return false;
-							}
-							function jumpSelf(URL)	{	//
-								window.location.href = URL+(T3_RETURN_URL?"&returnUrl="+T3_RETURN_URL:"");
-								return false;
-							}
-
-							function setHighlight(id)	{	//
-								top.fsMod.recentIds["web"]=id;
-								top.fsMod.navFrameHighlightedID["web"]="pages"+id+"_"+top.fsMod.currentBank;	// For highlighting
-
-								if (top.content && top.content.nav_frame && top.content.nav_frame.refresh_nav)	{
-									top.content.nav_frame.refresh_nav();
-								}
-							}
-
-							function editRecords(table,idList,addParams,CBflag)	{	//
-								window.location.href="'.$BACK_PATH.'alt_doc.php?returnUrl='.rawurlencode(t3lib_div::getIndpEnv('REQUEST_URI')).
-									'&edit["+table+"]["+idList+"]=edit"+addParams;
-							}
-							function editList(table,idList)	{	//
-								var list="";
-
-									// Checking how many is checked, how many is not
-								var pointer=0;
-								var pos = idList.indexOf(",");
-								while (pos!=-1)	{
-									if (cbValue(table+"|"+idList.substr(pointer,pos-pointer))) {
-										list+=idList.substr(pointer,pos-pointer)+",";
-									}
-									pointer=pos+1;
-									pos = idList.indexOf(",",pointer);
-								}
-								if (cbValue(table+"|"+idList.substr(pointer))) {
-									list+=idList.substr(pointer)+",";
-								}
-
-								return list ? list : idList;
-							}
-
-							if (top.fsMod) top.fsMod.recentIds["web"] = '.intval($this->id).';
-						'
-
-			);
-			// #
-			// ### Mansoor Ahmad - I need this for my Drag & Drop - start
-			// #
-			$this->doc->JScode .= '<script type="text/javascript" src="../../../../typo3/contrib/scriptaculous/scriptaculous.js?load=effects,dragdrop"></script>
-								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/draganddrop.js"></script>';
-			// #
-			// ### Mansoor Ahmad - I need this for my Drag & Drop - end
-			// #
-				// Set up JS for dynamic tab menu and side bar
-			$this->doc->JScode .= $this->doc->getDynTabMenuJScode();
-			$this->doc->JScode .= $this->modTSconfig['properties']['sideBarEnable'] ? $this->sideBarObj->getJScode() : '';
-
-				// Setting up support for context menus (when clicking the items icon)
-			$CMparts = $this->doc->getContextMenuCode();
-			$this->doc->bodyTagAdditions = $CMparts[1];
-			$this->doc->JScode.= $CMparts[0];
-			$this->doc->postCode.= $CMparts[2];
-
-
-			if (t3lib_extMgm::isLoaded('t3skin')) {
-				// Fix padding for t3skin in disabled tabs
-				$this->doc->inDocStyles .= '
-table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, table.typo3-dyntabmenu td.disabled:hover { padding-left: 10px; }
-				';
-			}
-
-			$this->handleIncomingCommands();
-
-				// Start creating HTML output
-			$this->content .= $this->doc->startPage($LANG->getLL('title'));
-			$render_editPageScreen = true;
-				// Show message if the page is of a special doktype:
-			if ($this->rootElementTable == 'pages') {
-
-					// Initialize the special doktype class:
-				$specialDoktypesObj =& t3lib_div::getUserObj ('&tx_templavoila_mod1_specialdoktypes','');
-				$specialDoktypesObj->init($this);
-
-				$methodName = 'renderDoktype_'.$this->rootElementRecord['doktype'];
-				if (method_exists($specialDoktypesObj, $methodName)) {
-					$result = $specialDoktypesObj->$methodName($this->rootElementRecord);
-					if ($result !== FALSE) {
-						$this->content .= $result;
-						if ($GLOBALS['BE_USER']->isPSet($this->calcPerms, 'pages', 'edit')) {
-							// Edit icon only if page can be modified by user
-							$this->content .= '<br/><br/><strong>'.$this->link_edit('<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/edit2.gif','').' title="'.htmlspecialchars($LANG->sL('LLL:EXT:lang/locallang_mod_web_list.xml:editPage')).'" alt="" style="border: none; vertical-align: middle" /> '.$LANG->sL('LLL:EXT:lang/locallang_mod_web_list.xml:editPage'),'pages',$this->id).'</strong>';
-						}
-						$render_editPageScreen = false; // Do not output editing code for special doctypes!
-					}
-				}
-				
-				// Display editPageScreen even if page is of type shortcut (4) - Lucas Jenﬂ
-				if($this->rootElementRecord['doktype'] == 4) {
-					$this->content .= '<br/><br/><br/>';
-					$render_editPageScreen = true;
-				}
-			}
-
-			if ($render_editPageScreen) {
-					// Render "edit current page" (important to do before calling ->sideBarObj->render() - otherwise the translation tab is not rendered!
-				$editCurrentPageHTML = $this->render_editPageScreen();
-
-					// Hook for adding new sidebars or removing existing
-				$sideBarHooks = $this->hooks_prepareObjectsArray('sideBarClass');
-				foreach ($sideBarHooks as $hookObj)	{
-					if (method_exists($hookObj, 'main_alterSideBar')) {
-						$hookObj->main_alterSideBar($this->sideBarObj, $this);
-					}
-				}
-
-					// Show the "edit current page" screen along with the sidebar
-				$shortCut = ($BE_USER->mayMakeShortcut() ? '<br /><br />'.$this->doc->makeShortcutIcon('id,altRoot',implode(',',array_keys($this->MOD_MENU)),$this->MCONF['name']) : '');
-				if ($this->sideBarObj->position == 'left' && $this->modTSconfig['properties']['sideBarEnable']) {
-					$this->content .= '
-						<table cellspacing="0" cellpadding="0" style="width:100%; height:550px; padding:0; margin:0;">
-							<tr>
-								<td style="vertical-align:top;">'.$this->sideBarObj->render().'</td>
-								<td style="vertical-align:top; padding-bottom:20px;" width="99%">'.$editCurrentPageHTML.$shortCut;'</td>
-							</tr>
-						</table>
-					';
-				} else {
-					$sideBarTop = $this->modTSconfig['properties']['sideBarEnable']  && ($this->sideBarObj->position == 'toprows' || $this->sideBarObj->position == 'toptabs') ? $this->sideBarObj->render() : '';
-					$this->content .= $sideBarTop.$editCurrentPageHTML.$shortCut;
-				}
-			}
-
-		} else {	// No access or no current page uid:
-
-			$this->doc = t3lib_div::makeInstance('mediumDoc');
-			$this->doc->docType= 'xhtml_trans';
-			$this->doc->backPath = $BACK_PATH;
-			$this->content.=$this->doc->startPage($LANG->getLL('title'));
-
-			$cmd = t3lib_div::_GP ('cmd');
-			switch ($cmd) {
-
-					// Create a new page
-				case 'crPage' :
-						// Output the page creation form
-					$this->content .= $this->wizardsObj->renderWizard_createNewPage (t3lib_div::_GP ('positionPid'));
+			$notesStatus = htmlspecialchars(t3lib_div::_GP('notesStatus'));
+			switch($notesStatus){
+				case 'createNotes':
+					$notesData['width'] = intval(t3lib_div::_GP('noteWidth'));
+					$notesData['height'] = intval(t3lib_div::_GP('noteHeight'));
+					$this->createNotes($notesData);
 					break;
-
-					// If no access or if ID == zero
-				default:
-					$this->content.=$this->doc->header($LANG->getLL('title'));
-					$this->content.=$LANG->getLL('default_introduction');
+				case 'editNotes':
+					$notesData['text'] = htmlspecialchars(t3lib_div::_GP('noteText'));
+					$this->updateNotes($notesData);
+					break;
+				case 'moveNotes':
+					$notesData['posX'] = intval(t3lib_div::_GP('notePosX'));
+					$notesData['posY'] = intval(t3lib_div::_GP('notePosY'));
+					$this->updateNotes($notesData);
+					break;
+				case 'resizeNotes':
+					$notesData['width'] = intval(t3lib_div::_GP('noteWidth'));
+					$notesData['height'] = intval(t3lib_div::_GP('noteHeight'));
+					$this->updateNotes($notesData);
+					break;
+				case 'deleteNotes':
+					$this->deleteNotes($notesData);
+					break;
 			}
+			echo json_encode($notesData);
+			die();
 		}
-		$this->content.=$this->doc->endPage();
 	}
-	
 
-} // EOF: class go_tx_templavoila_module1 extends tx_templavoila_module1 
+
+	/**
+	 * Load Notes
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @param		array	data of note
+	 *
+	 * @return		String	JavaScript and Data for Noteengine
+	 */
+	function getNotes($notesData){
+		$content = '<script type="text/javascript">
+					jQuery(document).ready( function() {
+						var created = function(note) {
+							jQuery.post(location+\'&type=ajax&notesStatus=createNotes\', {noteId:note.id, noteWidth:note.width, noteHeight:note.height}, function(data){},"json");
+						}
+
+						var edited = function(note) {
+							jQuery.post(location+\'&type=ajax&notesStatus=editNotes\', {noteId:note.id, noteText:note.text}, function(data){},"json");
+						}
+
+						var deleted = function(note) {
+							jQuery.post(location+\'&type=ajax&notesStatus=deleteNotes\', {noteId:note.id}, function(data){},"json");
+						}
+
+						var resized = function(note) {
+							jQuery.post(location+\'&type=ajax&notesStatus=resizeNotes\', {noteId:note.id, noteWidth:note.width, noteHeight:note.height}, function(data){},"json");
+						}
+
+						var moved = function(note) {
+							jQuery.post(location+\'&type=ajax&notesStatus=moveNotes\', {noteId:note.id, notePosX:note.pos_x, notePosY:note.pos_y}, function(data){},"json");
+						}
+
+						var initNotesOptions =	{notes:[';
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'gbl_notes', 'pageId="'.$notesData['pageId'].'" AND deleted="0"');
+		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)){
+			$content .= 	'{
+								"id":'.$row['noteId'].',
+								"text":"'.$row['text'].'",
+								"pos_x": '.$row['posX'].',
+								"pos_y": '.$row['posY'].',
+								"width": '.$row['width'].',
+								"height": '.$row['height'].',
+							},';
+		}
+		$content .= '	],createCallback: created, editCallback:edited, deleteCallback: deleted, resizeCallback: resized, moveCallback: moved}
+						jQuery(\'#notes\').stickyNotes(initNotesOptions);
+					});
+					</script>';
+		return $content;
+	}
+
+	/**
+	 * Create the note
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @param		array	data of note
+	 */
+	function createNotes($notesData){
+		$GLOBALS['TYPO3_DB']->exec_INSERTquery('gbl_notes', $notesData);
+	}
+
+
+	/**
+	 * Delete the note
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @param		array	data of note
+	 */
+	function deleteNotes($notesData){
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('gbl_notes', 'noteId="'.$notesData['noteId'].'" AND pageId="'.$notesData['pageId'].'"', array("deleted" => "1"));
+	}
+
+
+	/**
+	 * Update the note
+	 *
+	 * @author		Mansoor Ahmad
+	 *
+	 * @param		array	data of note
+	 */
+	function updateNotes($notesData){
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('gbl_notes', 'noteId="'.$notesData['noteId'].'" AND pageId="'.$notesData['pageId'].'" AND deleted="0"', $notesData);
+	}
+
+
+
+
+} // EOF: class go_tx_templavoila_module1 extends tx_templavoila_module1
 
 
 
