@@ -92,17 +92,11 @@ page.meta {
 	author = Gosign media., Hamburg, Germany
 }
 
-
-# Mansoor Ahmad - Change the headerparsesing
-lib.stdheader.stdWrap.br = 1
-
-
-# Javascript Check for CompatMode
-#page.headerData.38 = TEXT
-#page.headerData.38.value = <script> alert(document.compatMode); </script>
-
-
 # Adds a prefix to typo3's temporary file names (md5 hashes)
 # so they can be easily identified.
 # e.g. 4d3f00c.jpg -> flower_4d3f00c.jpg
 config.meaningfulTempFilePrefix = 100
+
+# Javascript Check for CompatMode
+# page.headerData.38 = TEXT
+# page.headerData.38.value = <script> alert(document.compatMode); </script>
