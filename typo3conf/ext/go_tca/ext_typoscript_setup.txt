@@ -1,1 +1,2 @@
-# Multiline Headerlib.stdheader.stdWrap.br = 1
+# Multiline Header
+lib.stdheader.stdWrap.br = 1

@@ -40,7 +40,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'suggests' => array(
 		),
 	),
-	'_md5_values_when_last_written' => '',
+	'_md5_values_when_last_written' => 'a:7:{s:9:"README.md";s:4:"f235";s:12:"ext_icon.gif";s:4:"461a";s:17:"ext_localconf.php";s:4:"3b5c";s:14:"ext_tables.php";s:4:"6c39";s:14:"ext_tables.sql";s:4:"66aa";s:24:"ext_typoscript_setup.txt";s:4:"4464";s:16:"locallang_db.xml";s:4:"6156";}',
 	'suggests' => array(
 	),
 );
