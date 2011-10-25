@@ -24,13 +24,13 @@ var GosignLocal;
 /*
  * GosignLocal tries to be aware of wether it is loaded before or after the
  * goLib_global.js file to prevent errors. However, it will send a console
- * message in case the wrong order is configured (in that case, go_pibase should)
- * be loaded before go_tsconfig).
+ * message in case the wrong order is configured (in that case, go_pibase should
+ * be loaded before go_pibase_local).
  */
 if(typeof Gosign === "undefined") {
 	Gosign = GosignLocal;
 	if(typeof console !== "undefined") {
-		console.log("goLib_local.js: go_pibase seems be loaded after go_tsconfig.");
+		console.log("goLib_local.js: go_pibase seems be loaded after go_pibase_local.");
 		console.log("This should not be the case.");
 	}
 } else {

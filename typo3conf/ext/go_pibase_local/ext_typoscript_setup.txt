@@ -1,0 +1,2 @@
+# Include goLib_global.js
+page.includeJS.tx_gopibase_GoLib_Local = typo3conf/ext/go_pibase_local/javascript/goLib_local.js

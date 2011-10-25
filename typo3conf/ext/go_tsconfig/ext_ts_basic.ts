@@ -80,7 +80,6 @@ page.includeCSS.footer_menu = fileadmin/templates/css/footer_menu.css
 # includeJS libs fileadmin/templates/javascript/..
 page.includeJS.jQuery = fileadmin/templates/javascript/jquery.js
 page.includeJS.jQueryCookie = fileadmin/templates/javascript/jquery.cookie.js
-page.includeJS.GoLib_Local = fileadmin/templates/javascript/goLib_local.js
 
 # Add page favicon
 page.headerData.10 = TEXT
