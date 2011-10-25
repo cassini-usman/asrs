@@ -139,6 +139,9 @@ page.meta {
 # e.g. 4d3f00c.jpg -> flower_4d3f00c.jpg
 config.meaningfulTempFilePrefix = 100
 
+# add div wrap for CType text
+tt_content.text.20.wrap = <div class="csc-textpic-text"> | </div>
+
 # Javascript Check for CompatMode
 # page.headerData.38 = TEXT
 # page.headerData.38.value = <script> alert(document.compatMode); </script>
