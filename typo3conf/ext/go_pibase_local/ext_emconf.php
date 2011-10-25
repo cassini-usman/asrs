@@ -29,7 +29,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
 	'author_company' => 'Gosign media. GmbH',
-	'version' => '1.0.0',
+	'version' => '1.0.1',
 	'constraints' => array(
 		'depends' => array(
 			'go_pibase' => '1.2.2-0.0.0',
@@ -39,7 +39,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'suggests' => array(
 		),
 	),
-	'_md5_values_when_last_written' => 'a:5:{s:16:"ext_autoload.php";s:4:"85f9";s:12:"ext_icon.gif";s:4:"461a";s:17:"ext_localconf.php";s:4:"c8ba";s:14:"ext_tables.php";s:4:"a0fd";s:30:"lib/class.tx_gopibaselocal.php";s:4:"3589";}',
+	'_md5_values_when_last_written' => 'a:7:{s:16:"ext_autoload.php";s:4:"85f9";s:12:"ext_icon.gif";s:4:"461a";s:17:"ext_localconf.php";s:4:"c8ba";s:14:"ext_tables.php";s:4:"a0fd";s:24:"ext_typoscript_setup.txt";s:4:"525a";s:25:"javascript/goLib_local.js";s:4:"d2a8";s:30:"lib/class.tx_gopibaselocal.php";s:4:"3589";}',
 );
 
 ?>
