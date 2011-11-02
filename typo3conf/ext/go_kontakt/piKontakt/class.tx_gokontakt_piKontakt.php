@@ -43,6 +43,20 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	var $pi_checkCHash = true;
 
 	/**
+	 * Array to hold form errors
+	 *
+	 * @var array
+	 */
+	protected $errors = array();
+
+	/**
+	 * Are there any errors in this form
+	 *
+	 * @var boolean
+	 */
+	protected $hasErrors = FALSE;
+
+	/**
 	 * The main method of the PlugIn
 	 *
 	 * @param	string		$content: The PlugIn content
@@ -78,7 +92,8 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$this->conf = &$conf;
 		$this->data = &$this->cObj->data;
 
-		$this->newsletterPID = current($GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow( 'uid', 'pages', "module='newsletter'" ));
+		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow( 'uid', 'pages', "module='newsletter'" );
+		$this->newsletterPID = is_array($row) ? current($row) : 0;
 		$this->newsletterRegEnabled = $this->newsletterPID && $this->data['tx_gokontakt_newsletterUsergroup'];
 
 		$this->submitted = (int) $this->piVars['submitted'];
@@ -119,14 +134,16 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 
 		// Next Step initialization
 		// the next step is coded in an array (e.g. nextStep[2]=Weiter)
-		$nextStep = intval(end(array_keys($this->piVars['nextStep'])));
+		if (is_array($this->piVars['nextStep'])) {
+			$nextStep = (int) end(array_keys($this->piVars['nextStep']));
+		}
 		// Error checks (if clicking in forward direction)
 		if ( ($nextStep > $step) || ($nextStep == $this->lastStep) ) {
 			$this->doErrorChecks($step);
 		}
 
 		// If no error, update the current step to the next one
-		if ( !$this->errors['any'] && $nextStep ) {
+		if ( !$this->hasErrors && $nextStep ) {
 			$step = min($nextStep, $this->lastStep ); // default last step is 2
 		}
 		$this->subpartName = $step ? 'STEP_' . $step : $this->subpartName;
@@ -565,19 +582,17 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 			}
 		}
 		// insert the 'any'-indicator, that tells us if the field has any error at all
-		$anyError = 0;
 		foreach ( $this->errors as $field => $errorTypes ) {
 			$this->errors[$field]['any'] = 0;
 			foreach ( $errorTypes as $errorType => $value ) {
 				if ( $value ) {
 					$this->errors[$field]['any'] = 1;
-					$anyError = 1;
+					$this->hasErrors = TRUE;
 						// skip the rest, we already found an error
 					break;
 				}
 			}
 		}
-		$this->errors['any'] = $anyError;
 	}
 
 	/**
