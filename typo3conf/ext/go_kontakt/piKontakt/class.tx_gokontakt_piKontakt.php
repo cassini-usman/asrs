@@ -526,6 +526,9 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		$errorClasses = '';
 			// create error classes for each error
 		foreach( $fieldNames as $field ) {
+			if (!is_array($this->errors[$field])) {
+				continue;
+			}
 			$errorClasses .= empty($this->errors[$field]['any']) ? '' : ' formError-name-' . $field;
 			foreach( $this->errors[$field] as $errorType => $errorValue ) {
 				if ( $errorValue && ($errorType != 'any') ) {
