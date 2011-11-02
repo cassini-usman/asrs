@@ -900,7 +900,8 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 					$output .= ($row[$v]) ?  '<br /><strong>'.$this->getLLValue($TCA['tt_content']['columns'][$v]['label'], $v, $TCEFORM).'</strong><br />'.$this->getThumbNail($row[$v]).'<br />': '' ;
 					break;
 				case 'select':
-					foreach($TCA['tt_content']['columns'][$v]['config']['items'] as $sk => $sv) {
+					$selectItems = is_array($TCA['tt_content']['columns'][$v]['config']['items']) ? $TCA['tt_content']['columns'][$v]['config']['items'] : array();
+					foreach($selectItems as $sk => $sv) {
 						($TCA['tt_content']['columns'][$v]['config']['items'][$sk]['1'] == $row[$v]) ? $selectValue = $TCA['tt_content']['columns'][$v]['config']['items'][$sk]['0']:'';
 					}
 

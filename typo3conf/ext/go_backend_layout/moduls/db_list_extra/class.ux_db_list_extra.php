@@ -65,12 +65,12 @@ class ux_localRecordList extends localRecordList{
 		// die hier benutzten Felder müssen zuvor (durch den hook db_list_hook.php) geladen werden.
 		// die Felder müssen an zwei Stellen konfiguriert werden
 		if (t3lib_extMgm::isLoaded('dam_ttcontent') && empty($row['image']) ) { // replace normal thumb by DAM-thumb
-			foreach ( $this->DAMimageFields as $damField) {
+			/* foreach ( $this->DAMimageFields as $damField) {
 				if ( $row[$damField] ) {
 					$thumbsCol = $damField;
 					break;
 				}
-			}
+			} */
 			$thumbsCol = 'tx_damttcontent_files';
 			$this->thumbsCol = $thumbsCol; // for use in thumbCode()
 		}
