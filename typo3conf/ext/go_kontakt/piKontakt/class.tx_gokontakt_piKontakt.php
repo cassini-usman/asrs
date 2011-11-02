@@ -553,30 +553,31 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 			// check for each preceeding AND for the required step
 		for ( $currentStep = 1; $currentStep <= $step; $currentStep++ ) {
 				// parse the TS error handlig configuration for each field
-			foreach( $this->conf['errorCheck.']['step_' . $currentStep . '.'] as $field => $errorTypes ) {
+			foreach ( $this->conf['errorCheck.']['step_' . $currentStep . '.'] as $field => $errorTypes ) {
 				if ( is_array($errorTypes) ) { // it is just a configuration array and not a field definition
 					continue;
 				}
-				foreach( explode(',', $errorTypes) as $errorType ) {
-					$errorType = trim($errorType);
+				$errorTypeArray = t3lib_div::trimExplode(',', $errorTypes);
+				foreach ( $errorTypeArray as $errorType ) {
 					// error handlers will be called here
 					$this->errors[$field][$errorType] = $this->callErrorHandler($field, $errorType, $this->conf['errorCheck.']['step_' . $step . '.'][$field . '.'][$errorType . '.']);
 				}
 			}
 		}
 		// insert the 'any'-indicator, that tells us if the field has any error at all
-		$this->errors['any'] = 0;
-		foreach( $this->errors as $field => $errorTypes ) {
+		$anyError = 0;
+		foreach ( $this->errors as $field => $errorTypes ) {
 			$this->errors[$field]['any'] = 0;
-			foreach( $errorTypes as $errorType => $value ) {
+			foreach ( $errorTypes as $errorType => $value ) {
 				if ( $value ) {
 					$this->errors[$field]['any'] = 1;
-					$this->errors['any'] = 1;
+					$anyError = 1;
 						// skip the rest, we already found an error
 					break;
 				}
 			}
 		}
+		$this->errors['any'] = $anyError;
 	}
 
 	/**
