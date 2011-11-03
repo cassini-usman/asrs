@@ -1,5 +1,5 @@
 # Add go_kontakt CSS file
-page.includeCSS.go_kontakt = typo3conf/ext/go_kontakt/res/kontakt.css
+page.includeCSS.go_kontakt = EXT:go_kontakt/res/kontakt.css
 
 # NO HEADER - we'll do that in the plugin
 tt_content.go_kontakt_piKontakt.10 >
