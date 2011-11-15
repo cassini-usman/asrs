@@ -744,36 +744,84 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 
 
 
-	// #
-	// ### Mansoor Ahmad - render Pi in the Backendlistview
-	// #
+
+	/**
+	 * render Pi in the Backendlistview
+	 * @author Mansoor Ahmad - render Pi in the Backendlistview
+	 * @author Caspar Stuebs, Arthur Heckmann - refactored, fixed bug with new structure
+	 *
+	 * @param array the row of the current Element
+	 *
+	 * @return string the HTML output
+	 */
 	function renderPi($row) {
-		global $TCA;
+		$output = '';
 
-		$rowCType = $row['CType'];
-
-		foreach($TCA['tt_content']['types'] as $k => $v) {
-			$cElements .= $k.',';
+		$showItem = array();
+		if (array_key_exists($row['CType'], $GLOBALS['TCA']['tt_content']['types'])) {
+			$showItem = $GLOBALS['TCA']['tt_content']['types'][$row['CType']]['showitem'];
+		} else {
+			$showItem = $GLOBALS['TCA']['tt_content']['types'][1]['showitem'];
 		}
 
-		if(in_array($rowCType,explode(',',$cElements)) && is_array($TCA['tt_content']['columns']['CType']['config']['items'])) {
-			foreach($TCA['tt_content']['columns']['CType']['config']['items'] as $k => $v) {
-				if($TCA['tt_content']['columns']['CType']['config']['items'][$k]['1'] == $rowCType) {
-					//print_r($row);
-
-					$filePath = $TCA['tt_content']['columns']['CType']['config']['items'][$k]['2'];
-					$filePath = substr($filePath, 0, strrpos($filePath, '/'));
-					$extType = (is_file(PATH_site . 'fileadmin/' . $filePath . '/pageview.png'))?'png':'gif';
-					$imageFilePath = $filePath . '/pageview.' . $extType;
-					$output	=	$this->getCSS($rowCType, $imageFilePath);
-
-					$output .= $this->getParsedFields($TCA['tt_content']['types'][$rowCType]['showitem'], $row);
-					$output	.=	$this->getPiName($this->getLLValue($TCA['tt_content']['columns']['CType']['config']['items'][$k]['0']), $rowCType, $row['uid']);
+		if (is_array($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'])) {
+			foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $cTypeConfig) {
+				if ($cTypeConfig[1] == $row['CType']) {
+					$output = $this->getCSS($row['CType'], $this->getPageviewImage($cTypeConfig[2]));
+					$output .= $this->getParsedFields($showItem, $row);
+					$output .= $this->getPiName($this->getLLValue($cTypeConfig[0]), $cTypeConfig[1], $row['uid']);
+					break;
 				}
 			}
 		}
 
 		return $output;
+	}
+
+	/**
+	 * returns the relative pageview image path
+	 * @author Caspar Stuebs, Arthur Heckmann
+	 *
+	 * @param string the path of the default plugin icon
+	 *
+	 * @return string relative path
+	 */
+	protected function getPageviewImage($filePath) {
+		$pageviewFile = '';
+
+		if ($filePath) {
+			$pathInfo = pathinfo($filePath);
+			$absolutePath = $this->getAbsolutePath($pathInfo['dirname']);
+			if (is_file($absolutePath . '/pageview.png')) {
+				$pageviewFile = $pathInfo['dirname'] . '/pageview.png';
+			} elseif (is_file($absolutePath . '/pageview.gif')) {
+				$pageviewFile = $pathInfo['dirname'] . '/pageview.gif';
+			}
+		}
+
+		return $pageviewFile;
+	}
+
+	/**
+	 * returns the absolute path of an imagepath
+	 * @author Caspar Stuebs, Arthur Heckmann
+	 *
+	 * @param string the relative path
+	 *
+	 * @return string the absolute path
+	 */
+	protected function getAbsolutePath($filePath) {
+		$absolutePath = '';
+
+		if ($filePath) {
+			if (strpos($filePath, '../') === 0) {
+				$absolutePath = PATH_site . substr($filePath, 3);
+			} else {
+				$absolutePath = PATH_typo3 . $filePath;
+			}
+		}
+
+		return $absolutePath;
 	}
 
 	// #
@@ -1054,9 +1102,19 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 	// #
 	// ### Mansoor Ahmad - get CSS for the BG Image
 	// #
+	/**
+	 * get CSS for the BG Image (pageview) for a plugin
+	 * @author Mansoor Ahmad
+	 * @author Caspar Stuebs, Arthur Heckmann
+	 *
+	 * @param string the plugin name
+	 * @param string the relative path to the image
+	 *
+	 * @return string CSS output
+	 */
 	function getCSS($piName, $imageFilePath) {
-		$imgRelPath	=	'../../../' . $imageFilePath;
-		$imgAbsPath	=	PATH_site . 'fileadmin/' . $imageFilePath;
+		$imgRelPath = '../../../' . $imageFilePath;
+		$imgAbsPath = $this->getAbsolutePath($imageFilePath);
 
 		if($piName && file_exists($imgAbsPath)) {
 			$imgInfo = getimagesize($imgAbsPath);
@@ -1065,14 +1123,14 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 							td.templavoila_pi1 td.'.$piName.':hover,
 							td.'.$piName.':hover,
 							td.'.$piName.' {
-								height:'.$imgInfo[1].'px;
-								background:url('.$imgRelPath.');
+								background:url(\''.$imgRelPath.'\');
 								background-repeat:no-repeat;
-								background-position:right top;
+								background-position:right center;
 								vertical-align:bottom;
 								padding-left:2px;
 							}
 						</style>';
+
 			return $output;
 		}
 	}
