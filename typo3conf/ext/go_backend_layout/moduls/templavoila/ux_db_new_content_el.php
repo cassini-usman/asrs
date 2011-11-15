@@ -567,38 +567,74 @@ class ux_tx_templavoila_dbnewcontentel extends tx_templavoila_dbnewcontentel {
 		return $wizardItems;
 	}
 
-	// #
-	// ### Mansoor Ahmad - Add automatly Plugins in the Wizardlist
-	// #
+	/**
+	 * Add plugins to the wizard list
+	 * @author Mansoor Ahmad - Add automaticly Plugins in the Wizardlist
+	 * @author Caspar Stuebs - refactored
+	 *
+	 * @param string list with cTypes to be ignored
+	 * @param array default wizard items, this array will be extended and given back
+	 * @param string passed through default parameters
+	 *
+	 * @return array the new wizard item array
+	 */
 	function parseWizard($ignoreList, $wizardItems, $defVals) {
-		global $TCA;
+		$ignoreArray = explode(',', $ignoreList);
+		$cTypesArray = array_keys($GLOBALS['TCA']['tt_content']['types']);
+		$cTypesArray = array_diff($cTypesArray, array_keys($wizardItems), $ignoreArray);
 
-		foreach($TCA['tt_content']['types'] as $k => $v){
-			if(!in_array($k,$wizardItems) && !in_array($k,explode(',',$ignoreList))){
-				if($k){
-					foreach($TCA['tt_content']['columns']['CType']['config']['items'] as $k2 => $v2){
-						if($TCA['tt_content']['columns']['CType']['config']['items'][$k2]['1'] == $k){
-							list($piTitle, $piDesc)	=	$this->getLLValue($TCA['tt_content']['columns']['CType']['config']['items'][$k2]['0'], $k);
-							$filePath = $TCA['tt_content']['columns']['CType']['config']['items'][$k2]['2'];
-						}
-					}
-					$filePath = substr($filePath, 0, strrpos($filePath, '/'));
-					$extType = (is_file(PATH_site . 'fileadmin/'. $filePath . '/wizard.png'))?'png':'gif';
-
-					$add = array(
-						"$k" => array(
-							'icon'			=>	$filePath . '/wizard.' . $extType,
-							'title'			=>	$piTitle,
-							'description'	=>	$piDesc,
-							'params'		=>	'&defVals[tt_content][CType]='.$k.$defVals
-						)
-					);
-					$wizardItems = $wizardItems + $add;
-				}
+		$cTypeConfigItems = array();
+		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $cTypeConfig) {
+			$cTypeConfigItems[$cTypeConfig[1]] = $cTypeConfig;
+		}
+		foreach ($cTypesArray as $cType) {
+			if (is_array($cTypeConfigItems[$cType])) {
+				$wizardItems[$cType] = $this->createWizardItem($cTypeConfigItems[$cType], $defVals);
 			}
 		}
 
 		return $wizardItems;
+	}
+
+	/**
+	 * creates a new wizard item from configuration array
+	 * @author Caspar Stuebs
+	 * @author Arthur Heckmann
+	 *
+	 * @param array the cType configuration
+	 * @param string passed through default parameters
+	 *
+	 * @return array the new wizard item
+	 */
+	protected function createWizardItem($cTypeConfigItemArray, $defVals) {
+		list($piTitle, $piDesc) = $this->getLLValue($cTypeConfigItemArray[0], $cTypeConfigItemArray[1]);
+
+		$iconFile = '';
+		$filePath = $cTypeConfigItemArray[2];
+		if ($filePath) {
+			$pathInfo = pathinfo($filePath);
+			if (strpos($pathInfo['dirname'], '../') === 0) {
+				$absolutePath = PATH_site . substr($pathInfo['dirname'], 3);
+			} else {
+				$absolutePath = PATH_typo3 . $pathInfo['dirname'];
+			}
+			if (is_file($absolutePath . '/wizard.png')) {
+				$iconFile = $pathInfo['dirname'] . '/wizard.png';
+			} elseif (is_file($absolutePath . '/wizard.gif')) {
+				$iconFile = $pathInfo['dirname'] . '/wizard.gif';
+			} else {
+				$iconFile = $filePath;
+			}
+		}
+
+		$newWizardItem = array(
+			'icon'			=>	$iconFile,
+			'title'			=>	$piTitle,
+			'description'	=>	$piDesc,
+			'params'		=>	'&defVals[tt_content][CType]=' . $cTypeConfigItemArray[1] . $defVals
+		);
+
+		return $newWizardItem;
 	}
 
 	// #

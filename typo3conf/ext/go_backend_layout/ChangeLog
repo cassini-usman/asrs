@@ -1,3 +1,8 @@
+15-11-11 Caspar Stuebs <caspar@gosign.de>, Arthur Heckmann <arthur@gosign.de>
+	* Fixes wizard.png / wizard.gif fallback to default icon
+	* some Performance improvement generating the wizarditemlist
+	* Version 1.8.1
+
 26-07-11 Mansoor Ahmad <mansoor@gosign.de>
 	* Backend Notesmanaging System included
 	* Version 1.8.0
