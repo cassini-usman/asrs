@@ -117,15 +117,14 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 	 *
 	 */
 	function stepLogic() {
+		$this->lastStep = isset($this->conf['lastStep']) ? (int) $this->conf['lastStep'] : 2;
+
 			// for newsletter confirmation: no step processing
 			// newsletter auth does not use piVars to avoid line breaks in long links
 		if ( t3lib_div::_GP('nlAuth') ) {
 			$this->subpartName = $this->activateNewsletter() ? 'NEWSLETTER_OK' : 'NEWSLETTER_ERROR';
 			return 0;
 		}
-
-		$this->lastStep = isset($this->conf['lastStep']) ? $this->conf['lastStep'] : 2;
-
 			// Current Step initialization
 		$step = intval($this->piVars['step'] );
 		$step = ($step==0) ? 1 : $step; // if first visit
@@ -231,7 +230,7 @@ class tx_gokontakt_piKontakt extends tx_gopibase {
 		}
 
 			// After successful form submission
-		if( $step == $this->lastStep ) {
+		if( $step === $this->lastStep ) {
 			$this->sendEmails();
 			$this->addNewsletter();
 
