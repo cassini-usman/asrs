@@ -1,3 +1,4 @@
+if (!tinyMCE_GZ){
 var tinyMCE_GZ = {
 	settings : {
 		themes : '',
@@ -133,4 +134,5 @@ var tinyMCE_GZ = {
 		} else
 			w.execScript(co); // IE
 	}
+}
 };
