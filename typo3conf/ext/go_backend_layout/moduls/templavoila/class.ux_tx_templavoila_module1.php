@@ -163,7 +163,7 @@ class ux_tx_templavoila_module1 extends tx_templavoila_module1 {
 			// #
 			// ### Mansoor Ahmad - I need this for my Drag & Drop - start
 			// #
-			$this->doc->JScode = '<script type="text/javascript" src="../../../../typo3/contrib/scriptaculous/scriptaculous.js?load=effects,dragdrop"></script>
+			$this->doc->JScode .= '<script type="text/javascript" src="../../../../typo3/contrib/scriptaculous/scriptaculous.js?load=effects,dragdrop"></script>
 								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/draganddrop.js"></script>
 								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/jQuery.js"></script>
 								   <script type="text/javascript" src="../../../../typo3conf/ext/go_backend_layout/lib/jQueryUi.js"></script>
