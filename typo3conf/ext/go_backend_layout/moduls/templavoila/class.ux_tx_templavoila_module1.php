@@ -364,7 +364,8 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 					// #
 					// ### Mansoor Ahmad - I include it on Caspars recommend
 					// #
-					$linkUnlink = $this->link_unlink('<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/garbage.gif','').' title="'.$LANG->getLL('deleteRecord').'" border="0" alt="" />', $parentPointer, ($elementBelongsToCurrentPage ? TRUE : FALSE));
+					$linkUnlinkTitle = $LANG->getLL($elementBelongsToCurrentPage ? 'deleteRecord' : 'unlinkRecord');
+					$linkUnlink = $this->link_unlink('<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/garbage.gif','').' title="' . $linkUnlinkTitle . '" border="0" alt="" />', $parentPointer, ($elementBelongsToCurrentPage ? TRUE : FALSE));
 					if ($GLOBALS['BE_USER']->recordEditAccessInternals('tt_content', $contentTreeArr['previewData']['fullRow'])) {
 						$linkEdit = ($elementBelongsToCurrentPage ? $this->link_edit('<img'.t3lib_iconWorks::skinImg($this->doc->backPath,'gfx/edit2.gif','').' title="'.$LANG->getLL('editrecord').'" border="0" alt="" />',$contentTreeArr['el']['table'],$contentTreeArr['el']['uid']) : '');
 					}

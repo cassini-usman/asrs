@@ -137,6 +137,7 @@ td.list table.typo3-dblist tr td div.typo3-DBctrl{
 }
 td.list table.typo3-dblist tr td{
 	border-left:1px solid #CCCCCC;
+	white-space: normal; /* fix for the bug db-list, see ticket #6001 */
 }
 td.list table.typo3-dblist tr td:first-child,
 td.list table.typo3-dblist tr td.col-control-space,
