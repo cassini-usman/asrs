@@ -432,8 +432,12 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 		}
 
 			// Prepare the language icon:
-		$languageLabel = htmlspecialchars ($this->allAvailableLanguages[$contentTreeArr['el']['sys_language_uid']]['title']);
-		$languageIcon = $this->allAvailableLanguages[$languageUid]['flagIcon'] ? '<img src="'.$this->allAvailableLanguages[$languageUid]['flagIcon'].'" title="'.$languageLabel.'" alt="'.$languageLabel.'" style="text-align: center; vertical-align: middle;" />' : ($languageLabel && $languageUid ? '['.$languageLabel.']' : '');
+		$languageLabel = htmlspecialchars($this->allAvailableLanguages[$contentTreeArr['el']['sys_language_uid']]['title']);
+		if (!isset($languageUid)) {
+			$languageUid = 0;
+		}
+		$languageFlagIconPath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('t3skin') . 'images/flags/' . $this->allAvailableLanguages[$languageUid]['flagIcon'] . '.png';
+		$languageIcon = $this->allAvailableLanguages[$languageUid]['flagIcon'] ? '<img src="' . $languageFlagIconPath . '" title="'.$languageLabel.'" alt="'.$languageLabel.'" style="text-align: center; vertical-align: middle; margin-right: 4px;" />' : ($languageLabel && $languageUid ? '['.$languageLabel.']' : '');
 
 			// If there was a language icon and the language was not default or [all] and if that langauge is accessible for the user, then wrap the  flag with an edit link (to support the "Click the flag!" principle for translators)
 		if ($languageIcon && $languageUid>0 && $GLOBALS['BE_USER']->checkLanguageAccess($languageUid) && $contentTreeArr['el']['table']==='tt_content')	{
@@ -475,7 +479,7 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 						// #
 						// ### Mansoor Ahmad - Titlebar Fix
 						// #
-						//$languageIcon.
+						$languageIcon.
 						$titleBarLeftButtons.
 						$backLinkToParentCe.
 						//($elementBelongsToCurrentPage?'':'<em>').htmlspecialchars($contentTreeArr['el']['title']).($elementBelongsToCurrentPage ? '' : '</em>').
@@ -722,9 +726,10 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 					}
 
 					if ($l10nInfo && $BE_USER->checkLanguageAccess($sys_language_uid))	{
+						$flagIcon = $languageFlagIconPath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('t3skin') . 'images/flags/' . $sLInfo['flagIcon'] . '.png';
 						$tRows[]='
 							<tr class="bgColor4">
-								<td width="1%">'.$flagLink_begin.($sLInfo['flagIcon'] ? '<img src="'.$sLInfo['flagIcon'].'" alt="'.htmlspecialchars($sLInfo['title']).'" title="'.htmlspecialchars($sLInfo['title']).'" />' : $sLInfo['title']).$flagLink_end.'</td>
+								<td width="1%">'.$flagLink_begin.($sLInfo['flagIcon'] ? '<img src="'.$flagIcon.'" alt="'.htmlspecialchars($sLInfo['title']).'" title="'.htmlspecialchars($sLInfo['title']).'" />' : '[' . $sLInfo['title'] . ']').$flagLink_end.'</td>
 								<td width="99%">'.$l10nInfo.'</td>
 							</tr>';
 					}
