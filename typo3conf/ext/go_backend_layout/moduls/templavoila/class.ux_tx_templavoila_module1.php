@@ -943,7 +943,12 @@ table.typo3-dyntabmenu td.disabled, table.typo3-dyntabmenu td.disabled_over, tab
 					$output .= ($row[$v]) ?  '<br /><strong>'.$label.'</strong><br />'.((strlen($row[$v]) > 9 && is_numeric($row[$v]))?date("d.m.Y",$row[$v]):$this->getPagename($row[$v])).'<br />': '' ;
 					break;
 				case 'text':
-					$output .= ($row[$v]) ?  '<br /><strong>'.$this->getLLValue($TCA['tt_content']['columns'][$v]['label'], $v, $TCEFORM).'</strong><br />'.str_replace('src="','src="../../../../', nl2br($row[$v])).'<br />': '' ;
+					$output .= ($row[$v]) ?  '<br /><strong>'.$this->getLLValue($TCA['tt_content']['columns'][$v]['label'], $v, $TCEFORM).'</strong><br />'
+						// replace only paths to local images
+						// not those with HTTP: in front of.
+						// @author Marius Stuebs <marius@gosign.de>
+					. preg_replace('/src="(?!https?:)/i','src="../../../../', nl2br($row[$v]))
+					.'<br />': '' ;
 					break;
 				case 'image':
 					$output .= ($row[$v]) ?  '<br /><strong>'.$this->getLLValue($TCA['tt_content']['columns'][$v]['label'], $v, $TCEFORM).'</strong><br />'.$this->getThumbNail($row[$v]).'<br />': '' ;
