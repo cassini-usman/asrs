@@ -69,11 +69,22 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 			$this->addJSfile(t3lib_extMgm::siteRelPath($this->extKey).'res/swfobject.js');
 		}
 
-		$img = !empty($this->imgFile) ? $this->cObj->IMAGE(array('file' => $this->imgFile, 'file.' => array('maxW' => $this->swfWidth, 'maxH' => $this->swfHeight),
-																'stdWrap.' => array('typolink.' => array('parameter' => $this->imgLink)))) : '';
+		$img = !empty($this->imgFile) ? $this->cObj->IMAGE(array(
+											'file' => $this->imgFile,
+											'file.' => array(
+												'maxW' => $this->swfWidth,
+												'maxH' => $this->swfHeight
+											),
+											'stdWrap.' => array(
+												'typolink.' => array(
+													'parameter' => $this->imgLink,
+													'ATagParams' => 'class=logo'
+												)
+											)
+										)) : '';
 
 		$cnt =	'<div id="flashmovie">
-					<div id="noflash">'.$img.'</div>
+					<div id="flashmovie_noflash">'.$img.'</div>
 				</div>';
 
 		return $cnt;
@@ -85,7 +96,10 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 	 * @return	none
 	 */
 	function getKeyVisualValues($takeDefaultLang = false) {
-		$pageTable = ($GLOBALS['TSFE']->sys_language_uid == 0 || $takeDefaultLang) ? array('pages', 'uid') : array('pages_language_overlay', 'pid');
+		$pageTable = ($GLOBALS['TSFE']->sys_language_uid == 0 || $takeDefaultLang) ?
+			array('pages', 'uid', array('tx_gokeyvisual_imagelink')) :
+			array('pages_language_overlay', 'pid', array('tx_gokeyvisual_imagelink', 'sys_language_uid as page_language'));
+
 		$rootline = array();
 		foreach($GLOBALS['TSFE']->rootLine as $tmpPage) {
 			$rootline[] = $tmpPage['uid'];
@@ -94,9 +108,12 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 
 		if($damLoaded = t3lib_extMgm::isLoaded('dam')) {
 			while((empty($this->swfFile) && empty($this->imgFile)) && $tmpUid != 0) {
-				$myImages = $this->getDamImages($pageTable[0], '', '', 'AND '.$pageTable[0].'.'.$pageTable[1].'='.$tmpUid, 'tx_gokeyvisual_imagelink');
+				$myImages = $this->getDamImages($pageTable[0], '', '', 'AND '.$pageTable[0].'.'.$pageTable[1].'='.$tmpUid, $pageTable[2]);
 
 				foreach($myImages['rows'] as $row) {
+					if (!$takeDefaultLang && $GLOBALS['TSFE']->sys_language_uid && $row['page_language'] != $GLOBALS['TSFE']->sys_language_uid) {
+						continue;
+					}
 					if($row['ident'] == 'tx_gokeyvisual_flash') $this->swfFile = $row['file_path'].$row['file_name'];
 					if($row['ident'] == 'tx_gokeyvisual_image') $this->imgFile = $row['file_path'].$row['file_name'];
 					if(isset($row['tx_gokeyvisual_imagelink']) && empty($this->imgLink)) $this->imgLink = $row['tx_gokeyvisual_imagelink'];
@@ -137,7 +154,7 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 	 * @return	The JavaScript that is included on the website
 	 */
 	function getHeaderJavaScript() {
-		$result =  '
+		$result = '
 		<script type="text/javascript">
 		// <![CDATA[
 			$(document).ready(function() {
