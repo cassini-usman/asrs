@@ -50,11 +50,14 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 	/**
 	 * The main method of the PlugIn
 	 *
-	 * @param	string		$content: The PlugIn content
-	 * @param	array		$conf: The PlugIn configuration
-	 * @return	The content that is displayed on the website
+	 * @access	public
+	 *
+	 * @param	string	$content: The PlugIn content
+	 * @param	array	$conf: The PlugIn configuration
+	 *
+	 * @return	string	The content that is displayed on the website
 	 */
-	function main($content, $conf)	{
+	public function main($content, $conf) {
 		if(!empty($conf['swfWidth'])) $this->swfWidth = $conf['swfWidth'];
 		if(!empty($conf['swfHeight'])) $this->swfHeight = $conf['swfHeight'];
 
@@ -69,19 +72,24 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 			$this->addJSfile(t3lib_extMgm::siteRelPath($this->extKey).'res/swfobject.js');
 		}
 
-		$img = !empty($this->imgFile) ? $this->cObj->IMAGE(array(
-											'file' => $this->imgFile,
-											'file.' => array(
-												'maxW' => $this->swfWidth,
-												'maxH' => $this->swfHeight
-											),
-											'stdWrap.' => array(
-												'typolink.' => array(
-													'parameter' => $this->imgLink,
-													'ATagParams' => 'class=logo'
-												)
-											)
-										)) : '';
+		$img = '';
+		if (!empty($this->imgFile)) {
+			$img = $this->cObj->IMAGE(
+				array(
+					'file' => $this->imgFile,
+					'file.' => array(
+						'maxW' => $this->swfWidth,
+						'maxH' => $this->swfHeight
+					),
+					'stdWrap.' => array(
+						'typolink.' => array(
+							'parameter' => $this->imgLink,
+							'ATagParams' => 'class=logo'
+						)
+					)
+				)
+			);
+		}
 
 		$cnt =	'<div id="flashmovie">
 					<div id="flashmovie_noflash">'.$img.'</div>
@@ -93,9 +101,11 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 	/**
 	 * This method get the Keyvisual Fields from the DB and puts it to the class variables
 	 *
-	 * @return	none
+	 * @access	protected
+	 *
+	 * @return	void
 	 */
-	function getKeyVisualValues($takeDefaultLang = false) {
+	protected function getKeyVisualValues($takeDefaultLang = false) {
 		$pageTable = ($GLOBALS['TSFE']->sys_language_uid == 0 || $takeDefaultLang) ?
 			array('pages', 'uid', array('tx_gokeyvisual_imagelink')) :
 			array('pages_language_overlay', 'pid', array('tx_gokeyvisual_imagelink', 'sys_language_uid as page_language'));
@@ -151,9 +161,11 @@ class tx_gokeyvisual_pi1 extends tx_gopibase {
 	/**
 	 * This method creates the JavaScript to include the Flash-Film
 	 *
-	 * @return	The JavaScript that is included on the website
+	 * @access	protected
+	 *
+	 * @return	string	The JavaScript that is included on the website
 	 */
-	function getHeaderJavaScript() {
+	protected function getHeaderJavaScript() {
 		$result = '
 		<script type="text/javascript">
 		// <![CDATA[

@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext "go_keyvisual".
 #
-# Auto generated 06-02-2012 19:45
+# Auto generated 09-02-2012 15:30
 #
 # Manual updates:
 # Only the data in the array - everything else is removed by next
@@ -29,7 +29,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
 	'author_company' => 'Gosign media. GmbH',
-	'version' => '0.3.1',
+	'version' => '0.3.2',
 	'constraints' => array(
 		'depends' => array(
 			'go_pibase' => '1.2.7-0.0.0',
@@ -39,7 +39,7 @@ $EM_CONF[$_EXTKEY] = array(
 		'suggests' => array(
 		),
 	),
-	'_md5_values_when_last_written' => 'a:9:{s:12:"ext_icon.gif";s:4:"2615";s:17:"ext_localconf.php";s:4:"3cbe";s:14:"ext_tables.php";s:4:"4343";s:14:"ext_tables.sql";s:4:"83e0";s:24:"ext_typoscript_setup.txt";s:4:"277f";s:16:"locallang_db.xml";s:4:"bc2d";s:32:"pi1/class.tx_gokeyvisual_pi1.php";s:4:"66d4";s:22:"res/expressInstall.swf";s:4:"7b65";s:16:"res/swfobject.js";s:4:"892a";}',
+	'_md5_values_when_last_written' => 'a:9:{s:12:"ext_icon.gif";s:4:"2615";s:17:"ext_localconf.php";s:4:"3cbe";s:14:"ext_tables.php";s:4:"4343";s:14:"ext_tables.sql";s:4:"83e0";s:24:"ext_typoscript_setup.txt";s:4:"277f";s:16:"locallang_db.xml";s:4:"bc2d";s:32:"pi1/class.tx_gokeyvisual_pi1.php";s:4:"1533";s:22:"res/expressInstall.swf";s:4:"7b65";s:16:"res/swfobject.js";s:4:"892a";}',
 	'suggests' => array(
 	),
 );
