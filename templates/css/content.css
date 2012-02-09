@@ -11,6 +11,12 @@
 	margin: 0px;
 	padding: 0px;
 }
+body.ie7 #content {
+	height: 100%;
+}
+body.safari_mac #content {
+	height: 100%;
+}
 
 #left_column {
 	width: 180px;
