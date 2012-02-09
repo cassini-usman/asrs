@@ -1,4 +1,4 @@
-/** 
+/**
  * base_fest.css
  * --- Gosign media. ---
  * version 1.0
@@ -42,7 +42,7 @@ body {
 	margin: 0 auto;
 	background: #F8EEDE;
 	overflow: hidden;
-	width: 950px;	
+	width: 950px;
 	padding: 0px;
 	position: relative;
 }
@@ -100,12 +100,12 @@ body {
  * ... for IE5 + IE6/Win | to activate the hasLayout
  */
 
-* html .clearall { 
-	background:none; 
-}   
+* html .clearall {
+	background:none;
+}
 
 /**
- * End hide from IE Mac 
+ * End hide from IE Mac
  */
 
 /**

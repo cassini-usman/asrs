@@ -1,4 +1,4 @@
-/** 
+/**
  * mce.css
  * --- Gosign media. ---
  * version 1.0
@@ -7,8 +7,8 @@
  */
 
 /**
- * WICHTIG WICHTIG WICHTIG WICHTIG WICHTIG WICHTIG 
- * neue Klassen müssen im PAGE TS 
+ * WICHTIG WICHTIG WICHTIG WICHTIG WICHTIG WICHTIG
+ * neue Klassen mÃ¼ssen im PAGE TS
  * RTE.default.proc.allowedClasses = link1,color
  * eingetragen sein!!!!!!
  */
@@ -26,9 +26,9 @@ span.color {
 }
 
 /**
- * Wird aufgeführt
+ * Wird aufgefÃ¼hrt
  */
- 
+
 .link1,
 a.link1,
 p.link1 a,

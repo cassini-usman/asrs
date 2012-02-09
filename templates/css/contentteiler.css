@@ -1,15 +1,15 @@
-/** 
+/**
  * contentteiler.css
  * --- Gosign media. ---
  * version 1.0
  * (c) Copyright 2011 Gosign media. All Rights Reserved.
  * 2011-09-12
  */
- 
+
 /**
  * Contentteiler - 2 columns table
  */
- 
+
 table.contentteiler2 {
 	display: block;
 }
@@ -30,7 +30,7 @@ table.contentteiler2 tr td.right {
 /**
  * Header
  */
- 
+
 table.contentteiler2 tr td div.csc-header {
 	width: 214px;
 	overflow: hidden;
@@ -40,7 +40,7 @@ table.contentteiler2 tr td div.csc-header {
 /**
  * Image module
  */
- 
+
 table.contentteiler2 tr td.left div.csc-textpic-left {
 	display: block;
 	float: left;
@@ -85,7 +85,7 @@ table.contentteiler2 tr td div.csc-textpic-left div.csc-textpic-text {
 /**
  * Contentteiler - 3 columns table
  */
- 
+
 table.contentteiler3 {
 	display: block;
 }
@@ -109,8 +109,8 @@ table.contentteiler3 tr td.right {
 }
 
 /**
- * special adjustment for the 
- * 3 columns table content 
+ * special adjustment for the
+ * 3 columns table content
  */
 
 table.contentteiler3 tr td div.csc-header {
@@ -161,7 +161,7 @@ table.contentteiler3 tr td.right div.csc-textpic-left div.csc-textpic-text {
 }
 
 /**
- * Caption gap to the image 
+ * Caption gap to the image
  */
 
 table.contentteiler3 tr td div.csc-textpic-left div.csc-textpic-text {
@@ -174,7 +174,7 @@ table.contentteiler3 tr td div.csc-textpic-left div.csc-textpic-text {
 /**
  * Contentteiler - 4 columns table
  */
- 
+
 table.contentteiler4 {
 	display: block;
 }
@@ -198,8 +198,8 @@ table.contentteiler4 tr td.right {
 }
 
 /**
- * special adjustment for the 
- * 4 columns table content 
+ * special adjustment for the
+ * 4 columns table content
  */
 
 table.contentteiler4 tr td div.csc-header {
@@ -247,11 +247,11 @@ table.contentteiler4 tr td.right div.csc-textpic-left {
 
 table.contentteiler4 tr td.right div.csc-textpic-left div.csc-textpic-text {
 	width: 85px;
-	
+
 }
 
 /**
- * Caption gap to the image 
+ * Caption gap to the image
  */
 
 table.contentteiler4 tr td div.csc-textpic-left div.csc-textpic-text {

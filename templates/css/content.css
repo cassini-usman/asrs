@@ -1,11 +1,11 @@
-/** 
+/**
  * content.css
  * --- Gosign media. ---
  * version 1.0
  * (c) Copyright 2011 Gosign media. All Rights Reserved.
  * 2011-09-12
  */
- 
+
 #content {
 	width: 100%;
 	margin: 0px;
@@ -89,7 +89,7 @@ h1.contentheading {
 	width: 90%;
 }
 
-#left_content h1, h2, h3, h4, h5{
+#left_content h1, h2, h3, h4, h5 {
 	font-size: 1em;
 	font-weight: bold;
 }
@@ -100,18 +100,18 @@ div.tx-gofontsize-pi1 {
 	border-left: 0.6em solid #CC0000;
 }
 
-div.tx-gofontsize-pi1 a{
+div.tx-gofontsize-pi1 a {
 	color:#ffffff;
 	margin-right:0.4em;
 }
 
-div.tx-gofontsize-pi1 a .fontsize_inc{
+div.tx-gofontsize-pi1 a .fontsize_inc {
 	font-size:1.2em;
 }
-div.tx-gofontsize-pi1 a .fontsize_base{
+div.tx-gofontsize-pi1 a .fontsize_base {
 	font-size:1.4em;
 }
-div.tx-gofontsize-pi1 a .fontsize_dec{
+div.tx-gofontsize-pi1 a .fontsize_dec {
 	font-size:1.6em;
 }
 
