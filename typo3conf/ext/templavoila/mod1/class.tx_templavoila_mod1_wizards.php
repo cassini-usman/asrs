@@ -24,29 +24,9 @@
 /**
  * Submodule 'wizards' for the templavoila page module
  *
- * $Id: class.tx_templavoila_mod1_wizards.php 47548 2011-05-10 21:32:59Z tolleiv $
+ * $Id$
  *
  * @author     Robert Lemke <robert@typo3.org>
- */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   62: class tx_templavoila_mod1_wizards
- *   78:     function init(&$pObj)
- *
- *              SECTION: Wizards render functions
- *  103:     function renderWizard_createNewPage ($positionPid)
- *
- *              SECTION: Wizard related helper functions
- *  241:     function renderTemplateSelector ($positionPid, $templateType='tmplobj')
- *  355:     function createPage($pageArray,$positionPid)
- *  389:     function getImportObject()
- *
- * TOTAL FUNCTIONS: 5
- * (This index is automatically created/updated by the extension "extdeveval")
- *
  */
 
 /**
@@ -209,9 +189,7 @@ class tx_templavoila_mod1_wizards {
 		$this->doc->postCode.= $CMparts[2] . $tceforms->printNeededJSFunctions();
 
 			// fix due to #13762
-		if (t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
-			$this->doc->inDocStyles .= '.c-inputButton{ cursor:pointer; }';
-		}
+		$this->doc->inDocStyles .= '.c-inputButton{ cursor:pointer; }';
 
 		$content.=$this->doc->header($LANG->sL('LLL:EXT:lang/locallang_core.xml:db_new.php.pagetitle'));
 		$content.=$this->doc->startPage($LANG->getLL ('createnewpage_title'));

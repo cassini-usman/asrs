@@ -31,25 +31,6 @@
  *
  * @author	Kasper Skårhøj <kasperYYYY@typo3.com>
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   57: class tx_lowlevel_cleanflexform extends tx_lowlevel_cleaner_core
- *   64:     function tx_lowlevel_cleanflexform()
- *   89:     function main()
- *  117:     function main_parseTreeCallBack(&$pObj,$tableName,$uid,$echoLevel,$versionSwapmode,$rootIsVersion)
- *  148:     function main_autoFix($resultArray, $dryrun=TRUE)
- *
- * TOTAL FUNCTIONS: 4
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
-
-
-
-
 
 	// Include TemplaVoila API
 require_once (t3lib_extMgm::extPath('templavoila').'class.tx_templavoila_api.php');
@@ -145,12 +126,7 @@ Automatic Repair:
 			if (!$versionSwapmode)	{
 
 					// Initialize TemplaVoila API class:
-				if(t3lib_div::int_from_ver(TYPO3_version) < 4003000) {
-					$apiClassName = t3lib_div::makeInstanceClassName('tx_templavoila_api');
-					$apiObj = new $apiClassName ('pages');
-				} else {
-					$apiObj = t3lib_div::makeInstance('tx_templavoila_api','pages');
-				}
+				$apiObj = t3lib_div::makeInstance('tx_templavoila_api','pages');
 
 					// Fetch the content structure of page:
 				$contentTreeData = $apiObj->getContentTree('pages', t3lib_BEfunc::getRecordRaw('pages','uid='.intval($uid)));

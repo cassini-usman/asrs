@@ -60,7 +60,7 @@ $TYPO3_CONF_VARS['EXT']['extList_FE'] = 'extbase,css_styled_content,install,t3sk
 $TYPO3_CONF_VARS['EXT']['allowGlobalInstall'] = '1';
 
 $TYPO3_CONF_VARS['EXT']['extConf']['static_info_tables'] = 'a:2:{s:7:"charset";s:5:"utf-8";s:12:"usePatch1822";s:1:"0";}';
-$TYPO3_CONF_VARS['EXT']['extConf']['templavoila'] = 'a:1:{s:7:"enable.";a:1:{s:13:"oldPageModule";s:1:"0";}}';
+$TYPO3_CONF_VARS['EXT']['extConf']['templavoila'] = 'a:1:{s:7:"enable.";a:3:{s:13:"oldPageModule";s:1:"0";s:19:"selectDataStructure";s:1:"0";s:15:"renderFCEHeader";s:1:"0";}}';
 $TYPO3_CONF_VARS['EXT']['extConf']['dam'] = 'a:6:{s:8:"tsconfig";s:7:"default";s:8:"web_file";s:1:"0";s:15:"hideMediaFolder";s:1:"0";s:8:"mediatag";s:1:"1";s:15:"htmlAreaBrowser";s:1:"1";s:5:"devel";s:1:"0";}';
 $TYPO3_CONF_VARS['EXT']['extConf']['lfeditor'] = 'a:14:{s:13:"viewLanguages";s:0:"";s:12:"viewLocalExt";s:1:"1";s:13:"viewGlobalExt";s:1:"0";s:10:"viewSysExt";s:1:"0";s:12:"viewStateExt";s:1:"1";s:9:"extIgnore";s:10:"/^csh_.*$/";s:9:"anzBackup";s:1:"5";s:15:"numTextAreaRows";s:1:"5";s:13:"numSiteConsts";s:1:"6";s:8:"treeHide";s:1:"1";s:10:"execBackup";s:1:"1";s:10:"pathBackup";s:26:"typo3conf/LFEditor/Backup/";s:12:"pathXLLFiles";s:23:"typo3conf/LFEditor/XLL/";s:8:"metaFile";s:34:"typo3conf/LFEditor/Backup/Meta.xml";}';	// Modified or inserted by TYPO3 Extension Manager.
 $TYPO3_CONF_VARS['EXT']['extConf']['tinymce_rte'] = 'a:2:{s:10:"loadConfig";s:34:"EXT:tinymce_rte/static/standard.ts";s:18:"pageLoadConfigFile";s:34:"EXT:tinymce_rte/static/pageLoad.ts";}';

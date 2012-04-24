@@ -24,39 +24,11 @@
 /**
  * Plugin 'Flexible Content' for the 'templavoila' extension.
  *
- * $Id: class.tx_templavoila_pi1.php 47514 2011-05-10 12:39:48Z tolleiv $
+ * $Id$
  *
  * @author    Kasper Skaarhoj <kasper@typo3.com>
  * @coauthor  Robert Lemke <robert@typo3.org>
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   71: class tx_templavoila_pi1 extends tslib_pibase
- *   88:     function main($content,$conf)
- *  101:     function main_page($content,$conf)
- *  131:     function initVars($conf)
- *  144:     function renderElement($row,$table)
- *  282:     function processDataValues(&$dataValues,$DSelements,$TOelements,$valueKey='vDEF')
- *  446:     function inheritValue($dV,$valueKey,$overlayMode='')
- *  486:     function formatError($string)
- *  519:     function visualID($content,$srcPointer,$DSrec,$TOrec,$row,$table)
- *
- * TOTAL FUNCTIONS: 8
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
-
-
-
-
-
-
-
-
-
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(t3lib_extMgm::extPath('templavoila').'class.tx_templavoila_htmlmarkup.php');
@@ -76,7 +48,7 @@ class tx_templavoila_pi1 extends tslib_pibase {
 
 	var $inheritValueFromDefault=1;		// If set, children-translations will take the value from the default if "false" (zero or blank)
 
-	static $enablePageRenderer = FALSE;
+	static $enablePageRenderer = TRUE;
 
 	/**
 	 * Markup object
@@ -232,10 +204,8 @@ class tx_templavoila_pi1 extends tslib_pibase {
 	 */
 	function initVars($conf)	{
 		$this->inheritValueFromDefault = $conf['dontInheritValueFromDefault'] ? 0 : 1;
-		if (t3lib_div::int_from_ver(TYPO3_version) >= 4003000) {
-				// naming choosen to fit the regular TYPO3 integrators needs ;)
-			self::$enablePageRenderer = isset($conf['advancedHeaderInclusion']) ? $conf['advancedHeaderInclusion'] : self::$enablePageRenderer;
-		}
+			// naming choosen to fit the regular TYPO3 integrators needs ;)
+		self::$enablePageRenderer = isset($conf['advancedHeaderInclusion']) ? $conf['advancedHeaderInclusion'] : self::$enablePageRenderer;
 		$this->conf=$conf;
 	}
 
@@ -482,6 +452,9 @@ class tx_templavoila_pi1 extends tslib_pibase {
 							$savedParentInfo[$dkey] = $dvalue;
 							$unsetKeys[] = $dkey;
 						}
+						if (preg_match('/^tx_templavoila_pi1\.(nested_fields|current_field)/', $dkey)) {
+							$savedParentInfo[$dkey] = $dvalue;
+						}
                     }
 
                     // Step 2: unset previous parent info
@@ -503,17 +476,11 @@ class tx_templavoila_pi1 extends tslib_pibase {
                 }
             }
 
-			if (isset($GLOBALS['TSFE']->register['tx_templavoila_pi1.nested_fields'])) {
-				$nested_fields = $GLOBALS['TSFE']->register['tx_templavoila_pi1.nested_fields'];
-			} else {
-				$nested_fields = '';
-			}
-
 				// For each DS element:
 			foreach($DSelements as $key => $dsConf)	{
 					// Store key of DS element and the parents being handled in global register
-				if ($nested_fields) {
-					$GLOBALS['TSFE']->register['tx_templavoila_pi1.nested_fields'] = $nested_fields . ',' . $key;
+				if (isset($savedParentInfo['nested_fields'])) {
+					$GLOBALS['TSFE']->register['tx_templavoila_pi1.nested_fields'] = $savedParentInfo['nested_fields'] . ',' . $key;
 				} else {
 					$GLOBALS['TSFE']->register['tx_templavoila_pi1.nested_fields'] = $key;
 				}
@@ -668,8 +635,6 @@ class tx_templavoila_pi1 extends tslib_pibase {
             foreach ($savedParentInfo as $dkey => $dvalue) {
                 $GLOBALS['TSFE']->register[$dkey] = $dvalue;
             }
-
-			$GLOBALS['TSFE']->register['tx_templavoila_pi1.nested_fields'] = $nested_fields;
         }
     }
 
