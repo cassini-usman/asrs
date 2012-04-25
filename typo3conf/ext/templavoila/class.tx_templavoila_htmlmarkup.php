@@ -398,9 +398,12 @@ class tx_templavoila_htmlmarkup {
 
 				if (!isset($newArray['cArray'][$theKeyFound]))	{
 					$newArray['cArray'][$theKeyFound] = $lC;
-					if(is_array($currentMappingInfo[$theKeyFound]['el']))	{
-						$newArray['sub'][$theKeyFound]=$this->splitContentToMappingInfo($lC,$currentMappingInfo[$theKeyFound]['el']);
+					$elements = $currentMappingInfo[$theKeyFound]['el'];
+					if (!is_array($elements)) {
+							// FCE without any child elements
+						$elements = array();
 					}
+					$newArray['sub'][$theKeyFound] = $this->splitContentToMappingInfo($lC, $elements);
 				} else {
 					$newArray['cArray'][$k] = $lC;
 				}
@@ -814,7 +817,7 @@ class tx_templavoila_htmlmarkup {
 								}
 								break;
 							case 'SCRIPT':
-								if ( isset($attr[0]['src'])) {
+								if ( isset($attr[0]['src']) && $attr[0]['src']) {
 									$pageRenderer->addJsFile($attr[0]['src']);
 								} else {
 									$cont = $htmlParse->removeFirstAndLastTag($MappingData_head_cached['cArray']['el_'.$kk]);
