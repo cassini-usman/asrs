@@ -92,6 +92,9 @@ TCEMAIN.table.tt_content {
 	disableHideAtCopy = 1
 }
 
+# show delete buttons for content elements in templavoila
+mod.web_txtemplavoilaM1.enableDeleteIconForLocalElements=1
+
 ## Layout Typen umbenennen
 #TCEFORM.tt_content.header_layout.altLabels.1 = LLL:EXT:go_tsconfig/locallang.xml:layout.goheader1
 ## Layout Typen ausblenden
