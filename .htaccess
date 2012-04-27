@@ -135,5 +135,26 @@ RewriteRule .* index.php [L]
 ### End: Miscellaneous ###
 
 
+### Begin: Password protection ###
+### Un-comment this block if you need password protection ###
+
+#AuthUserFile <path to .htpasswd>
+#AuthName "Protected area"
+#AuthType Basic
+
+#order deny,allow
+
+#deny from all
+#satisfy any
+
+## Let facebook user-agent through the password protection
+## Not very secure, as user-agents can be spoofed
+#SetEnvIf User-Agent ^facebookexternalhit/1\.1 let_facebook_in
+#Allow from env=let_facebook_in
+#require valid-user
+
+### End: Password protection ###
+
+
 # Add your own rules here.
 # ...
