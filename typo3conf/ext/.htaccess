@@ -1,7 +1,7 @@
 Order deny,allow
 Deny from all
 
-<FilesMatch "\.(gif|png|jpg|js|css|php|htm|html|swf)$">
+<FilesMatch "\.(gif|png|jpg|js|css|php|htm|html|swf|flv|mp3|mp4)$">
 	Allow from all
 </FilesMatch>
 
