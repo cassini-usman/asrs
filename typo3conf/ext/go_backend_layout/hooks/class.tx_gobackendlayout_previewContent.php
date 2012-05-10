@@ -133,6 +133,7 @@ class tx_gobackendlayout_previewContent {
 	 */
 	function loadTemplate($CType) {
 		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 
 		$extensionNameParts = explode('_', $CType);
 		$pluginName = array_pop($extensionNameParts);
@@ -144,7 +145,7 @@ class tx_gobackendlayout_previewContent {
 			$extTemplatePath = t3lib_extMgm::extPath($extensionName) . $pluginName . '/template_be.html';
 		}
 		if (!file_exists($extTemplatePath)) {
-			$extTemplatePath = t3lib_extMgm::extPath('go_backend_layout') . 'moduls/templavoila/template_be.html';
+			$extTemplatePath = t3lib_extMgm::extPath('go_backend_layout') . 'res/template_be.html';
 		}
 		return $this->doc->setModuleTemplate($extTemplatePath);
 	}
