@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 1999-2009 Kasper Skårhøj (kasperYYYY@typo3.com)
+*  (c) 2011 Caspar Stuebs <caspar@gosign.de>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -13,9 +13,6 @@
 *
 *  The GNU General Public License can be found at
 *  http://www.gnu.org/copyleft/gpl.html.
-*  A copy is found in the textfile GPL.txt and important notices to the license
-*  from the author is found in LICENSE.txt distributed with these scripts.
-*
 *
 *  This script is distributed in the hope that it will be useful,
 *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,14 +22,17 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+/**
+ * @author Caspar Stuebs <caspar@gosign.de>
+ *
+ * @description autoload go_backend_layout PHP files
+ */
 
-require_once(PATH_t3lib . 'interfaces/interface.t3lib_localrecordlistgettablehook.php');
+$go_backend_layoutClasses = array(
+	'tx_gobackendlayout_static' => t3lib_extMgm::extPath('go_backend_layout') . 'lib/class.tx_gobackendlayout_static.php',
+	'tx_gobackendlayout_previewcontent' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_previewContent.php',
+	'tx_gobackendlayout_manipulatewizarditems' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_manipulateWizardItems.php',
+);
 
-class user_getTableHook implements t3lib_localRecordListGetTableHook {
-	public function getDBlistQuery($table, $pageId, &$additionalWhereClause, &$selectedFieldsList, &$parentObject) {
-		if(count($parentObject->DAMimageFields[$table])) { // we need to fetch these additional fields for thumbs
-			$selectedFieldsList .= ','.implode(',',$parentObject->DAMimageFields[$table]);
-		}
-	}
-}
-
+return $go_backend_layoutClasses;
+?>
