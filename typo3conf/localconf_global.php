@@ -30,7 +30,7 @@ $TYPO3_CONF_VARS['BE']['explicitADmode'] = 'explicitAllow';
 $TYPO3_CONF_VARS['BE']['fileCreateMask'] = '0664';
 $TYPO3_CONF_VARS['BE']['folderCreateMask'] = '0775';
 $TYPO3_CONF_VARS['BE']['disable_exec_function'] = '0';
-$TYPO3_CONF_VARS['BE']['installToolPassword'] = '0bd0b0e0c5754271d8dc5ea254288c82';
+$TYPO3_CONF_VARS['BE']['installToolPassword'] = '2a01663b2cc1f1dc9d75b9df949c05db';
 $TYPO3_CONF_VARS['BE']['versionNumberInFilename'] = '0';
 
 $TYPO3_CONF_VARS['FE']['disableNoCacheParameter'] = '0';
