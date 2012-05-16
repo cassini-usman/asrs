@@ -155,3 +155,5 @@ namespace :local do
   end
 
 end
+
+load './config/capistrano/gosign/tasks.rb'

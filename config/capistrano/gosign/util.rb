@@ -1,6 +1,33 @@
 class Gosign
   module Util
 
+    # Creates a mysqldump command that does not dump Typo3 temporary tables
+    # See https://github.com/gosign-media/t3-scripts for more information
+    #
+    def self.mysqldump(dbName)
+      blacklist = [
+        "cache_extensions",
+        "cache_hash",
+        "cache_imagesizes",
+        "cache_md5params",
+        "cache_pages",
+        "cache_pagesection",
+        "cache_sys_dmail_stat",
+        "cache_typo3temp_log",
+        "sys_log",
+        "tx_realurl_chashcache",
+        "tx_realurl_errorlog",
+        "tx_realurl_pathcache",
+        "tx_realurl_urldecodecache",
+        "tx_realurl_urlencodecache"
+      ]
+
+      cmd = "mysqldump #{dbName} "
+      blacklist.each { |table| cmd += "--ignore-table=#{dbName}.#{table} " }
+
+      cmd
+    end
+
     def self.msg(msg, linebreak=true, level=0)
       out = (self.prefix(level) + msg).foreground(:green)
       if linebreak
