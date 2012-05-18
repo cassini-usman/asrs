@@ -72,11 +72,7 @@ page.includeJS.jQuery = fileadmin/templates/javascript/jquery.js
 page.includeJS.jQueryCookie = fileadmin/templates/javascript/jquery.cookie.js
 
 # Add page favicon
-page.headerData.10 = TEXT
-page.headerData.10.value (
-	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
-
-)
+page.shortcutIcon = fileadmin/templates/images/favicon.ico
 
 
 # Include Templavoila
