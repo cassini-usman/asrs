@@ -28,6 +28,15 @@ class Gosign
       cmd
     end
 
+
+    # This method will convert any string into a string that can be used for a filename
+    def self.filename_friendly(string)
+      string.gsub(/[^\w\s_-]+/, '')
+            .gsub(/(^|\b\s)\s+($|\s?\b)/, '\\1\\2')
+            .gsub(/\s+/, '_')
+    end
+
+
     def self.msg(msg, linebreak=true, level=0)
       out = (self.prefix(level) + msg).foreground(:green)
       if linebreak

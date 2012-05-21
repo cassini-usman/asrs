@@ -51,11 +51,10 @@ echo "-DB-".PHP_EOL.$typo_db.PHP_EOL.$typo_db_username.PHP_EOL.$typo_db_password
 
     tempFile = result.last.gsub("\n", "")
 
-
-
     # Download the database dump
     roles[:app].servers.each do |server|
-      retrieveFileCmd = "scp #{user}@#{server}:#{tempFile} #{Dir.pwd}/mysql.dump.gz"
+      mysqlDumpFilename = "#{Dir.pwd}/#{application}_#{stage}_#{Gosign::Util.filename_friendly(Time.now.to_s)}_mysql.dump.gz"
+      retrieveFileCmd = "scp #{user}@#{server}:#{tempFile} #{mysqlDumpFilename}"
       system(retrieveFileCmd)
     end
 
