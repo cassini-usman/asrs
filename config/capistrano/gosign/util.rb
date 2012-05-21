@@ -22,7 +22,7 @@ class Gosign
         "tx_realurl_urlencodecache"
       ]
 
-      cmd = "mysqldump #{dbName} "
+      cmd = "mysqldump --default-character-set=utf8 #{dbName} "
       blacklist.each { |table| cmd += "--ignore-table=#{dbName}.#{table} " }
 
       cmd
