@@ -89,12 +89,12 @@ class tx_gobackendlayout_previewContent {
 							$html	=	$this->getTTNews($row);
 							break;
 						case 'rwe_feuseradmin_pi1':
-							$html	=	'<strong>'.$LANG->getLL($row['list_type'].'.field.hinweis',1).'</strong>: <br />'.$LANG->getLL($row['list_type'].'.field.hinweis.content',1).'<br />'.
-										$this->getPluginName($LANG->sL(t3lib_BEfunc::getLabelFromItemlist($table,'list_type',$row['list_type'])), $row['CType'], $row['uid']);
+							$html	=	'<strong>'.$GLOBALS['LANG']->getLL($row['list_type'].'.field.hinweis',1).'</strong>: <br />'.$GLOBALS['LANG']->getLL($row['list_type'].'.field.hinweis.content',1).'<br />'.
+										$this->getPluginName($GLOBALS['LANG']->sL(t3lib_BEfunc::getLabelFromItemlist($table,'list_type',$row['list_type'])), $row['CType'], $row['uid']);
 							break;
 						case 'th_mailformplus_pi1':
-							$html	=	'<strong>'.$LANG->getLL($row['list_type'].'.field.hinweis',1).'</strong>: <br />'.$LANG->getLL($row['list_type'].'.field.hinweis.content',1).'<br />'.
-										'<br /><br /><strong style="margin:2px;padding:2px;border:1px solid #bfbfbf; background-color:#FFFFFF;">'.$LANG->sL(t3lib_BEfunc::getLabelFromItemlist($table,'list_type',$row['list_type'])).'</strong><br /><br />';
+							$html	=	'<strong>'.$GLOBALS['LANG']->getLL($row['list_type'].'.field.hinweis',1).'</strong>: <br />'.$GLOBALS['LANG']->getLL($row['list_type'].'.field.hinweis.content',1).'<br />'.
+										'<br /><br /><strong style="margin:2px;padding:2px;border:1px solid #bfbfbf; background-color:#FFFFFF;">'.$GLOBALS['LANG']->sL(t3lib_BEfunc::getLabelFromItemlist($table,'list_type',$row['list_type'])).'</strong><br /><br />';
 										// ELIO@GOSIGN 13/08/09 START
 										// LFE-Link: we have to set the langfile like this for this plugin
 										$typoscript = $self->loadTS($row['pid']);
@@ -107,7 +107,7 @@ class tx_gobackendlayout_previewContent {
 						$output = $self->link_edit($html, $table, $row['uid']).'<br />';
 					}
 					else {
-						$output = $self->link_edit('<strong>'.$LANG->sL(t3lib_BEfunc::getItemLabel($table,'list_type')).'</strong> ' . htmlspecialchars($LANG->sL(t3lib_BEfunc::getLabelFromItemlist($table,'list_type',$row['list_type']))).' &ndash; '.htmlspecialchars($extraInfo ? $extraInfo : $row['list_type']), $table, $row['uid']).'<br />';
+						$output = $self->link_edit('<strong>'.$GLOBALS['LANG']->sL(t3lib_BEfunc::getItemLabel($table,'list_type')).'</strong> ' . htmlspecialchars($GLOBALS['LANG']->sL(t3lib_BEfunc::getLabelFromItemlist($table,'list_type',$row['list_type']))).' &ndash; '.htmlspecialchars($extraInfo ? $extraInfo : $row['list_type']), $table, $row['uid']).'<br />';
 					}
 				break;
 			default:
@@ -803,8 +803,6 @@ class tx_gobackendlayout_previewContent {
 	// ### Mansoor Ahmad - parse the LL Array
 	// #
 	function getLLValue($LLValue, $type = '', $TCEFORM = array('')) {
-		global $LANG;
-
 		// parse Labels over TSconfig
 		$TSaltLabel =  $TCEFORM[$type.'.']['altLabels.'][trim(substr(strrchr($LLValue,'.')+1,2))];
 		$TSLabel = ($TSaltLabel)?$TSaltLabel:$TCEFORM[$type.'.']['label'];
@@ -821,9 +819,8 @@ class tx_gobackendlayout_previewContent {
 		}
 
 		if(strlen($LLFile) > 4 && empty($TSLabel)) {
-			$locallang = $LANG;
-			$locallang->includeLLFile($LLFile);
-			return $locallang->getLL($LLFName);
+			$GLOBALS['LANG']->includeLLFile($LLFile);
+			return $GLOBALS['LANG']->getLL($LLFName);
 		}
 		elseif($TSLabel) {
 			return $TSLabel;
