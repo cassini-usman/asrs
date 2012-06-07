@@ -70,22 +70,45 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 
 		$hiddenInfos = '';
 		$hiddenInfosWrap = array('<input type="hidden" name="', '" value="', '" />');
+		$hiddenInfosContainerWrap = array('<div class="hiddenInfos">', '</div>');
 		$itemAlreadyParsed = array();
 		foreach ($wizardItems as $item) {
-			if ($item['tt_content_defValues']['CType'] && !in_array($itemAlreadyParsed, $item['tt_content_defValues']['CType'])) {
-				$hiddenInfos .= $hiddenInfosWrap[0] . $item['tt_content_defValues']['CType'] . $hiddenInfosWrap[1];
-				$hiddenInfos .=  tx_gobackendlayout_static::checkFieldAccess($fieldName, $item['tt_content_defValues']['CType']) . $hiddenInfosWrap[2];
-				$itemAlreadyParsed[] = $item['tt_content_defValues']['CType'];
+			$cType = $item['tt_content_defValues']['CType'];
+			if ($cType && !in_array($itemAlreadyParsed, $cType)) {
+				$hiddenInfos .= $this->buildHiddenInfo($cType, $item['tt_content_defValues']['tx_templavoila_to'], $fieldName);
+				$itemAlreadyParsed[] = $cType;
 			}
 		}
-		$parentObject->content .= $hiddenInfos;
 
 		if(!$this->isLabelPage($parentObject->id)){
-			$checkBoxToAdd = '<td valign="top"><input type="checkbox" class="fieldrightsCheckbox" name="' . $fieldName . '" value="" /></td>';
+			$hiddenFieldNameInfo = '<input type="hidden" class="fieldName" value="' . $fieldName . '" />';
+			$parentObject->content .= $hiddenInfosContainerWrap[0] . $hiddenFieldNameInfo . $hiddenInfos . $hiddenInfosContainerWrap[1];
+			$checkBoxToAdd = '<td valign="top"><input type="checkbox" class="fieldrightsCheckbox" value="" /></td>';
 		}
 
-		$parentObject->elementWrapper['wizard'][1] = $checkBoxToAdd . $parentObject->elementWrapper['wizard'][1];
-		$parentObject->elementWrapperForTabs['wizard'][1] = $parentObject->elementWrapper['wizard'][1];
+		$parentObject->elementWrapper['wizard'] = array('<tr class="row">', $checkBoxToAdd . $parentObject->elementWrapper['wizard'][1]);
+		$parentObject->elementWrapperForTabs['wizard'] = $parentObject->elementWrapper['wizard'];
+	}
+
+	/**
+	 *
+	 * @author	Daniel Agro <agro@gosign.de>
+	 *
+	 * @param	string	$item: item to built hidden info for
+	 *
+	 * @return	hidden info
+	 */
+	protected function buildHiddenInfo($cType, $tvTemplateObject, $fieldName) {
+		$hiddenInfo = '';
+		$hiddenInfosWrap = array('<input type="hidden" name="tvTemplateObject" value="', '" ', '/>');
+		$hiddenInfosContainerWrap = array('<div class="', '">', '</div>');
+		$tvTemplateObject = $tvTemplateObject ? (int) $tvTemplateObject : 0;
+
+		$checkInformation = tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, $tvTemplateObject) === 'true' ? 'checked="1"' : '';
+		$hiddenInfo .= $hiddenInfosWrap[0] . $tvTemplateObject . $hiddenInfosWrap[1] . $checkInformation . $hiddenInfosWrap[2];
+		$hiddenInfo = $hiddenInfosContainerWrap[0] . $cType . '_' . $tvTemplateObject . $hiddenInfosContainerWrap[1] . $hiddenInfo . $hiddenInfosContainerWrap[2];
+
+		return $hiddenInfo;
 	}
 
 	/**

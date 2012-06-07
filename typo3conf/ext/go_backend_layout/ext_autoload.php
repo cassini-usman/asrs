@@ -29,9 +29,12 @@
  */
 
 $go_backend_layoutClasses = array(
-	'tx_gobackendlayout_static' => t3lib_extMgm::extPath('go_backend_layout') . 'lib/class.tx_gobackendlayout_static.php',
+	'tx_gobackendlayout_addheaderfilestobackend' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_addHeaderFilesToBackend.php',
 	'tx_gobackendlayout_previewcontent' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_previewContent.php',
 	'tx_gobackendlayout_manipulatewizarditems' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_manipulateWizardItems.php',
+	'tx_gobackendlayout_ajaxrequests' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_ajaxRequests.php',
+	'tx_gobackendlayout_static' => t3lib_extMgm::extPath('go_backend_layout') . 'lib/class.tx_gobackendlayout_static.php',
+	'tx_gobackendlayout_getprocessedvalue' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_getProcessedValue.php',
 );
 
 return $go_backend_layoutClasses;

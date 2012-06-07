@@ -4,14 +4,32 @@ if (!defined ("TYPO3_MODE")) 	die ("Access denied.");
 /*
  * HOOKS
  */
+
+/*
+ * hooks for css and js includes
+ */
+$TYPO3_CONF_VARS['SC_OPTIONS']['typo3/template.php']['preHeaderRenderHook'][]  = 'tx_gobackendlayout_addHeaderFilesToBackend->addJStoBackend';
+$TYPO3_CONF_VARS['SC_OPTIONS']['typo3/template.php']['preHeaderRenderHook'][]  = 'tx_gobackendlayout_addHeaderFilesToBackend->addCSStoBackend';
+
 /*
  * render backend view of all content elements
  */
 $TYPO3_CONF_VARS['EXTCONF']['templavoila']['mod1']['renderPreviewContentClass']['default'] = 'tx_gobackendlayout_previewContent';
+
+/*
+ * hook for ajax requests
+ */
+$TYPO3_CONF_VARS['SC_OPTIONS']['templavoila']['db_new_content_el']['wizardItemsHook'][]  = 'tx_gobackendlayout_ajaxRequests';
+
 /*
  * new content element wizard - manipulate item list
  */
 $TYPO3_CONF_VARS['SC_OPTIONS']['templavoila']['db_new_content_el']['wizardItemsHook'][]  = 'tx_gobackendlayout_manipulateWizardItems';
+
+/*
+ * preprocess hook for t3lib_befunc->getProcessedValue to show labels of tx_dam files
+ */
+$TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/class.t3lib_befunc.php']['preProcessValue'][]  = 'tx_gobackendlayout_getProcessedValue->preProcessValue';
 
 /*
  * XCLASSES

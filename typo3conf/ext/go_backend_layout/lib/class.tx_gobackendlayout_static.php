@@ -142,21 +142,115 @@ class tx_gobackendlayout_static {
 	}
 
 	/**
+	 * This function adds the js to the backend
+	 * working directory is "htdocs/typo3"
+	 *
+	 * @author:	Daniel Agro <agro@gosign.de>
+	 * @date:	2012-06-04
+	 *
+	 * @param:	string	$file: file to include
+	 * @param:	string	$extName: extension name where the file is to find
+	 * @param	array	$conf: configures the options
+	 *
+	 * @return	void/string		ErrorMessage if file does not exist
+	 */
+	public static function addJavaScriptFile($file, $extName = 'go_backend_layout', array $conf = array()) {
+		if (!$file) {
+			return 'no file';
+		}
+
+		if(!file_exists(t3lib_extMgm::extPath($extName) . $file)) {
+			return 'file ' . $file . 'does not exist\n working directory is ' . getcwd();
+		}
+
+		$defaultConf = array(
+			'type' => 'text/javascript',
+			'compress' => FALSE,
+			'forceOnTop' => FALSE,
+			'allWrap' => '',
+		);
+
+		$conf = t3lib_div::array_merge_recursive_overrule($defaultConf, $conf);
+
+		$filePath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath($extName) . $file;
+		$pageRenderer = $GLOBALS['TBE_TEMPLATE']->getPageRenderer();
+		$pageRenderer->addJsFile($filePath, $conf['type'], $conf['compress'], $conf['forceOnTop'], $conf['allWrap']);
+	}
+
+	/**
+	 * This function adds the css to the backend
+	 * working directory is "htdocs/typo3"
+	 *
+	 * @author:	Daniel Agro <agro@gosign.de>
+	 * @date:	2012-06-04
+	 *
+	 * @param:	string	$file: file to include
+	 * @param:	string	$extName: extension name where the file is to find
+	 * @param	array	$conf: configures the options
+	 *
+	 * @return	void/string		ErrorMessage if nof file given or file does not exist
+	 */
+
+	public static function addStyleSheetFile($file, $extName = 'go_backend_layout', array $conf = array()) {
+		if (!$file) {
+			return 'no file';
+		}
+
+		if(!file_exists(t3lib_extMgm::extPath($extName) . $file)) {
+			return 'file ' . $file . 'does not exist\n working directory is ' . getcwd();
+		}
+
+		$defaultConf = array(
+			'rel' => 'stylesheet',
+			'media' => 'all',
+			'compress' => FALSE,
+			'forceOnTop' => FALSE,
+			'allWrap' => '',
+		);
+
+		$conf = t3lib_div::array_merge_recursive_overrule($defaultConf, $conf);
+
+		$filePath = $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath($extName) . $file;
+		$pageRenderer = $GLOBALS['TBE_TEMPLATE']->getPageRenderer();
+		$pageRenderer->addCssFile($filePath, $conf['rel'], $conf['media'], $conf['title'], $conf['compress'], $conf['allWrap']);
+	}
+
+	/**
 	 * Checks, if the given CType is allowed to be added at given templavoila field
 	 *
 	 * @param	string	$fieldName: The templavoila field
 	 * @param	string	$elementKey: The CType to check
+	 * @param	string	$tvTemplateObject: The value for the field 'tx_templavoila_to'
+	 * @param	string	$getUID: if true, the return value is the uid of the row
+	 *							 if false, the return value is the access-string
 	 *
-	 * @return	boolean	TRUE, if access is allowed
+	 * @return	string	field access ('true' or 'false')
 	 */
-	public static function checkFieldAccess($fieldName, $elementKey) {
+	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject, $getUID = FALSE) {
 		t3lib_div::loadTCA('tt_content');
-		$access = $GLOBALS['TYPO3_DB']->exec_SELECTcountRows(
+		$row = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
+		$return = $getUID ? $row['uid'] : $row['access'];
+
+		return $return;
+	}
+
+	/**
+	 * Fetches the row for this rule
+	 *
+	 * @param	string	$fieldName: The templavoila field
+	 * @param	string	$elementKey: The CType to check
+	 * @param	string	$tvTemplateObject: The value for the field 'tx_templavoila_to'
+	 *
+	 * @return	array	the selected row
+	 */
+	public static function getAccessRow($fieldName, $elementKey, $tvTemplateObject) {
+		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 			'*',
 			'tx_gobackendlayout_fieldrights',
-			'fieldName=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($fieldName) . ' AND elementKey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementKey) . ' AND deleted=0'
+			'fieldName = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($fieldName) . ' AND elementKey = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementKey) . 'AND templateObject = ' . (int) $tvTemplateObject
 		);
-		return $access;
+
+		return $row;
 	}
 
 	/**
@@ -167,12 +261,21 @@ class tx_gobackendlayout_static {
 	 *
 	 * @return	void
 	 */
-	public static function grantFieldAccess($fieldName, $elementKey) {
-		if ($GLOBALS['BE_USER']->isAdmin() && !self::checkFieldAccess($fieldName, $elementKey)) {
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery(
-				'tx_gobackendlayout_fieldrights',
-				array('fieldName' => $fieldName, 'elementKey' => $elementKey)
-			);
+	public static function grantFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
+		if ($GLOBALS['BE_USER']->isAdmin()) {
+				// if there is no rule for this field and this element -> insert a new rule
+			if(!self::getAccessRow($fieldName, $elementKey, $tvTemplateObject)) {
+				$GLOBALS['TYPO3_DB']->exec_INSERTquery(
+					'tx_gobackendlayout_fieldrights',
+					array('fieldName' => $fieldName, 'elementKey' => $elementKey, 'templateObject' => (int) $tvTemplateObject, 'access' => 'true')
+				);
+			} else { // else -> update the existing rule
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					'tx_gobackendlayout_fieldrights',
+					'uid = ' . self::checkFieldAccess($fieldName, $elementKey, $tvTemplateObject, TRUE),
+					array('access' => 'true')
+				);
+			}
 		}
 	}
 
@@ -184,15 +287,14 @@ class tx_gobackendlayout_static {
 	 *
 	 * @return	void
 	 */
-	public static function revokeFieldAccess($fieldName, $elementKey) {
-		if ($GLOBALS['BE_USER']->isAdmin() && self::checkFieldAccess($fieldName, $elementKey)) {
+	public static function revokeFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
+		if ($GLOBALS['BE_USER']->isAdmin() && self::getAccessRow($fieldName, $elementKey, $tvTemplateObject)) {
 			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 				'tx_gobackendlayout_fieldrights',
-				'fieldName=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($fieldName) . ' AND elementKey=' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementKey),
-				array('deleted' => 1)
+				'uid = ' . self::checkFieldAccess($fieldName, $elementKey, $tvTemplateObject, TRUE),
+				array('access' => 'false')
 			);
 		}
 	}
 }
-
 ?>
