@@ -221,15 +221,13 @@ class tx_gobackendlayout_static {
 	 * @param	string	$fieldName: The templavoila field
 	 * @param	string	$elementKey: The CType to check
 	 * @param	string	$tvTemplateObject: The value for the field 'tx_templavoila_to'
-	 * @param	string	$getUID: if true, the return value is the uid of the row
-	 *							 if false, the return value is the access-string
 	 *
-	 * @return	string	field access ('true' or 'false')
+	 * @return	BOOLEAN	field access
 	 */
-	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject, $getUID = FALSE) {
+	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
 		t3lib_div::loadTCA('tt_content');
-		$row = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
-		$return = $getUID ? $row['uid'] : $row['access'];
+		$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
+		$return = $accessRow['access'] === 'true' ? TRUE : FALSE;
 
 		return $return;
 	}
@@ -258,13 +256,15 @@ class tx_gobackendlayout_static {
 	 *
 	 * @param	string	$fieldName: The templavoila field
 	 * @param	string	$elementKey: The CType
+	 * @param	string	$tvTemplateObject: The value for the field 'tx_templavoila_to'
 	 *
 	 * @return	void
 	 */
 	public static function grantFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
 		if ($GLOBALS['BE_USER']->isAdmin()) {
+			$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
 				// if there is no rule for this field and this element -> insert a new rule
-			if(!self::getAccessRow($fieldName, $elementKey, $tvTemplateObject)) {
+			if(!$accessRow) {
 				$GLOBALS['TYPO3_DB']->exec_INSERTquery(
 					'tx_gobackendlayout_fieldrights',
 					array('fieldName' => $fieldName, 'elementKey' => $elementKey, 'templateObject' => (int) $tvTemplateObject, 'access' => 'true')
@@ -272,7 +272,7 @@ class tx_gobackendlayout_static {
 			} else { // else -> update the existing rule
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
 					'tx_gobackendlayout_fieldrights',
-					'uid = ' . self::checkFieldAccess($fieldName, $elementKey, $tvTemplateObject, TRUE),
+					'uid = ' . $accessRow['uid'],
 					array('access' => 'true')
 				);
 			}
@@ -284,16 +284,20 @@ class tx_gobackendlayout_static {
 	 *
 	 * @param	string	$fieldName: The templavoila field
 	 * @param	string	$elementKey: The CType
+	 * @param	string	$tvTemplateObject: The value for the field 'tx_templavoila_to'
 	 *
 	 * @return	void
 	 */
 	public static function revokeFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
-		if ($GLOBALS['BE_USER']->isAdmin() && self::getAccessRow($fieldName, $elementKey, $tvTemplateObject)) {
-			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
-				'tx_gobackendlayout_fieldrights',
-				'uid = ' . self::checkFieldAccess($fieldName, $elementKey, $tvTemplateObject, TRUE),
-				array('access' => 'false')
-			);
+		if ($GLOBALS['BE_USER']->isAdmin()) {
+			$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
+			if ($accessRow) {
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+					'tx_gobackendlayout_fieldrights',
+					'uid = ' . $accessRow['uid'],
+					array('access' => 'false')
+				);
+			}
 		}
 	}
 }

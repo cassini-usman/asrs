@@ -104,7 +104,7 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 		$hiddenInfosContainerWrap = array('<div class="', '">', '</div>');
 		$tvTemplateObject = $tvTemplateObject ? (int) $tvTemplateObject : 0;
 
-		$checkInformation = tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, $tvTemplateObject) === 'true' ? 'checked="1"' : '';
+		$checkInformation = tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, $tvTemplateObject) ? 'checked="1"' : '';
 		$hiddenInfo .= $hiddenInfosWrap[0] . $tvTemplateObject . $hiddenInfosWrap[1] . $checkInformation . $hiddenInfosWrap[2];
 		$hiddenInfo = $hiddenInfosContainerWrap[0] . $cType . '_' . $tvTemplateObject . $hiddenInfosContainerWrap[1] . $hiddenInfo . $hiddenInfosContainerWrap[2];
 
@@ -133,7 +133,8 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 				$currentSection = $key;
 				$currentSectionItemCount = 0;
 			} elseif ($item['tt_content_defValues']['CType']) {
-				if (!tx_gobackendlayout_static::checkFieldAccess($fieldName, $item['tt_content_defValues']['CType'])) {
+				$tvTemplateObject = $item['tt_content_defValues']['tx_templavoila_to'] ? (int) $item['tt_content_defValues']['tx_templavoila_to'] : 0;
+				if (!tx_gobackendlayout_static::checkFieldAccess($fieldName, $item['tt_content_defValues']['CType'], $tvTemplateObject)) {
 					unset($wizardItems[$key]);
 				} else {
 					$currentSectionItemCount++;
