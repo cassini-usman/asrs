@@ -25,7 +25,7 @@ foreach (array('pages', 'pages_language_overlay') as $pages) {
 	$TCA[$pages]['types'][21]['showitem'] = $TCA[$pages]['types'][254]['showitem'];
 }
 
-/*
+/**
  * set dam_ttcontent field as default thumbnail for table tt_content
  */
 if (t3lib_extMgM::isLoaded('dam_ttcontent')) {
@@ -33,4 +33,12 @@ if (t3lib_extMgM::isLoaded('dam_ttcontent')) {
 	$TCA['tt_content']['ctrl']['thumbnail'] = 'tx_damttcontent_files';
 	$TCA['tt_content']['interface']['showRecordFieldList'] = str_replace(',image,', ',tx_damttcontent_files,', $TCA['tt_content']['interface']['showRecordFieldList']);
 }
+
+/**
+ * add itemsProcFunc for tt_content column 'CType' to remove items which are not allowed in templavoila flexform field
+ *
+ * @author:	Daniel Agro <agro@gosign.de>
+ * @date:	2012-06-14
+ */
+$TCA['tt_content']['columns']['CType']['config']['itemsProcFunc'] = 'EXT:go_backend_layout/lib/class.tx_gobackendlayout_lib.php:tx_gobackendlayout_lib->manipulateCTypeSelect';
 ?>

@@ -130,11 +130,17 @@ class tx_gobackendlayout_static {
 			// go_backend_layout/ext_icon.gif is the fallback
 		$returnPath = t3lib_extMgm::extRelPath('go_backend_layout') . 'ext_icon.gif';
 		$possibleIconFiles = array('wizard.gif', 'wizard.png', 'wizard.jpg', 'icon.gif', 'icon.png', 'icon.jpg', '../ext_icon.gif');
-		foreach($possibleIconFiles as $checkFile) {
-			$filePath = str_replace(basename($filePath), $checkFile, $filePath);
-			if (file_exists(PATH_site . str_replace('../typo3conf', 'typo3conf', $filePath))) {
-				$returnPath = $filePath;
-				break;
+		if ($filePath) {
+			$filePath = dirname($filePath) . '/';
+
+			$checkFilePath = t3lib_div::resolveBackPath(PATH_typo3 . $filePath);
+			$checkFilePath = t3lib_div::getFileAbsFileName($checkFilePath);
+
+			foreach ($possibleIconFiles as $checkFile) {
+				if (file_exists($checkFilePath . $checkFile)) {
+					$returnPath = $filePath . $checkFile;
+					break;
+				}
 			}
 		}
 
@@ -225,9 +231,12 @@ class tx_gobackendlayout_static {
 	 * @return	BOOLEAN	field access
 	 */
 	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
-		t3lib_div::loadTCA('tt_content');
 		$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
 		$return = $accessRow['access'] === 'true' ? TRUE : FALSE;
+
+		if (!$GLOBALS['BE_USER']->isAdmin()) {
+			$return = $return && $GLOBALS['BE_USER']->checkAuthMode('tt_content', 'CType', $elementKey, 'explicitAllow');
+		}
 
 		return $return;
 	}
@@ -242,10 +251,18 @@ class tx_gobackendlayout_static {
 	 * @return	array	the selected row
 	 */
 	public static function getAccessRow($fieldName, $elementKey, $tvTemplateObject) {
+			// skip if no fieldName or elementKey given
+		if (!$fieldName || !$elementKey) {
+			return array();
+		}
+		$tvTemplateObject = $tvTemplateObject ? (int) $tvTemplateObject : 0;
+
 		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
 			'*',
 			'tx_gobackendlayout_fieldrights',
-			'fieldName = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($fieldName) . ' AND elementKey = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementKey) . 'AND templateObject = ' . (int) $tvTemplateObject
+			'fieldName = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($fieldName, 'tx_gobackendlayout_fieldrights') .
+				' AND elementKey = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($elementKey, 'tx_gobackendlayout_fieldrights') .
+				' AND templateObject = ' . $tvTemplateObject
 		);
 
 		return $row;
@@ -264,7 +281,7 @@ class tx_gobackendlayout_static {
 		if ($GLOBALS['BE_USER']->isAdmin()) {
 			$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
 				// if there is no rule for this field and this element -> insert a new rule
-			if(!$accessRow) {
+			if (!$accessRow) {
 				$GLOBALS['TYPO3_DB']->exec_INSERTquery(
 					'tx_gobackendlayout_fieldrights',
 					array('fieldName' => $fieldName, 'elementKey' => $elementKey, 'templateObject' => (int) $tvTemplateObject, 'access' => 'true')
@@ -299,6 +316,89 @@ class tx_gobackendlayout_static {
 				);
 			}
 		}
+	}
+
+	/**
+	 * This function checks in which temaplavoila field we are
+	 *
+	 * @author:	Daniel Agro <agro@gosign.de>
+	 * @date:	2012-06-14
+	 *
+	 * @param	String	$dataRow the contentelement to check for
+	 *
+	 * @return	String	the fieldname
+	 */
+	public static function getFieldName($dataRow) {
+		$return = '';
+			// fetch the flex xml
+		$pageRow = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow(
+			'tx_templavoila_flex',
+			'pages',
+			'uid = ' . $dataRow['pid']
+		);
+			// check which uid we have to search in the flexArray
+		$uidField = $dataRow['sys_language_uid'] && $dataRow['l18n_parent'] ? 'l18n_parent' : 'uid';
+		$localizedUID = $dataRow[$uidField];
+
+		$return = self::recursiveFlexSearch($pageRow, $localizedUID);
+
+		return $return;
+	}
+
+	/**
+	 * This function searches recursive in contentdevider for the CE with the given UID
+	 *
+	 * @author:	Daniel Agro <agro@gosign.de>
+	 * @date:	2012-06-14
+	 *
+	 * @param	Array	$row 			in first call: pageRow to check
+	 *									in recursive calls: contentRow to check
+	 * @param	String	$localizedUID 	The UID to search for
+	 *
+	 * @return	String	templavoila fieldname
+	 */
+	public static function recursiveFlexSearch(array $row, $localizedUID) {
+		if (empty($row) || !t3lib_div::testInt($localizedUID) || $localizedUID <= 0) {
+			return '';
+		}
+
+		$flexArray = t3lib_div::xml2array($row['tx_templavoila_flex']);
+
+		if (!is_array($flexArray['data']['sDEF']['lDEF'])) {
+			return '';
+		}
+
+		$return = '';
+
+			// check all templavoila fields of this templavoila CE
+		foreach ($flexArray['data']['sDEF']['lDEF'] as $fieldName => $vDEF) {
+			$uidsFromFlexField = t3lib_div::trimExplode(',', (reset($vDEF)));
+				// return $fieldName if $localizedUID found
+			if (in_array($localizedUID, $uidsFromFlexField)) {
+				$return = $fieldName;
+				break;
+			}
+
+				// fetch all templavoila CE if uid is in $uidList
+			$where = 'uid IN (' . reset($vDEF) . ') AND CType = "templavoila_pi1" ' . t3lib_BEfunc::BEenableFields('tt_content') . t3lib_BEfunc::deleteClause('tt_content');
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, tx_templavoila_flex', 'tt_content', $where);
+
+			while ($newRow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+					// skip if no flex xml
+				if (!$newRow['tx_templavoila_flex']) {
+					continue;
+				}
+
+					// recursive call
+				$tempFieldName = self::recursiveFlexSearch($newRow, $localizedUID);
+				if ($tempFieldName) {
+					$return = $tempFieldName;
+					break 2;
+				}
+			}
+		}
+
+		return $return;
 	}
 }
 ?>

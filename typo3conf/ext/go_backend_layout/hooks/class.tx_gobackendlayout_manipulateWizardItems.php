@@ -39,7 +39,7 @@ require_once(PATH_typo3 . 'interfaces/interface.cms_newcontentelementwizarditems
 class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementWizardsHook {
 
 	/**
-	 * This hook ...
+	 * This hook manipulates the item list of the new content element wizard of templavoila
 	 *
 	 * @author	Caspar Stuebs <caspar@gosign.de>
 	 *
@@ -57,6 +57,7 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 	}
 
 	/**
+	 * Adds the admin functions to the wizard
 	 *
 	 * @author	Caspar Stuebs <caspar@gosign.de>
 	 *
@@ -66,31 +67,37 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 	 * @return	void
 	 */
 	protected function createWizardItemsAdminFunctions(&$wizardItems, &$parentObject) {
+		if ($this->isLabelPage($parentObject->id)) {
+			return;
+		}
+
 		$fieldName = $this->getFieldName($parentObject->parentRecord);
 
 		$hiddenInfos = '';
-		$hiddenInfosWrap = array('<input type="hidden" name="', '" value="', '" />');
 		$hiddenInfosContainerWrap = array('<div class="hiddenInfos">', '</div>');
 		$itemAlreadyParsed = array();
+
 		foreach ($wizardItems as $item) {
 			$cType = $item['tt_content_defValues']['CType'];
-			if ($cType && !in_array($itemAlreadyParsed, $cType)) {
-				$hiddenInfos .= $this->buildHiddenInfo($cType, $item['tt_content_defValues']['tx_templavoila_to'], $fieldName);
-				$itemAlreadyParsed[] = $cType;
+			$tvTemplateObject = (int) $item['tt_content_defValues']['tx_templavoila_to'];
+
+			if ($cType && !in_array($cType . '_' . $tvTemplateObject, $itemAlreadyParsed)) {
+				$hiddenInfos .= $this->buildHiddenInfo($cType, $tvTemplateObject, $fieldName);
+				$itemAlreadyParsed[] = $cType . '_' . $tvTemplateObject;
 			}
 		}
 
-		if(!$this->isLabelPage($parentObject->id)){
-			$hiddenFieldNameInfo = '<input type="hidden" class="fieldName" value="' . $fieldName . '" />';
-			$parentObject->content .= $hiddenInfosContainerWrap[0] . $hiddenFieldNameInfo . $hiddenInfos . $hiddenInfosContainerWrap[1];
-			$checkBoxToAdd = '<td valign="top"><input type="checkbox" class="fieldrightsCheckbox" value="" /></td>';
-		}
+		$hiddenFieldNameInfo = '<input type="hidden" class="fieldName" value="' . $fieldName . '" />';
+		$parentObject->content .= $hiddenInfosContainerWrap[0] . $hiddenFieldNameInfo . $hiddenInfos . $hiddenInfosContainerWrap[1];
+
+		$checkBoxToAdd = '<td valign="top"><input type="checkbox" class="fieldrightsCheckbox" value="" /></td>';
 
 		$parentObject->elementWrapper['wizard'] = array('<tr class="row">', $checkBoxToAdd . $parentObject->elementWrapper['wizard'][1]);
 		$parentObject->elementWrapperForTabs['wizard'] = $parentObject->elementWrapper['wizard'];
 	}
 
 	/**
+	 * Gets the html code for hidden input types for the admin functions
 	 *
 	 * @author	Daniel Agro <agro@gosign.de>
 	 *
@@ -104,7 +111,7 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 		$hiddenInfosContainerWrap = array('<div class="', '">', '</div>');
 		$tvTemplateObject = $tvTemplateObject ? (int) $tvTemplateObject : 0;
 
-		$checkInformation = tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, $tvTemplateObject) ? 'checked="1"' : '';
+		$checkInformation = tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, $tvTemplateObject) ? 'checked="checked"' : '';
 		$hiddenInfo .= $hiddenInfosWrap[0] . $tvTemplateObject . $hiddenInfosWrap[1] . $checkInformation . $hiddenInfosWrap[2];
 		$hiddenInfo = $hiddenInfosContainerWrap[0] . $cType . '_' . $tvTemplateObject . $hiddenInfosContainerWrap[1] . $hiddenInfo . $hiddenInfosContainerWrap[2];
 
@@ -112,6 +119,7 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 	}
 
 	/**
+	 * Removes not allowed wizard items
 	 *
 	 * @author	Caspar Stuebs <caspar@gosign.de>
 	 *
