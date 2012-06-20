@@ -47,47 +47,80 @@ class tx_golll_userfuncs implements cms_newContentElementWizardsHook {
 	/**
 	 * customized ignore
 	 */
-	var $ignoreListCustomized = 'go_lll_piLabel';
+	var $ignoreListCustomized = 'go_lll_piLabel,queo_speedup_pi1';
 
 	/**
 	 * Generate a list of CTypes that are allowed for Translation
 	 *
 	 * @author	Daniel Agro <agro@gosign.de>
-	 * @author	Marius Stuebs <marius@gosign.de>
-	 * @date 2012-01-26
+	 * @date 2012-06-19
 	 *
-	 * @param	array	$data the data array as reference
-	 * @return	Array	diff between ALL CTypes and ignoreList.
+	 * @param	array	$type type which has to be fetched (for example: 'cType', 'list_type')
+	 * @return	Array	Item with given type which are allowed to make a label element for
 	 */
-	function getCTypesArray() {
+	function getItemArrayByType($type) {
+		if(!is_array($GLOBALS['TCA']['tt_content']['columns'][$type]['config']['items'])) {
+			return array();
+		}
+		$myCType = 'go_lll_piLabel';
 		$ignoreArray = explode(',', $this->ignoreListStandard);
 		$ignoreArray = array_merge($ignoreArray, explode(',', $this->ignoreListCustomized));
 
-		$cTypesArray = array_keys($GLOBALS['TCA']['tt_content']['types']);
-		$cTypesArray = array_diff($cTypesArray, $ignoreArray);
+		$itemsArray = array();
+		foreach ($GLOBALS['TCA']['tt_content']['columns'][$type]['config']['items'] as $item) {
+			if (!$item[1] || in_array($item[1], $ignoreArray) || $item[1] === '--div--' || !$this->hasLocallang($item[1])) {
+				continue;
+			}
 
-		return array_merge($cTypesArray);
+			$wItem = array();
+			$wItem['icon'] = tx_gobackendlayout_static::getIcon('');
+			$wItem['title'] = 'Bezeichner-Element für ' . $GLOBALS['LANG']->sL($item[0]);
+			$wItem['description'] = '';
+			$wItem['tt_content_defValues']['tx_golll_ctype'] = $item[1];
+			$wItem['tt_content_defValues']['CType'] = $myCType;
+			$wItem['params'] = '&defVals[tt_content][CType]='.$myCType;
+			$wItem['params'] .= '&defVals[tt_content][header]='.urlencode($this->computeHeaderValue($GLOBALS['LANG']->sL($item[0])));
+			$wItem['params'] .= '&defVals[tt_content][tx_golll_ctype]='.$wItem['tt_content_defValues']['tx_golll_ctype'];
+
+			$itemsArray[$item[1]] = $wItem;
+		}
+
+		return $itemsArray;
+	}
+
+	/**
+	 * Generate a list of cType and list_types element that are allowed for Translation
+	 *
+	 * @author	Daniel Agro <agro@gosign.de>
+	 * @date 2012-06-19
+	 *
+	 * @return	Array	fetched wizarditems which are allowed to make a label element for
+	 */
+	function getWizardItems() {
+		$returnArray = array_merge($this->getItemArrayByType('CType'), $this->getItemArrayByType('list_type'));
+
+		return $returnArray;
 	}
 
 	/**
 	 * Format the list of CTypes that are allowed for Translation
 	 * NEEDED BY TCA.
 	 *
-	 * @author Marius Stuebs <marius@gosign.de>
 	 * @author Daniel Agro <agro@gosign.de>
+	 *
+	 * @date: 2012-06-19
 	 *
 	 * @param	array	$data the data array as reference
 	 * @return	void
 	 */
 	function getCTypeItems(&$data){
-		$cTypesArray = $this->getCTypesArray();
-		foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $cTypeConfig) {
-			$cTypeConfigItems[$cTypeConfig[1]] = $cTypeConfig;
-		}
+			// fetch list of allowed items
+		$wizardItems = $this->getWizardItems();
 
-		foreach(($cTypesArray) as $cType) {
-			$label = $GLOBALS['LANG']->sL($cTypeConfigItems[$cType][0]);
-			$data['items'][] = array( $label, $cType);
+			// generate item list
+		foreach($wizardItems as $key => $item) {
+			$label = $item['title'];
+			$data['items'][] = array( $label, $key);
 		}
 	}
 
@@ -116,7 +149,6 @@ class tx_golll_userfuncs implements cms_newContentElementWizardsHook {
 		$params['title'] = $label;
 	}
 
-
 	/**
 	 * This function feeds a hook of templaVoila >= 1.6.0
 	 *
@@ -135,37 +167,19 @@ class tx_golll_userfuncs implements cms_newContentElementWizardsHook {
 			return;
 		}
 
-		$cTypesArray = $this->getCTypesArray();
-		$myCType = 'go_lll_piLabel';
+			// fetch customized list of wizarditems
+		$itemsArray = $this->getWizardItems();
 
-		/* Traverse through all wizard items
-		 * and remove those not in $cTypesArray.
-		 *
-		 */
-		$removeArray = array();
+			// build new wizarditems list and set an header
+		$newWizardItemArray = array();
+		$newWizardItemArray['common'] = array('header' => 'Bezeichner-Elemente');
 
-		foreach ($wizardItems as $key => &$wItem) {
-				// Check, if the wizard item CType is allowed to get a translation element
-			if (in_array($wItem['tt_content_defValues']['CType'], $cTypesArray) && $this->hasLocallang($wItem['tt_content_defValues']['CType'])) {
-				$wItem['title'] = 'Bezeichner-Element für ' . $wItem['title'];
-				$wItem['description'] = '';
-				$wItem['tt_content_defValues']['tx_golll_ctype'] = $wItem['tt_content_defValues']['CType'];
-				$wItem['tt_content_defValues']['CType'] = $myCType;
-				$wItem['params'] = '&defVals[tt_content][CType]='.$myCType;
-				$wItem['params'] .= '&defVals[tt_content][header]='.urlencode($this->computeHeaderValue($wItem['title']));
-				$wItem['params'] .='&defVals[tt_content][tx_golll_ctype]='.$wItem['tt_content_defValues']['tx_golll_ctype'];
-			} elseif ($key === 'common') {
-					//if this element is the head -> change the header
-				$wizardItems['common']['header'] = 'Bezeichner-Elemente';
-			} else {
-					// If the wizard item CType is not good, remove it afterwards.
-				$removeArray[] = $key;
-			}
+		foreach ($itemsArray as $key => $item) {
+			$newWizardItemArray['common_' . $key] = $item;
 		}
-			// Remove unliked wizard items.
-		foreach ($removeArray as $key) {
-			unset($wizardItems[$key]);
-		}
+
+			// overwrite the pld wizarditem list with our customized
+		$wizardItems = $newWizardItemArray;
 
 		// @reminder No return is required, because in fact we return $wizardItems by reference.
 	}
@@ -185,7 +199,7 @@ class tx_golll_userfuncs implements cms_newContentElementWizardsHook {
 	 * @param Object	$this is an object of class tx_templavoila_module1 extends t3lib_SCbase
 	 * @return void.
 	 */
-	function handleIncomingCommands_preProcess($command, $redirectLocation, $self) {
+	function handleIncomingCommands_preProcess($command, &$redirectLocation, $self) {
 		if ($command == 'createNewRecord') {
 			$defVals = t3lib_div::_GP('defVals');
 			$newRow = is_array ($defVals['tt_content']) ? $defVals['tt_content'] : array();
@@ -200,7 +214,7 @@ class tx_golll_userfuncs implements cms_newContentElementWizardsHook {
 					$commandParameters = t3lib_div::_GP($command);
 					$apiObj = t3lib_div::makeInstance('tx_templavoila_module1');
 					$redirectLocation = $GLOBALS['BACK_PATH'].'alt_doc.php?edit[tt_content]['.$cUID.']=edit&returnUrl='.rawurlencode(t3lib_extMgm::extRelPath('templavoila').'mod1/index.php?'.$apiObj->link_getParameters());
-					return TRUE;;
+					return TRUE;
 				}
 			}
 		}

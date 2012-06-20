@@ -47,7 +47,7 @@ $tempColumns = array(
 			'foreign_table' => 'tx_golll_translation',
 			'foreign_match_fields' => array('parentField' => 'tx_golll_labelcontainer'),
 			'foreign_field' => 'parentElement',
-			'maxitems' => 500,
+			'maxitems' => 5000,
 			'appearance' => array(
 				'expandSingle' => 1,
 				'newRecordLinkAddTitle' => 0,

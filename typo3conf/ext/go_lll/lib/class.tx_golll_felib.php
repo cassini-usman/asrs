@@ -53,14 +53,16 @@ class tx_golll_felib implements t3lib_Singleton {
 			} else {
 				$enableFields = $plugin->cObj->enableFields('tx_golll_translation');
 
+				$cTypeForDb = $plugin->cObj->data['CType'] === 'list' ? $plugin->cObj->data['list_type'] : $plugin->cObj->data['CType'];
+
 					// set the values for the given language ($plugin->LLkey)
 				$tempLOCAL_LANG = array(
-					$plugin->LLkey => $this->getLabelsFromDB($plugin->cObj->data['CType'], $plugin->LLkey, $enableFields)
+					$plugin->LLkey => $this->getLabelsFromDB($cTypeForDb, $plugin->LLkey, $enableFields)
 				);
 
 					//set the values for default language
 				if ($plugin->LLkey !== 'default') {
-					$tempLOCAL_LANG['default'] = $this->getLabelsFromDB($plugin->cObj->data['CType'], 'default', $enableFields);
+					$tempLOCAL_LANG['default'] = $this->getLabelsFromDB($cTypeForDb, 'default', $enableFields);
 				}
 
 				$GLOBALS['go_lll'][$plugin->prefixId] = $tempLOCAL_LANG;
