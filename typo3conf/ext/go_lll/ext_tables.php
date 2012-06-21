@@ -10,22 +10,18 @@ $TCA['tx_golll_translation'] = array (
 	'ctrl' => array (
 		'title'     => 'LLL:EXT:go_lll/locallang_db.xml:tx_golll_translation',
 		'label_userFunc' => 'EXT:go_lll/lib/class.tx_golll_userfuncs.php:tx_golll_userfuncs->getLabelTitle',
-			// 'label'     => 'tx_golll_label',
-			// 'label_alt'       => 'tx_golll_value',
-			// 'label_alt_force' => 1,
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
 		'default_sortby' => 'ORDER BY tx_golll_label, tx_golll_langlabel',
-			//'delete' => 'deleted',
 		'enablecolumns' => array (
-			// 'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_golll_translation.gif',
 	),
 );
 
+$TCA['tt_content']['ctrl']['requestUpdate'] .= ',tx_golll_sorting';
 t3lib_div::loadTCA('tt_content');
 $tempColumns = array(
 	'tx_golll_ctype' => array (
@@ -38,7 +34,22 @@ $tempColumns = array(
 				'maxitems' => 1,
 				'readOnly' => 1,
 			)
-		),
+	),
+	'tx_golll_sorting' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:go_lll/locallang_db.xml:tx_golll_translation.tx_golll_sorting',
+			'config' => array (
+				'type' => 'select',
+				'items' => array (
+					array('LLL:EXT:go_lll/locallang_db.xml:tx_golll_translation.sorting.I.0', '0'),
+					array('LLL:EXT:go_lll/locallang_db.xml:tx_golll_translation.sorting.I.1', '1')
+				),
+				'default' => '0',
+				'size' => 1,
+				'minitems' => 1,
+				'maxitems' => 1,
+			)
+	),
 	'tx_golll_labelcontainer' => array (
 		'exclude' => 0,
 		'label' => 'LLL:EXT:go_tca/locallang_db.xml:tx_gotca_selectoptions',
@@ -81,6 +92,7 @@ t3lib_extMgm::addTCAcolumns('tt_content',$tempColumns,1);
 t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['palettes']['go_lll_piLabel']['showitem'] = 'tx_golll_ctype';
 $TCA['tt_content']['types'][$_EXTKEY . '_piLabel']['showitem'] = 'CType;;go_lll_piLabel;button;1-1-1,
+													tx_golll_sorting,
 													tx_golll_labelcontainer,
 													';
 

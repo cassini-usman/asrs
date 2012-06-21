@@ -30,6 +30,12 @@
 
 $go_lllClasses = array(
 	'tx_golll_felib' => t3lib_extMgm::extPath('go_lll') . 'lib/class.tx_golll_felib.php',
+	'tx_golll_belib' => t3lib_extMgm::extPath('go_lll') . 'lib/class.tx_golll_belib.php',
+	'tx_golll_userfuncs' => t3lib_extMgm::extPath('go_lll') . 'lib/class.tx_golll_userfuncs.php',
+	'tx_golll_getsinglefieldclass' => t3lib_extMgm::extPath('go_lll') . 'hooks/class.tx_golll_getSingleFieldClasstx_golll_felib.php',
+	'tx_golll_getmainfieldsclass' => t3lib_extMgm::extPath('go_lll') . 'hooks/class.tx_golll_getMainFieldsClass.php',
+	'tx_golll_handleincomingcommands' => t3lib_extMgm::extPath('go_lll') . 'hooks/class.tx_golll_handleIncomingCommands.php',
+	'tx_golll_wizarditemshook' => t3lib_extMgm::extPath('go_lll') . 'hooks/class.tx_golll_wizardItemsHook.php',
 );
 
 return $go_lllClasses;

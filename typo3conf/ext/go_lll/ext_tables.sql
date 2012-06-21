@@ -2,8 +2,9 @@
 # Table structure for table 'tt_content'
 #
 CREATE TABLE tt_content (
-	tx_golll_labelcontainer tinytext NOT NULL,
-	tx_golll_ctype text NOT NULL
+	tx_golll_labelcontainer text NOT NULL,
+	tx_golll_ctype tinytext NOT NULL,
+	tx_golll_sorting tinyint(4) DEFAULT '0' NOT NULL
 );
 
 #
@@ -15,7 +16,6 @@ CREATE TABLE tx_golll_translation (
 	tstamp int(11) DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
 	cruser_id int(11) DEFAULT '0' NOT NULL,
-#	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	hidden tinyint(4) DEFAULT '0' NOT NULL,
 	parentElement int(11) DEFAULT '0' NOT NULL,
 	tx_golll_ctype varchar(64) DEFAULT '' NOT NULL,
@@ -27,5 +27,5 @@ CREATE TABLE tx_golll_translation (
 	KEY parent (pid),
 	KEY tx_golll_ctype (tx_golll_ctype),
 	KEY tx_golll_label (tx_golll_label),
-	KEY tx_golll_langlabel (tx_golll_langlabel),
+	KEY tx_golll_langlabel (tx_golll_langlabel)
 );
