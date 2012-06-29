@@ -49,6 +49,10 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 	 * @return	void
 	 */
 	public function manipulateWizardItems(&$wizardItems, &$parentObject) {
+		if (tx_gobackendlayout_static::flexformRightsManagementDisabled() || $this->isLabelPage($parentObject->id)) {
+			return;
+		}
+
 		if ($GLOBALS['BE_USER']->isAdmin()) {
 			$this->createWizardItemsAdminFunctions($wizardItems, $parentObject);
 		} else {
@@ -67,10 +71,6 @@ class tx_gobackendlayout_manipulateWizardItems implements cms_newContentElementW
 	 * @return	void
 	 */
 	protected function createWizardItemsAdminFunctions(&$wizardItems, &$parentObject) {
-		if ($this->isLabelPage($parentObject->id)) {
-			return;
-		}
-
 		$fieldName = $this->getFieldName($parentObject->parentRecord);
 
 		$hiddenInfos = '';

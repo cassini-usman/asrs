@@ -46,7 +46,7 @@ class tx_gobackendlayout_lib {
 	 */
 	public function manipulateCTypeSelect(&$data) {
 			// skip process if is admin or no items
-		if ($GLOBALS['BE_USER']->isAdmin() || !is_array($data['items'])) {
+		if ($GLOBALS['BE_USER']->isAdmin() || !is_array($data['items']) || tx_gobackendlayout_static::flexformRightsManagementDisabled()) {
 			return;
 		}
 

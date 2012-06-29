@@ -72,5 +72,6 @@ $TYPO3_CONF_VARS['EXT']['extConf']['version'] = 'a:1:{s:18:"showDraftWorkspace";
 $TYPO3_CONF_VARS['EXT']['extConf']['dam_index'] = 'a:2:{s:18:"add_media_indexing";s:1:"0";s:23:"add_media_file_indexing";s:1:"1";}';
 $TYPO3_CONF_VARS['EXT']['extConf']['naw_securedl'] = 'a:10:{s:11:"securedDirs";s:29:"fileadmin/user_upload/private";s:8:"filetype";s:40:"pdf|jpe?g|gif|png|doc|xls|rar|tgz|tar|gz";s:13:"forcedownload";s:1:"0";s:17:"forcedownloadtype";s:26:"pdf|doc|xls|rar|tgz|tar|gz";s:6:"domain";s:46:"http://mydomain.com|http://my.other.domain.org";s:12:"cachetimeadd";s:4:"3600";s:5:"debug";s:1:"0";s:3:"log";s:1:"0";s:14:"outputFunction";s:8:"readfile";s:15:"outputChunkSize";s:7:"1048576";}';
 $TYPO3_CONF_VARS['EXT']['extConf']['go_language'] = 'a:8:{s:22:"defaultLanguageIsoCode";s:2:"DE";s:20:"defaultLanguageTitle";s:7:"Deutsch";s:19:"defaultLanguageFlag";s:2:"de";s:29:"defaultLanguageDisabledInMenu";s:1:"0";s:28:"defaultLanguageRealurlEncode";s:1:"1";s:34:"redirectToPreferredBrowserLanguage";s:1:"1";s:17:"sys_language_mode";s:16:"content_fallback";s:20:"sys_language_overlay";s:17:"hideNonTranslated";}';
+$TYPO3_CONF_VARS['EXT']['extConf']['go_backend_layout'] = 'a:1:{s:31:"disableFlexformRightsManagement";s:1:"0";}';
 
 ?>

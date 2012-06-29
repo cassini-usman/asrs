@@ -34,6 +34,58 @@
  * @subpackage	tx_gobackendlayout
  */
 class tx_gobackendlayout_static {
+	/**
+	 * The go_backend_layout extension config
+	 *
+	 * @var	array	The go_backend_layout extension config
+	 */
+	protected static $extensionConfig = array();
+
+	/**
+	 * Reads the extension config for the given extension from $GLOBALS array
+	 *
+	 * @param	string	$extensionKey: The extension key
+	 *
+	 * @return	array	The extension config
+	 */
+	public static function readExtensionConfig($extensionKey = 'go_backend_layout') {
+		if (t3lib_extMgm::isLoaded($extensionKey)) {
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extensionKey])) {
+				$extensionConfig = $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extensionKey];
+			} else {
+				$extensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$extensionKey]);
+			}
+		}
+
+		return is_array($extensionConfig) ? $extensionConfig : array();
+	}
+
+	/**
+	 * Gets the go_backend_layout extension config
+	 * Takes it from $GLOBALS array if empty
+	 *
+	 * @return	array	The go_backend_layout extension config
+	 */
+	public static function getStaticExtensionConfig() {
+		if (empty(self::$extensionConfig) || !is_array(self::$extensionConfig)) {
+			$tempExtensionConfig = self::readExtensionConfig();
+
+			self::$extensionConfig = (is_array($tempExtensionConfig) && !empty($tempExtensionConfig)) ? $tempExtensionConfig : array('disableFlexformRightsManagement' => FALSE);
+		}
+
+		return self::$extensionConfig;
+	}
+
+	/**
+	 * Checks if the rights management for templavoila flexform elements is disabled
+	 *
+	 * @return	boolean	TRUE, if the rights management is disabled
+	 */
+	public static function flexformRightsManagementDisabled() {
+		$extConf = self::getStaticExtensionConfig();
+
+		return (boolean) $extConf['disableFlexformRightsManagement'];
+	}
 
 	/**
 	 * Add extension to the new content element wizard
@@ -231,6 +283,10 @@ class tx_gobackendlayout_static {
 	 * @return	BOOLEAN	field access
 	 */
 	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
+		if (self::flexformRightsManagementDisabled()) {
+			return TRUE;
+		}
+
 		$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
 		$return = $accessRow['access'] === 'true' ? TRUE : FALSE;
 
@@ -252,7 +308,7 @@ class tx_gobackendlayout_static {
 	 */
 	public static function getAccessRow($fieldName, $elementKey, $tvTemplateObject) {
 			// skip if no fieldName or elementKey given
-		if (!$fieldName || !$elementKey) {
+		if (!$fieldName || !$elementKey || self::flexformRightsManagementDisabled()) {
 			return array();
 		}
 		$tvTemplateObject = $tvTemplateObject ? (int) $tvTemplateObject : 0;
@@ -278,7 +334,7 @@ class tx_gobackendlayout_static {
 	 * @return	void
 	 */
 	public static function grantFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
-		if ($GLOBALS['BE_USER']->isAdmin()) {
+		if ($GLOBALS['BE_USER']->isAdmin() && !self::flexformRightsManagementDisabled()) {
 			$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
 				// if there is no rule for this field and this element -> insert a new rule
 			if (!$accessRow) {
@@ -306,7 +362,7 @@ class tx_gobackendlayout_static {
 	 * @return	void
 	 */
 	public static function revokeFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
-		if ($GLOBALS['BE_USER']->isAdmin()) {
+		if ($GLOBALS['BE_USER']->isAdmin() && !self::flexformRightsManagementDisabled()) {
 			$accessRow = self::getAccessRow($fieldName, $elementKey, $tvTemplateObject);
 			if ($accessRow) {
 				$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
