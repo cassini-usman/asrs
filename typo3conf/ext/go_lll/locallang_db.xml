@@ -20,6 +20,7 @@
 			<label index="tx_golll_translation.tx_golll_label">Marker Label</label>
 			<label index="tx_golll_translation.tx_golll_value">Marker Value</label>
 			<label index="tx_golll_translation.tx_golll_sorting">Sorting</label>
+			<label index="tx_golll_translation.tx_golll_searchstring">Filter</label>
 			<label index="tx_golll_translation.sorting.I.0">Label</label>
 			<label index="tx_golll_translation.sorting.I.1">Language</label>
 		</languageKey>
@@ -38,6 +39,7 @@
 			<label index="tx_golll_translation.tx_golll_label">Marker-Name</label>
 			<label index="tx_golll_translation.tx_golll_value">Bezeichner</label>
 			<label index="tx_golll_translation.tx_golll_sorting">Sortierung</label>
+			<label index="tx_golll_translation.tx_golll_searchstring">Filter</label>
 			<label index="tx_golll_translation.sorting.I.0">Bezeichner</label>
 			<label index="tx_golll_translation.sorting.I.1">Sprache</label>
 		</languageKey>

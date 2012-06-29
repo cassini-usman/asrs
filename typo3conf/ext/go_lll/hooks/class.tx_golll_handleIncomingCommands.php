@@ -73,7 +73,6 @@ class tx_golll_handleIncomingCommands {
 }
 
 
-
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_lll/hooks/class.tx_golll_handleIncomingCommands.php'])	{
 	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/go_lll/hooks/class.tx_golll_handleIncomingCommands.php']);
 }

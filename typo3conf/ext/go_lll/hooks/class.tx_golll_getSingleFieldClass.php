@@ -49,7 +49,7 @@ class tx_golll_getSingleFieldClass {
 		if ($row['CType'] === 'go_lll_piLabel') {
 			if ($PA['fieldConf']['config']['form_type'] === 'inline') {
 				$sorting = $this->getSorting($row['tx_golll_sorting']);
-				$rows = $this->fetchRecords($PA, $sorting);
+				$rows = $this->fetchRecords($PA, $sorting, $row['tx_golll_searchstring']);
 
 					// fetch the uids
 				$idsArray = array();
@@ -93,15 +93,20 @@ class tx_golll_getSingleFieldClass {
 	 * @author	Daniel Agro <agro@gosign.de>
 	 * @date 2012-06-21
 	 *
-	 * @param	array	$PA			TCA configuration for the field
-	 * @param	String	$sorting	sortBy String for the db-request
+	 * @param	array	$PA				TCA configuration for the field
+	 * @param	String	$sorting		sortBy String for the db-request
+	 * @param	String	$searchString	search String for the db-request
 	 *
 	 * @return	Array	fetched rows
 	 */
-	public function fetchRecords($parentTCAconfig, $sorting) {
+	public function fetchRecords($parentTCAconfig, $sorting, $searchString = '') {
 		$select = '*';
 		$table = $parentTCAconfig['fieldConf']['config']['foreign_table'];
 		$where = 'uid IN (' . $parentTCAconfig['itemFormElValue'] . ') ';
+		if ($searchString) {
+			$where .= ' AND ' . $GLOBALS['TYPO3_DB']->searchQuery(t3lib_div::trimExplode(' ', $searchString), array('tx_golll_label', 'tx_golll_value'), 'tx_golll_translation');
+		}
+
 		$enableFields = t3lib_BEfunc::BEenableFields($table).t3lib_BEfunc::deleteClause($table);
 
 		return $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $table, $where . $enableFields, '', $sorting, '', '');

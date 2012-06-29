@@ -13,6 +13,7 @@ $TCA['tx_golll_translation'] = array (
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
+		'delete' => 'deleted',
 		'default_sortby' => 'ORDER BY tx_golll_label, tx_golll_langlabel',
 		'enablecolumns' => array (
 		),
@@ -21,7 +22,7 @@ $TCA['tx_golll_translation'] = array (
 	),
 );
 
-$TCA['tt_content']['ctrl']['requestUpdate'] .= ',tx_golll_sorting';
+$TCA['tt_content']['ctrl']['requestUpdate'] .= ',tx_golll_sorting,tx_golll_searchstring';
 t3lib_div::loadTCA('tt_content');
 $tempColumns = array(
 	'tx_golll_ctype' => array (
@@ -48,6 +49,13 @@ $tempColumns = array(
 				'size' => 1,
 				'minitems' => 1,
 				'maxitems' => 1,
+			)
+	),
+	'tx_golll_searchstring' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:go_lll/locallang_db.xml:tx_golll_translation.tx_golll_searchstring',
+			'config' => array (
+				'type' => 'input',
 			)
 	),
 	'tx_golll_labelcontainer' => array (
@@ -93,6 +101,7 @@ t3lib_div::loadTCA('tt_content');
 $TCA['tt_content']['palettes']['go_lll_piLabel']['showitem'] = 'tx_golll_ctype';
 $TCA['tt_content']['types'][$_EXTKEY . '_piLabel']['showitem'] = 'CType;;go_lll_piLabel;button;1-1-1,
 													tx_golll_sorting,
+													tx_golll_searchstring,
 													tx_golll_labelcontainer,
 													';
 

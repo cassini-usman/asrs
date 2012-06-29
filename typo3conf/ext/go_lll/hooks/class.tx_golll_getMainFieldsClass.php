@@ -54,14 +54,24 @@ class tx_golll_getMainFieldsClass {
 		if ($table === 'tt_content') {
 			if ($row['CType'] === 'go_lll_piLabel') {
 				$translatedCType = $row['tx_golll_ctype'];
+
 					// how many Labels are missing? Write and count!
 				$count = $this->go_lllBElib->writeLabelsToDatabase($translatedCType);
+
 					// check if there are existing labels directing to the wrong record
 				$count2 = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('COUNT(uid) as count', 'tx_golll_translation', 'tx_golll_ctype = "' . $translatedCType . '" AND parentElement != ' . $row['uid']);
 				if ($count2['count'] > 0) {
 						//there are existing labels directing to the wrong record? Count them and correct them.
-					$count += $count2['count'];
 					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_golll_translation', 'tx_golll_ctype = "' . $row['tx_golll_ctype'] . '"',  array( 'parentElement' => $row['uid']));
+					$count += $count2['count'];
+				}
+
+					// check if there deleted elements
+				$deletedElements = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('COUNT(uid) as count', 'tx_golll_translation', 'tx_golll_ctype = "' . $translatedCType . '" AND deleted = 1');
+				if ($deletedElements['count'] > 0) {
+						//there are existing labels directing to the wrong record? Count them and correct them.
+					$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_golll_translation', 'tx_golll_ctype = "' . $row['tx_golll_ctype'] . '"',  array( 'deleted' => '0'));
+					$count += $deletedElements['count'];
 				}
 
 				if ($count > 0 and !$GLOBALS['tx_golll_redirectcount']) {
@@ -70,6 +80,7 @@ class tx_golll_getMainFieldsClass {
 					$GLOBALS['tx_golll_redirectcount'] = 1;
 					t3lib_utility_http::redirect($redirectLocation);
 				}
+
 				return TRUE;
 			}
 		}
