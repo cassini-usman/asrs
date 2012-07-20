@@ -1,0 +1,20 @@
+<div class="previewTemplate {{typeValue}}">
+		{{#defaultFields}}
+		{{#value}}
+		<div class="row {{fieldName}} {{isType}}">
+			<div class="colWrapper">
+				<div class="col left">
+					<label for="{{fieldName}}">
+						{{label}}
+					</label>
+				</div>
+				<div class="col right">
+					<div>
+						{{{value}}}
+					</div>
+				</div>
+			</div>
+		</div>
+		{{/value}}
+		{{/defaultFields}}
+</div>

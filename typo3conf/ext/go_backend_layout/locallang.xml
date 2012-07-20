@@ -7,9 +7,23 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="pages.doktypes.pagecontainer">Page Container</label>
+			<label index="check">Checkbox</label>
+			<label index="check.yes">Yes</label>
+			<label index="check.no">No</label>
+			<label index="text">Textfield</label>
+			<label index="select">Selectbox</label>
+			<label index="input">Inputfield</label>
+			<label index="inline">Inlinefield</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="pages.doktypes.pagecontainer">Seitencontainer</label>
+			<label index="check">Checkbox</label>
+			<label index="check.yes">Ja</label>
+			<label index="check.no">Nein</label>
+			<label index="text">Textfeld</label>
+			<label index="select">Selectbox</label>
+			<label index="input">Inputfeld</label>
+			<label index="inline">Inlinefeld</label>
 		</languageKey>
 	</data>
 </T3locallang>

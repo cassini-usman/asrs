@@ -1,0 +1,72 @@
+/**
+ * preview content styling - begin
+ */
+
+.beTemplateCell .previewTemplate .row {
+	margin-bottom: 5px;
+}
+
+.beTemplateCell .previewTemplate .row .colWrapper {
+	display: inline-block;
+}
+
+/* for hover */
+.beTemplateCell .active .previewTemplate .row.typeRow .colWrapper {
+	background: #F7F7F7;
+}
+
+.beTemplateCell .previewTemplate .row .colWrapper .col {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.beTemplateCell .previewTemplate .row .colWrapper .col.left {
+	width: 100px;
+	margin-right: 10px;
+}
+
+.beTemplateCell .previewTemplate .row .colWrapper .col.left label {
+	font-weight: bold;
+}
+
+.beTemplateCell .previewTemplate .row .colWrapper .col.right {
+}
+
+/* special for type field*/
+.beTemplateCell .previewTemplate .row.typeRow .colWrapper {
+	border: 1px solid #000000;
+	border-radius: 5px 5px 5px 5px;
+	background: #ffffff;
+	padding: 2px 6px 2px;
+	margin: 4px 0px 2px;
+}
+.beTemplateCell .previewTemplate .row.typeRow .colWrapper .col.left {
+	display: none;
+}
+.beTemplateCell .previewTemplate .row.typeRow .colWrapper .col.right {
+	font-size: 11px;
+	font-weight: bold;
+}
+
+/**
+ * preview content styling - end
+ */
+
+
+/**
+ * title of template row
+ */
+.beTemplateCell td.tpm-title-cell {
+	border: 1px solid #CCCCCC;
+	padding: 4px;
+	color: #000000;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+/**
+ * remove left border of content cell
+ */
+.beTemplateCell td.tpm-content-cell {
+	border-left: 0px none;
+}

@@ -60,9 +60,13 @@ t3lib_extMgm::addPageTSConfig('templavoila.wizards.newContentElement.renderMode 
  */
 t3lib_extMgm::addPageTSConfig('mod.web_txtemplavoilaM1.enableDeleteIconForLocalElements = 2' . "\n");
 /*
+ * show localization links for templavoila_pi1 content elements
+ */
+t3lib_extMgm::addPageTSConfig('mod.web_txtemplavoilaM1.enableLocalizationLinkForFCEs = 1' . "\n");
+/*
  * hide reference buttons for content elements in templavoila
  */
-t3lib_extMgm::addPageTSConfig('mod.web_txtemplavoilaM1.blindIcons = ref' . "\n");
+t3lib_extMgm::addPageTSConfig('mod.web_txtemplavoilaM1.blindIcons = ref,browse' . "\n");
 /*
  * show content of shortcut pages in page module
  */

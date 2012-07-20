@@ -153,16 +153,49 @@ class tx_gobackendlayout_static {
 	 * @return	array	The config item array for the given CType
 	 */
 	public static function getCTypeArrayFromTCA($cType) {
-		$returnArray = array();
+		$returnArray = tx_gobackendlayout_static::getColumnItemArrayFromTCA(array('table' => 'tt_content', 'column' => 'CType', 'value' => $cType));
 
-		t3lib_div::loadTCA('tt_content');
-		if (is_array($GLOBALS['TCA']['tt_content']['columns']) && is_array($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'])) {
-			foreach ($GLOBALS['TCA']['tt_content']['columns']['CType']['config']['items'] as $itemArray) {
-				if ($itemArray[1] == $cType) {
-					$returnArray = $itemArray;
-					$returnArray[2] = tx_gobackendlayout_static::getIcon($returnArray[2]);
-					break;
-				}
+		if (!empty($returnArray)) {
+			$returnArray[2] = tx_gobackendlayout_static::getIcon($returnArray[2]);
+		}
+
+		return $returnArray;
+	}
+
+	/**
+	 * Get a config item array from TCA, defined by table and column and value
+	 *
+	 * @param	array	$options: The options to find the requested item array
+	 * @param	string	$options|table: The TCA table, default 'tt_content'
+	 * @param	string	$options|column: The column of the table, default 'CType'
+	 * @param	string	$options|value: The value of the item to find, default ''
+	 *
+	 * @return	array	An array of a config item (label, value, icon), emtpy if not found
+	 */
+	public static function getColumnItemArrayFromTCA($options) {
+		$defaultOptions = array(
+			'table' => 'tt_content',
+			'column' => 'CType',
+			'value' => '',
+		);
+
+		$options = t3lib_div::array_merge_recursive_overrule($defaultOptions, $options);
+
+		t3lib_div::loadTCA($options['table']);
+
+			// return an empty array, if table or coulmn not found or items array is empty
+		if (!is_array($GLOBALS['TCA'][$options['table']]) ||
+				!is_array($GLOBALS['TCA'][$options['table']]['columns'][$options['column']]) ||
+				!is_array($GLOBALS['TCA'][$options['table']]['columns'][$options['column']]['config']['items']) ||
+				empty($GLOBALS['TCA'][$options['table']]['columns'][$options['column']]['config']['items'])) {
+			return array();
+		}
+
+		$returnArray = array();
+		foreach ($GLOBALS['TCA'][$options['table']]['columns'][$options['column']]['config']['items'] as $itemArray) {
+			if ($itemArray[1] == $options['value']) {
+				$returnArray = $itemArray;
+				break;
 			}
 		}
 

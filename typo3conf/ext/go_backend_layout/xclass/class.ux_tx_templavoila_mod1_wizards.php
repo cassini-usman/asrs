@@ -74,10 +74,9 @@ class ux_tx_templavoila_mod1_wizards extends tx_templavoila_mod1_wizards {
 				 * At this moment only for 'doktype = 1' the template selection is shown and it is hardcoded in javascript file 'javascript/newPageWizard.js'
 				 */
 				// add javascript to show / hide template selector due to doktype.
-			$javascript = '<script type="text/javascript" src="' . $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('go_backend_layout') . 'javascript/jquery.js"></script>';
-			$javascript .= '<script type="text/javascript" src="' . $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath('go_backend_layout') . 'javascript/newPageWizard.js"></script>';
+			tx_gobackendlayout_static::addJavaScriptFile('res/javascript/newPageWizard.js', 'go_backend_layout');
 
-			$content = $doktype . $content . $javascript;
+			$content = $doktype . $content;
 		}
 
 		return $content;
