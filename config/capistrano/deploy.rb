@@ -46,6 +46,7 @@ end
 
 namespace :deploy do
 
+  ssh_options[:forward_agent] = true
   # Create a symlink from htdocs to current to keep our
   # DefaultProjekt structure intact.
   task :resymlink, :roles => :app do
