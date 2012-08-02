@@ -59,8 +59,14 @@ class tx_gobackendlayout_lib {
 			if ($item[1] === '--div--') {
 				continue;
 			}
-				// unset if no access and not selected value
-			if ($this->checkRemoveItem($fieldName, $item[1])) {
+
+			if ($data['row']['CType'] === 'templavoila_pi1') {
+					// if current element is 'templavoila_pi1', remove all items expect of 'templavoila_pi1'
+				if ($item[1] !== 'templavoila_pi1') {
+					unset($data['items'][$key]);
+				}
+			} elseif ($this->checkRemoveItem($fieldName, $item[1])) {
+					// if no access or select item is templavoila_pi1, remove item
 				unset($data['items'][$key]);
 			}
 		}
@@ -78,14 +84,7 @@ class tx_gobackendlayout_lib {
 	 * @return	boolean	TRUE, if the cType hs to be removed
 	 */
 	public function checkRemoveItem($fieldName, $cType) {
-		$return = FALSE;
-			// (!access || templavoila) && !selected
-		if ((!tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, '0') || $cType === 'templavoila_pi1')
-				&& $data['row']['CType'] !== $cType) {
-			$return = TRUE;
-		}
-
-		return $return;
+		return (!tx_gobackendlayout_static::checkFieldAccess($fieldName, $cType, '0') || $cType === 'templavoila_pi1');
 	}
 
 }

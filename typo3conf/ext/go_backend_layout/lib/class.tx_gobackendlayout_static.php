@@ -88,6 +88,17 @@ class tx_gobackendlayout_static {
 	}
 
 	/**
+	 * Checks if the notes functionality is enabled
+	 *
+	 * @return	boolean	TRUE, if the rights management is enabled
+	 */
+	public static function notesFunctionalityEnabled() {
+		$extConf = self::getStaticExtensionConfig();
+
+		return (boolean) $extConf['enableNotesFunctionality'];
+	}
+
+	/**
 	 * Add extension to the new content element wizard
 	 * This function has to be called from ext_tables.php after the call of t3lib_extMgm::addPlugin()
 	 *
@@ -208,7 +219,7 @@ class tx_gobackendlayout_static {
 	 * @param	string	$filePath: The filepath from TCA
 	 *
 	 * @return	array	The first existing iconpath from $possibleIconFiles ('wizard.gif', 'wizard.png', 'wizard.jpg',
-	 *					'icon.gif', 'icon.png', 'icon.jpg', '../ext_icon.gif') ang the go_backend_layout/ext_icon.gif
+	 *					'icon.gif', 'icon.png', 'icon.jpg', '../ext_icon.gif') and the go_backend_layout/ext_icon.gif
 	 *					as fallback
 	 */
 	public static function getIcon($filePath) {
@@ -243,7 +254,7 @@ class tx_gobackendlayout_static {
 	 * @param:	string	$extName: extension name where the file is to find
 	 * @param	array	$conf: configures the options
 	 *
-	 * @return	void/string		ErrorMessage if file does not exist
+	 * @return	void/string	ErrorMessage if file does not exist
 	 */
 	public static function addJavaScriptFile($file, $extName = 'go_backend_layout', array $conf = array()) {
 		if (!$file) {
@@ -279,7 +290,7 @@ class tx_gobackendlayout_static {
 	 * @param:	string	$extName: extension name where the file is to find
 	 * @param	array	$conf: configures the options
 	 *
-	 * @return	void/string		ErrorMessage if nof file given or file does not exist
+	 * @return	void/string	ErrorMessage if nof file given or file does not exist
 	 */
 
 	public static function addStyleSheetFile($file, $extName = 'go_backend_layout', array $conf = array()) {
@@ -313,7 +324,7 @@ class tx_gobackendlayout_static {
 	 * @param	string	$elementKey: The CType to check
 	 * @param	string	$tvTemplateObject: The value for the field 'tx_templavoila_to'
 	 *
-	 * @return	BOOLEAN	field access
+	 * @return	boolean	field access
 	 */
 	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
 		if (self::flexformRightsManagementDisabled()) {
@@ -404,6 +415,81 @@ class tx_gobackendlayout_static {
 					array('access' => 'false')
 				);
 			}
+		}
+	}
+
+	/**
+	 * This function inserts the given data to the notes table
+	 *
+	 * @author	Daniel Agro <agro@gosign.de>
+	 * @date	2012-07-26
+	 *
+	 * @param	array	$noteData: the note data
+	 *
+	 * @return	void
+	 */
+	public static function createNote($noteData) {
+		if (self::notesFunctionalityEnabled()) {
+			$time = time();
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery(
+				'tx_gobackendlayout_notes',
+				array('noteId' => $noteData['noteId'],
+					'pageId' => $noteData['id'],
+					'text' => $noteData['noteText'],
+					'posX' => 0,
+					'posY' => 0,
+					'width' => $noteData['noteWidth'],
+					'height' => $noteData['noteWidth'],
+					'deleted' => 0,
+					'tstamp' => $time,
+					'crdate' => $time,
+					'cruser_id' => $GLOBALS['BE_USER']->user['uid']
+				)
+			);
+		}
+	}
+
+	/**
+	 * This function deletes the note with the given noteId and pageId
+	 *
+	 * @author	Daniel Agro <agro@gosign.de>
+	 * @date	2012-07-26
+	 *
+	 * @param	string	$noteId: the note id which has to be deleted
+	 * @param	string	$pageId: the page id where the note is placed
+	 *
+	 * @return	void
+	 */
+	public static function deleteNote($noteId, $pageId) {
+		if (self::notesFunctionalityEnabled()) {
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				'tx_gobackendlayout_notes',
+				'noteId = ' . $noteId . ' AND pageId = ' . $pageId,
+				array('deleted' => 1)
+			);
+		}
+	}
+
+	/**
+	 * This function updates the note given note fields for the not with the given note and page id
+	 *
+	 * @author	Daniel Agro <agro@gosign.de>
+	 * @date	2012-07-26
+	 *
+	 * @param	string	$noteId: the note id which has to be deleted
+	 * @param	string	$pageId: the page id where the note is placed
+	 * @param	array	$updateFields: fields which have to be updated
+	 *
+	 * @return	void
+	 */
+	public static function updateNote($noteId, $pageId, $updateFields) {
+		if (self::notesFunctionalityEnabled()) {
+			$updateFields = t3lib_div::array_merge_recursive_overrule(array('tstamp' => time()), $updateFields);
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery(
+				'tx_gobackendlayout_notes',
+				'noteId = ' . $noteId . ' AND pageId = ' . $pageId,
+				$updateFields
+			);
 		}
 	}
 

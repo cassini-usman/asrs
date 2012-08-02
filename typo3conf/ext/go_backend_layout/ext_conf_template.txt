@@ -1,2 +1,4 @@
 	# cat=basic; type=boolean; label=Disable rights management:for templavoila flexform elements
 disableFlexformRightsManagement = 0
+	# cat=basic; type=boolean; label=Enable notes functionality: for templa voila page module
+enableNotesFunctionality = 0

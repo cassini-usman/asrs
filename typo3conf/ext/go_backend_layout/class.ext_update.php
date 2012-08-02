@@ -42,7 +42,6 @@ class ext_update {
 	 * @date 2012-07-13
 	 * @author Daniel Agro <agro@gosign.de>
 	 *
-	 *
 	 * @return	string	the HTML output, which is displayed in the update window
 	 */
 	public function main () {
@@ -52,7 +51,7 @@ class ext_update {
 		if ($this->checkTableExists('gbl_fieldrights')) {
 				// first check if new table exists
 			if (!$this->checkTableExists('tx_gobackendlayout_fieldrights')) {
-				$return .= 'fieldrights: please make a database compare before updating extension <br />';
+				$return .= 'fieldrights: please do a database compare before updating extension <br />';
 			} else {
 					// transform the data from old to new table
 				$this->transformFieldrightsTable();
@@ -79,8 +78,7 @@ class ext_update {
 	 * @date 2012-07-13
 	 * @author Daniel Agro <agro@gosign.de>
 	 *
-	 *
-	 * @return	BOLLEAN		TRUE if update is necessary
+	 * @return	boolean	TRUE if update is necessary
 	 */
 	public function access() {
 		$access = FALSE;
@@ -104,8 +102,9 @@ class ext_update {
 	 * @date 2012-07-13
 	 * @author Daniel Agro <agro@gosign.de>
 	 *
+	 * @param	string	$tableName: the name of the table
 	 *
-	 * @return	BOLLEAN		TRUE if table exists
+	 * @return	boolean	TRUE if table exists
 	 */
 	private function checkTableExists($tableName) {
 		return array_key_exists($tableName, $GLOBALS['TYPO3_DB']->admin_get_tables());
@@ -119,7 +118,7 @@ class ext_update {
 	 * @author Daniel Agro <agro@gosign.de>
 	 *
 	 *
-	 * @return	BOLLEAN		TRUE if table exists
+	 * @return	void
 	 */
 	public function transformFieldrightsTable($tableName) {
 			// get the data from the old table

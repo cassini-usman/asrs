@@ -35,6 +35,8 @@ $go_backend_layoutClasses = array(
 	'tx_gobackendlayout_ajaxrequests' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_ajaxRequests.php',
 	'tx_gobackendlayout_static' => t3lib_extMgm::extPath('go_backend_layout') . 'lib/class.tx_gobackendlayout_static.php',
 	'tx_gobackendlayout_getprocessedvalue' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_getProcessedValue.php',
+	'tx_gobackendlayout_pagemoduleprecontent' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_pageModulePreContent.php',
+	'tx_gobackendlayout_userauthgroup' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_userAuthGroup.php',
 );
 
 return $go_backend_layoutClasses;

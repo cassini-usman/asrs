@@ -103,12 +103,15 @@ class tx_gobackendlayout_previewContent {
 	 * @return	string	the HTML output, may be empty
 	 */
 	protected function renderTemplavoilaSubElements($row, $table, &$self) {
-		if (!$row['CType'] === 'templavoila_pi1' || !$row['sys_language_uid'] || !$row['l18n_parent']) {
+		if ($row['CType'] !== 'templavoila_pi1' || !$row['sys_language_uid'] || !$row['l18n_parent']) {
 			return '';
 		}
 
 		$output = '';
 		$contentTreeData = $self->apiObj->getContentTree($table, $row);
+		if (!is_array($contentTreeData['tree']['sub']) || empty($contentTreeData['tree']['sub'])) {
+			return '';
+		}
 
 		$pid = $contentTreeData['tree']['el']['pid'];
 		if ($contentTreeData['tree']['el']['pid'] != $self->rootElementUid_pidForContent && $contentTreeData['tree']['el']['_ORIG_uid']) {

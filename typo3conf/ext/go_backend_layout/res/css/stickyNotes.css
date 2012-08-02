@@ -1,0 +1,158 @@
+/*
+ * Sticky Notes
+ */
+#sticky-container {
+	position: relative;
+	height:100%;
+	background-color: rgba(0,0,0, .8);
+}
+
+#sticky-container div.button {
+	cursor:pointer;
+	position:absolute;
+	top:5px;
+	right:5px;
+	margin:0px;
+	padding:4px 10px 4px 26px;
+	border-color:#EEEEEE #DEDEDE #DEDEDE #EEEEEE;
+	border-style:solid;
+	border-width:2px;
+	font-weight:bold;
+	color:#000000;
+	background:url(../images/notesIcon.png) 4px 4px no-repeat;
+	background-color:#dde9ff;
+	box-shadow: 3px 2px 5px #aaa;
+	border-radius: 7px;
+}
+
+#sticky-container div.button:hover {
+	color:#FFFFFF;
+	background-color:#000000;
+}
+
+#sticky-container textarea {
+	outline: 0 none;
+	background-color:transparent;
+	border:none;
+	font-family: 'Comic Sans MS',Textile,cursive;
+	font-size:16px;
+	overflow:hidden;
+	color:#999;
+	padding:15px 20px 0px 24px;
+	float:left;
+}
+
+#sticky-container p {
+	height:100%;
+	font-family: 'Comic Sans MS',Textile,cursive;
+	font-size:16px;
+	overflow:hidden;
+	padding:15px 20px 0px 24px;
+	display:block;
+	color:#444;
+}
+
+#notes {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 99999999;
+}
+
+
+#notes .singleNote {
+	display: none;
+}
+
+.stretch {
+	width:100%;
+	height:100%;
+	z-index:0;
+}
+
+/* import */
+.jSticky-large{
+	width:225px;
+	height:228px;
+	position: absolute;
+	z-index:999999;
+}
+.jSticky-medium{
+	width:160px;
+	height:162px;
+	position: absolute;
+	z-index:999999;
+	border:1px solid #000000;
+	background:#dde9ff;
+	box-shadow: 3px 2px 5px #aaa;
+	border-radius: 7px;
+}
+.jSticky-delete[class]{
+	background:transparent url(../images/notesClose.png) no-repeat top left;
+	height:20px;
+	width:20px;
+	position:absolute;
+	cursor:pointer;
+	z-index:4;
+}
+* .jSticky-delete{
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/notesClose.png');
+	height:20px;
+	width:20px;
+	position:absolute;
+	cursor:pointer;
+	z-index:4;
+}
+.jSticky-medium .jStickyNote textarea, .jSticky-medium .jStickyNote p{
+	font-size: 16px;
+	line-height:20px;
+	font-weight:bold;
+}
+.jSticky-large .jStickyNote textarea, .jSticky-large .jStickyNote p{
+	height:160px;
+	font-size: 16px;
+}
+
+.jStickyNote {
+	cursor :move;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 2;
+	height:90%;
+	overlay:hidden;
+	width:100%;
+}
+
+.jSticky-medium .ui-icon {
+	right:0px;
+	bottom:0px;
+	width:13px;
+	height:13px;
+	background-image: url(../images/notesResize.png);
+}
+
+.ui-resizable-handle {
+	position: absolute;
+	font-size: 0.1px;
+	z-index: 99999;
+	display: block;
+}
+
+.ui-resizable-e {
+	cursor: e-resize;
+	width: 7px;
+	right: -5px;
+	top: 0px;
+	height: 100%;
+}
+
+.ui-resizable-s {
+	cursor: s-resize;
+	height: 7px;
+	width: 100%;
+	bottom: -5px;
+	left: 0px;
+}
