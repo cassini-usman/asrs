@@ -49,8 +49,33 @@
 }
 
 /**
- * preview content styling - end
+ * Design of CType templavoila_pi1
  */
+.beTemplateCell .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper .col.right {
+	display: block;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper .col.right div {
+	text-align: center;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper {
+	display: block;
+	background-color: #9999FF;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper {
+	background-color: #99FF99;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper {
+	background-color: #FF9999;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper {
+	background-color: #FFFF99;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper {
+	background-color: #99FFFF;
+}
+.beTemplateCell .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .tpm-ctype-templavoila_pi1 .previewTemplate.templavoila_pi1 .row.typeRow .colWrapper {
+	background-color: #FF99FF;
+}
 
 
 /**
