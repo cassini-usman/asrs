@@ -71,7 +71,7 @@ class ux_tx_templavoila_mod1_wizards extends tx_templavoila_mod1_wizards {
 				/*
 				 * @TODO: Look at TCA, if the template object is shown in backend and show/hide the selector due to that info.
 				 *
-				 * At this moment only for 'doktype = 1' the template selection is shown and it is hardcoded in javascript file 'javascript/newPageWizard.js'
+				 * At this moment only for 'doktype = 1' the template selection is shown and it is hardcoded in javascript file 'res/javascript/newPageWizard.js'
 				 */
 				// add javascript to show / hide template selector due to doktype.
 			tx_gobackendlayout_static::addJavaScriptFile('res/javascript/newPageWizard.js', 'go_backend_layout');

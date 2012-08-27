@@ -99,7 +99,7 @@
 
 			jQuery(document).keydown(function(e){
 				if(e.which == 110 || e.which == 78) {
-					jQuery('#notes').css({'height': jQuery('#typo3-inner-docbody').height() + 'px'});
+					jQuery('#notes').css({'height': jQuery('#typo3-docbody').height() + 'px'});
 					jQuery('#notes').css({'display': 'block'});
 				} else if (e.which == 27) {
 					jQuery('#notes').css({'display': 'none'});

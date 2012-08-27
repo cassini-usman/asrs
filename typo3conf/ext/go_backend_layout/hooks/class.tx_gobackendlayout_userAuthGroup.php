@@ -43,7 +43,10 @@ class tx_gobackendlayout_userAuthGroup {
 	 * @return	boolean	TRUE, if record could be edited
 	 */
 	public function recordEditAccessInternals(&$params, &$parentObject) {
-		if ($params['table'] !== 'tt_content') {
+			// if no uid is set, we have a new record.
+			// for this new record, the access is already checked in the new content element wizard
+			// so first, we dont have to check againg, second, we can´t check if we don´t have an uid
+		if ($params['table'] !== 'tt_content' || !isset($params['idOrRow']['uid'])) {
 			return TRUE;
 		}
 
