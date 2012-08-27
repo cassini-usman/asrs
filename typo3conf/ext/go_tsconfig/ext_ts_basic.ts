@@ -117,6 +117,9 @@ page.meta {
 
 	revisit-after = 10 days
 	author = Gosign media., Hamburg, Germany
+
+	# google webmaster tool for t3admin@gosign.de
+	google-site-verification = w1Wpv17tpRO-bHuGYtDkDrsptrkxm1KiC0a2Kl5WHlQ
 }
 
 # Adds a prefix to typo3's temporary file names (md5 hashes)
