@@ -24,7 +24,6 @@ set :scm, :git
 set :deploy_via, :remote_cache
 set :use_sudo, false
 set :keep_releases, 3
-
 ssh_options[:forward_agent] = true
 
 
@@ -55,8 +54,6 @@ end
 
 
 namespace :deploy do
-
-  ssh_options[:forward_agent] = true
 
 
   desc <<-DESC
