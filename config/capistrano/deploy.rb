@@ -23,6 +23,7 @@ require './config/capistrano/project.rb' # Include Project Configuration
 set :scm, :git
 set :deploy_via, :remote_cache
 set :use_sudo, false
+set :keep_releases, 3
 
 ssh_options[:forward_agent] = true
 
@@ -47,6 +48,33 @@ end
 namespace :deploy do
 
   ssh_options[:forward_agent] = true
+
+
+  desc <<-DESC
+    Clean up old releases. By default, the last 5 releases are kept on each \
+    server (though you can change this with the keep_releases variable).
+    -----
+    This is a modification of the original deploy:cleanup task that ignores \
+    symlinks and files when counting releases in the release directory. Also, \
+    to go easy on the servers when deleting, it uses nice and ionice for "rm".
+    -----
+    All other deployed revisions are removed from the servers. By default, this \
+    will use sudo to clean up the old releases, but if sudo is not available \
+    for your environment, set the :use_sudo variable to false instead.
+  DESC
+  task :cleanup, :except => { :no_release => true } do
+    count = fetch(:keep_releases, 5).to_i
+    local_releases = capture("find #{releases_path} -mindepth 1 -maxdepth 1 -type d | sort -r | xargs echo").split.reverse
+    if count >= local_releases.length
+      logger.important "no old releases to clean up"
+    else
+      logger.info "keeping #{count} of #{local_releases.length} deployed releases"
+      directories = (local_releases - local_releases.last(count)).join(" ")
+      try_sudo "nice -19 ionice -c3 rm -rf #{directories}"
+    end
+  end
+
+
   # Create a symlink from htdocs to current to keep our
   # DefaultProjekt structure intact.
   task :resymlink, :roles => :app do
@@ -79,6 +107,7 @@ namespace :deploy do
 end
 before "deploy:symlink", "deploy:permissions"
 after "deploy:symlink", "deploy:resymlink"
+after "deploy:symlink", "deploy:cleanup"
 
 after "deploy:user_upload", "setup:set_data_permissions"
 
