@@ -27,6 +27,15 @@ set :keep_releases, 3
 
 ssh_options[:forward_agent] = true
 
+
+# Due to the fact that we have additional symlinks in our releases directory, the standard
+# way of listing the releases doesn't work. The following excludes the symlinks. Without this,
+# deploy:rollback will "destroy" the deploy directory :)
+set(:releases) {
+  capture("find #{releases_path} -mindepth 1 -maxdepth 1 -type d | xargs -n1 basename | xargs echo").split.sort
+}
+
+
 # Load project configuration
 self.extend Gosign::Config
 loadConfig()
