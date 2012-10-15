@@ -53,7 +53,7 @@ class tx_golll_felib implements t3lib_Singleton {
 			} else {
 				$enableFields = $plugin->cObj->enableFields('tx_golll_translation');
 
-				$cTypeForDb = $plugin->cObj->data['CType'] === 'list' ? $plugin->cObj->data['list_type'] : $plugin->cObj->data['CType'];
+				$cTypeForDb = $this->getCTypeForDb($plugin);
 
 					// set the values for the given language ($plugin->LLkey)
 				$tempLOCAL_LANG = array(
@@ -106,6 +106,27 @@ class tx_golll_felib implements t3lib_Singleton {
 		}
 
 		return $returnLLarray;
+	}
+
+	/**
+	 * Do a database query and return the found labels
+	 *
+	 * @param	object	$plugin: a reference to the related cObj
+	 *
+	 * @return	string	An array with label => value pairs
+	 */
+	protected function getCTypeForDb(&$plugin) {
+		$cTypeForDb = '';
+
+		if (is_array($plugin->cObj->data['CType'])) {
+			$cTypeForDb = ($plugin->cObj->data['CType'] === 'list') ? $plugin->cObj->data['list_type'] : $plugin->cObj->data['CType'];
+		}
+
+		if (!$cTypeForDb) {
+			$classPrefix = t3lib_extMgm::getCN($plugin->extKey);
+			$cTypeForDb = str_replace($classPrefix, $plugin->extKey, $plugin->prefixId);
+		}
+		return $cTypeForDb;
 	}
 }
 

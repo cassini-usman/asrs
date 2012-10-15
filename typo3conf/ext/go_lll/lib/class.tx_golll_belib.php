@@ -165,14 +165,14 @@ class tx_golll_belib {
 	 * @return Array List of available language markers
 	 */
 	function determineExistingXMLMarker($filename) {
-
 		$contents = file_get_contents($filename);
 		$markerArray = array();
-		$count = preg_match_all('/label\s+index="(.+)"/', $contents, $markerArray);
-		$matches = array_unique($markerArray[1]);
+		$count = preg_match_all('/label\s+index=(\'|")(.+)(\1)/U', $contents, $markerArray);
+		$matches = array_unique($markerArray[2]);
 
 		return $matches;
 	}
+
 	/**
 	 * determine existing language marker from database
 	 *
@@ -188,13 +188,13 @@ class tx_golll_belib {
 	 * @return Array List of available language markers in format de_languagelabel
 	 */
 	function determineExistingDBMarker($piName) {
-
 		$select = 'CONCAT(tx_golll_langlabel, \'_\', tx_golll_label)';
 		$table = 'tx_golll_translation';
 		$where = 'tx_golll_ctype="' . $piName . '"';
 		$enableFields = t3lib_BEfunc::BEenableFields($table).t3lib_BEfunc::deleteClause($table);
 
 		$rows = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows($select, $table, $where . $enableFields);
+
 		return $rows;
 	}
 	/**
@@ -211,7 +211,6 @@ class tx_golll_belib {
 	 *
 	 */
 	function writeLabelsToDatabase($translatedCType) {
-
 		$filename = $this->getLocallangFilename($translatedCType);
 		$markerArrayXML = $this->determineExistingXMLMarker($filename);
 		$markerArrayDB = array(); //$this->determineExistingDBMarker($translatedCType);
@@ -264,6 +263,7 @@ class tx_golll_belib {
 				}
 			}
 		}
+
 		return $count;
 	}
 
@@ -279,9 +279,14 @@ class tx_golll_belib {
 	 * @return	String Filepath to the locallang for the given plugin
 	 */
 	function getLocallangFilename($cType) {
-		$lastUnderscore = strrpos($cType, '_');
-		$piName = substr($cType, $lastUnderscore + 1);
-		$extName = substr($cType, 0, $lastUnderscore);
+		if ($cType === 'indexed_search') {
+			$piName = 'pi';
+			$extName = $cType;
+		} else {
+			$lastUnderscore = strrpos($cType, '_');
+			$piName = substr($cType, $lastUnderscore + 1);
+			$extName = substr($cType, 0, $lastUnderscore);
+		}
 
 		if (!t3lib_extMgm::isLoaded($extName)) {
 			return FALSE;
