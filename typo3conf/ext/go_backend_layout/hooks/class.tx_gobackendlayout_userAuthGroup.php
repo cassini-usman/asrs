@@ -43,13 +43,15 @@ class tx_gobackendlayout_userAuthGroup {
 	 * @return	boolean	TRUE, if record could be edited
 	 */
 	public function recordEditAccessInternals(&$params, &$parentObject) {
+		$this->go_lllBElib = t3lib_div::makeInstance('tx_golll_belib');
 			// if no uid is set, we have a new record.
 			// for this new record, the access is already checked in the new content element wizard
 			// so first, we dont have to check againg, second, we can´t check if we don´t have an uid
-		if ($params['table'] !== 'tt_content' || !isset($params['idOrRow']['uid'])) {
+		if ($params['table'] !== 'tt_content'
+				|| !isset($params['idOrRow']['uid'])
+				|| $params['idOrRow']['pid'] == $this->go_lllBElib->getTranslationPageUID()) {
 			return TRUE;
 		}
-
 			// get templavoila field name
 		$fieldName = tx_gobackendlayout_static::getFieldName($params['idOrRow']);
 		$tvTemplateObject = $params['idOrRow']['tx_templavoila_to'] ? (int) $params['idOrRow']['tx_templavoila_to'] : 0;

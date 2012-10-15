@@ -68,6 +68,24 @@ $TYPO3_CONF_VARS['BE']['XCLASS']['typo3/alt_doc.php'] = t3lib_extMgm::extPath('g
  * pageTSconfig
  */
 /*
+ * add header to new content element wizard
+ */
+t3lib_extMgm::addPageTSConfig('
+templavoila.wizards.newContentElement.wizardItems.common {
+	elements {
+		header {
+			icon = gfx/c_wiz/regular_header.gif
+			title = LLL:EXT:cms/layout/locallang_db_new_content_el.xml:common_headerOnly_title
+			description = LLL:EXT:cms/layout/locallang_db_new_content_el.xml:common_headerOnly_description
+			tt_content_defValues {
+				CType = header
+			}
+		}
+	}
+	show := addToList(header)
+}
+');
+/*
  * render new content element wizard with tabs
  */
 t3lib_extMgm::addPageTSConfig('templavoila.wizards.newContentElement.renderMode = tabs' . "\n");
