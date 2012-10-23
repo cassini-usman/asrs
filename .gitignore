@@ -23,10 +23,6 @@ typo3conf/LFEditor
 # devlog should never be add
 typo3conf/ext/devlog/
 
-# Ignore .htaccess because of different .htaccess configurations throughout
-# the different servers
-/.htaccess
-
 config/local.sample/*
 !config/local.sample/*.sample
 
