@@ -21,11 +21,11 @@ config.tx_realurl_enable = 1
 # Page configuration
 page = PAGE
 page.includeCSS.base_fest = fileadmin/templates/css/base_fest.css
-page.includeCSS.top_menu_with_layers = fileadmin/templates/css/top_menu_with_layers.css
-page.includeCSS.left_menu = fileadmin/templates/css/left_menu.css
+page.includeCSS.naviTop = fileadmin/templates/css/naviTop.css
+page.includeCSS.naviLeft = fileadmin/templates/css/naviLeft.css
 page.includeCSS.content = fileadmin/templates/css/content.css
 page.includeCSS.contentteiler = fileadmin/templates/css/contentteiler.css
-page.includeCSS.footer_menu = fileadmin/templates/css/footer_menu.css
+page.includeCSS.naviFooter = fileadmin/templates/css/naviFooter.css
 
 [useragent = *iPad*]
 	page.bodyTagAdd = class="ipad"
