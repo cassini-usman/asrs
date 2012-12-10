@@ -33,9 +33,9 @@
 
 	// Initialize module
 unset($MCONF);
-require ('conf.php');
+require (dirname(__FILE__) . '/conf.php');
 require ($BACK_PATH.'init.php');
-require ($BACK_PATH.'template.php');
+require_once ($BACK_PATH.'template.php');
 $LANG->includeLLFile('EXT:templavoila/mod1/locallang.xml');
 require_once (PATH_t3lib.'class.t3lib_scbase.php');
 $BE_USER->modAccess($MCONF,1);    								// This checks permissions and exits if the users has no permission for entry.
@@ -131,7 +131,6 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 	function init()    {
 		parent::init();
 
-		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id, 'mod.' . $this->MCONF['name']);
 		$this->modSharedTSconfig = t3lib_BEfunc::getModTSconfig($this->id, 'mod.SHARED');
 		$this->MOD_SETTINGS = t3lib_BEfunc::getModuleData($this->MOD_MENU, t3lib_div::_GP('SET'), $this->MCONF['name']);
 
@@ -209,6 +208,7 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 	 */
 	function menuConfig()	{
 		global $TYPO3_CONF_VARS;
+		$this->modTSconfig = t3lib_BEfunc::getModTSconfig($this->id, 'mod.' . $this->MCONF['name']);
 
 			// Prepare array of sys_language uids for available translations:
 		$this->translatedLanguagesArr = $this->getAvailableLanguages($this->id);
@@ -292,9 +292,7 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 			$this->rootElementTable = is_array($this->altRoot) ? $this->altRoot['table'] : 'pages';
 			$this->rootElementUid = is_array($this->altRoot) ? $this->altRoot['uid'] : $this->id;
 			$this->rootElementRecord = t3lib_BEfunc::getRecordWSOL($this->rootElementTable, $this->rootElementUid, '*');
-			if ($this->rootElementRecord['t3ver_swapmode']==0 && $this->rootElementRecord['_ORIG_uid'] ) {
-				$this->rootElementUid_pidForContent = $this->rootElementRecord['_ORIG_uid'];
-			} else if ($this->rootElementRecord['t3ver_swapmode']==-1 && $this->rootElementRecord['t3ver_oid'] && $this->rootElementRecord['pid'] < 0) {
+			if ($this->rootElementRecord['t3ver_oid'] && $this->rootElementRecord['pid'] < 0) {
 					// typo3 lacks a proper API to properly detect Offline versions and extract Live Versions therefore this is done by hand
 				if ($this->rootElementTable == 'pages') {
 					$this->rootElementUid_pidForContent = $this->rootElementRecord['t3ver_oid'];
@@ -319,7 +317,14 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 				// Draw the header.
 			$this->doc = t3lib_div::makeInstance('template');
 			$this->doc->backPath = $BACK_PATH;
-			$this->doc->setModuleTemplate('EXT:templavoila/resources/templates/mod1_default.html');
+
+			$templateFile = t3lib_extMgm::extPath($this->extKey) . 'resources/templates/mod1_' . substr(TYPO3_version, 0, 3) . '.html';
+			if (file_exists($templateFile)) {
+				$this->doc->setModuleTemplate('EXT:templavoila/resources/templates/mod1_' . substr(TYPO3_version, 0, 3) . '.html');
+			} else {
+				$this->doc->setModuleTemplate('EXT:templavoila/resources/templates/mod1_default.html');
+			}
+
 			$this->doc->docType= 'xhtml_trans';
 
 			$this->doc->bodyTagId = 'typo3-mod-php';
@@ -327,11 +332,11 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 			$this->doc->form='<form action="'.htmlspecialchars('index.php?'.$this->link_getParameters()).'" method="post">';
 
 				// Add custom styles
-			$styleSheetFile = t3lib_extMgm::extPath($this->extKey) . 'mod1/pagemodule_' . substr(TYPO3_version, 0, 3) . '.css';
+			$styleSheetFile = t3lib_extMgm::extPath($this->extKey) . 'resources/styles/mod1_' . substr(TYPO3_version, 0, 3) . '.css';
 			if (file_exists($styleSheetFile)) {
-				$styleSheetFile = t3lib_extMgm::extRelPath($this->extKey) . 'mod1/pagemodule_' . substr(TYPO3_version, 0, 3) . '.css';
+				$styleSheetFile = t3lib_extMgm::extRelPath($this->extKey) . 'resources/styles/mod1_' . substr(TYPO3_version, 0, 3) . '.css';
 			} else {
-				$styleSheetFile = t3lib_extMgm::extRelPath($this->extKey) . 'mod1/pagemodule.css';
+				$styleSheetFile = t3lib_extMgm::extRelPath($this->extKey) . 'resources/styles/mod1_default.css';
 			}
 
 			if (isset($this->modTSconfig['properties']['stylesheet'])) {
@@ -1057,9 +1062,9 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 		$previewContent = $contentTreeArr['ds_meta']['disableDataPreview'] ? '&nbsp;' : $this->render_previewData($contentTreeArr['previewData'], $contentTreeArr['el'], $contentTreeArr['ds_meta'], $languageKey, $sheet);
 
 			// Wrap workspace notification colors:
-		if ($contentTreeArr['el']['_ORIG_uid'])	{
+		//if ($contentTreeArr['el']['_ORIG_uid'])	{
 			$previewContent = '<div class="ver-element">'.($previewContent ? $previewContent : '<em>[New version]</em>').'</div>';
-		}
+		//}
 
 
 		$title = t3lib_div::fixed_lgd_cs($contentTreeArr['el']['fullTitle'], $this->previewTitleMaxLen);
@@ -2252,10 +2257,11 @@ class tx_templavoila_module1 extends t3lib_SCbase {
 						 * so sortable doesn't need to update these and we
 						 * can safely use '#'
 						 */
+						$returnUrl = ( $this->currentElementParentPointer ) ? t3lib_div::getIndpEnv('REQUEST_URI') .'#c'. md5($this->apiObj->flexform_getStringFromPointer($this->currentElementParentPointer) . $uid) :  t3lib_div::getIndpEnv('REQUEST_URI');
 						if ($hidden)
-							return '<a href="#" class="tpm-hide" onclick="sortable_unhideRecord(this, \'' . htmlspecialchars($GLOBALS['SOBE']->doc->issueCommand($params, -1)) . '\');">' . $label . '</a>';
+							return '<a href="#" class="tpm-hide" onclick="sortable_unhideRecord(this, \'' . htmlspecialchars($GLOBALS['SOBE']->doc->issueCommand($params, $returnUrl)) . '\');">' . $label . '</a>';
 						else
-							return '<a href="#" class="tpm-hide" onclick="sortable_hideRecord(this, \'' . htmlspecialchars($GLOBALS['SOBE']->doc->issueCommand($params, -1)) . '\');">' . $label . '</a>';
+							return '<a href="#" class="tpm-hide" onclick="sortable_hideRecord(this, \'' . htmlspecialchars($GLOBALS['SOBE']->doc->issueCommand($params, $returnUrl)) . '\');">' . $label . '</a>';
 					}
 				} else {
 					return $label;

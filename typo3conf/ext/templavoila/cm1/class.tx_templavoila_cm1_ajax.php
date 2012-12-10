@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2010 Tolleiv Nietsch <info@tolleiv.de>
+ *  (c) 2010 Tolleiv Nietsch <tolleiv.nietsch@typo3.org>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -33,7 +33,7 @@ class tx_templavoila_cm1_ajax {
 	 */
 	public function getDisplayFileContent($params, &$ajaxObj) {
 		$session = $GLOBALS['BE_USER']->getSessionData(t3lib_div::_GP('key'));
-		echo t3lib_div::getUrl(PATH_site . $session['displayFile']);
+		echo t3lib_div::getUrl(t3lib_div::getFileAbsFileName($session['displayFile']));
 	}
 }
 
