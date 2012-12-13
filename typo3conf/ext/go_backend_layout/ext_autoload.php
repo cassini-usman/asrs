@@ -37,6 +37,7 @@ $go_backend_layoutClasses = array(
 	'tx_gobackendlayout_getprocessedvalue' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_getProcessedValue.php',
 	'tx_gobackendlayout_pagemoduleprecontent' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_pageModulePreContent.php',
 	'tx_gobackendlayout_userauthgroup' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_userAuthGroup.php',
+	'tx_gobackendlayout_handleincomingcommands' => t3lib_extMgm::extPath('go_backend_layout') . 'hooks/class.tx_gobackendlayout_handleIncomingCommands.php',
 );
 
 return $go_backend_layoutClasses;
