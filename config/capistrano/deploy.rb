@@ -23,7 +23,6 @@ require './config/capistrano/project.rb' # Include Project Configuration
 set :scm, :git
 set :deploy_via, :remote_cache
 set :use_sudo, false
-set :keep_releases, 3
 ssh_options[:forward_agent] = true
 
 
@@ -76,7 +75,10 @@ namespace :deploy do
     else
       logger.info "keeping #{count} of #{local_releases.length} deployed releases"
       directories = (local_releases - local_releases.last(count)).join(" ")
-      try_sudo "nice -19 ionice -c3 rm -rf #{directories}"
+
+      # Use ionice if we have permissions to use it, otherwise only nice
+      rm_cmd = "nice -19 rm -rf #{directories}"
+      try_sudo "if ionice -c3 echo 'foo' > /dev/null 2>&1; then ionice -c3 #{rm_cmd}; else #{rm_cmd}; fi"
     end
   end
 
