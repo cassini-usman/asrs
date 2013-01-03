@@ -7,23 +7,21 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="pages.doktypes.pagecontainer">Page Container</label>
-			<label index="check">Checkbox</label>
-			<label index="check.yes">Yes</label>
-			<label index="check.no">No</label>
-			<label index="text">Textfield</label>
-			<label index="select">Selectbox</label>
-			<label index="input">Inputfield</label>
-			<label index="inline">Inlinefield</label>
+			<label index="notificationHeadline">Notice:</label>
+			<label index="inherited">The content of this column is inherited from the page %s</label>
+			<label index="inheritedNothing">The content of this column is inherited from a higher page but there is nothing to inherit</label>
+			<label index="inherits">This column inherits its content to the subpages if the subpage contains the same column and the column is empty</label>
+			<label index="jumpToInheritanceRoot">Jump to the inheriting page</label>
+			<label index="stopSlide">Stop the Inheritance</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="pages.doktypes.pagecontainer">Seitencontainer</label>
-			<label index="check">Checkbox</label>
-			<label index="check.yes">Ja</label>
-			<label index="check.no">Nein</label>
-			<label index="text">Textfeld</label>
-			<label index="select">Selectbox</label>
-			<label index="input">Inputfeld</label>
-			<label index="inline">Inlinefeld</label>
+			<label index="notificationHeadline">Hinweis:</label>
+			<label index="inherited">Der Inhalt dieser Spalte wird von der Seite %s geerbt</label>
+			<label index="inheritedNothing">Der Inhalt dieser Spalte wird von einer übergeordneten Seite mit dem gleichen Spaltennamen geerbt, allerdings ist nichts zum Erben da</label>
+			<label index="inherits">Diese Spalte vererbt ihren Inhalt auf die darunterliegenden Seiten, sofern die gleiche Spalte dort existiert und leer ist</label>
+			<label index="jumpToInheritanceRoot">Zur vererbenden Seite springen</label>
+			<label index="stopSlide">Vererbung unterbrechen</label>
 		</languageKey>
 	</data>
 </T3locallang>

@@ -116,7 +116,7 @@ t3lib_div::loadTCA("pages");
 
 
 	// add folder icon
-$ICON_TYPES['go_lll'] = array('icon' => t3lib_extMgm::extRelPath($_EXTKEY).'ext_icon.gif');
+t3lib_SpriteManager::addTcaTypeIcon('pages', 'contains-go_lll', t3lib_extMgm::extRelPath('go_lll').'ext_icon.gif');
 $TCA['pages']['columns']['module']['config']['items'][] = array('LLL:EXT:'.$_EXTKEY.'/locallang_db.xml:tt_content.pagetype_golllpage', 'go_lll', 'EXT:'.$_EXTKEY.'/ext_icon.gif');
 
 // backend module

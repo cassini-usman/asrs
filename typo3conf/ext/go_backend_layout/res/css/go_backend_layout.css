@@ -95,3 +95,33 @@
 .beTemplateCell td.tpm-content-cell {
 	border-left: 0px none;
 }
+
+/**
+ * inheritance notifications
+ */
+.inheritInfo {
+	padding: 0 5px 5px;
+	font-size: 11px;
+}
+
+.inheritInfo a {
+	padding: 3px;
+	text-decoration: underline;
+}
+
+.inheritInfo .notificationHeadline {
+	font-weight: bold;
+}
+
+.inheritInfo .notification,
+.inheritInfo .jumpLink {
+	margin-bottom: 12px;
+}
+
+.inheritInfo .jumpLink a {
+	background: none repeat scroll 0 0 #C6F48E;
+}
+
+.inheritInfo .stopSlide a {
+	background: none repeat scroll 0 0 #FEE5FF;
+}

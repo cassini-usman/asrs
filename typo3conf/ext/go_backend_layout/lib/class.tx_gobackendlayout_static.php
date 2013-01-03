@@ -327,7 +327,9 @@ class tx_gobackendlayout_static {
 	 * @return	boolean	field access
 	 */
 	public static function checkFieldAccess($fieldName, $elementKey, $tvTemplateObject) {
-		if (self::flexformRightsManagementDisabled()) {
+			// tv delete process is to unlink the element first and after that the element will be deleted
+			// but if element is unlinked, fieldname is not anymore determinable
+		if (self::flexformRightsManagementDisabled() || empty($fieldName)) {
 			return TRUE;
 		}
 

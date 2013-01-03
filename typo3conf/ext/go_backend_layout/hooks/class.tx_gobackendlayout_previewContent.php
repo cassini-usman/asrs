@@ -415,7 +415,7 @@ class tx_gobackendlayout_previewContent {
 					if (is_array($damFiles) && count($damFiles) > 0) {
 						$row[$singleField['field']] = implode(',', $damFiles['files']);
 					}
-					$singleFieldcontent['value'] = t3lib_BEfunc::thumbCode($row, $table, $singleField['field'], $GLOBALS['BACK_PATH'], '');
+					$singleFieldcontent['value'] = t3lib_BEfunc::thumbCode($row, $table, $singleField['field'], $GLOBALS['BACK_PATH'], '', '');
 				} elseif ($this->isPagesField($singleField['field'], $row, $table)) {
 						// just get the the link content for all given pages
 					$pagesArray = t3lib_div::trimExplode(',', $rowValue);

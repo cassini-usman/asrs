@@ -46,15 +46,34 @@ class tx_gobackendlayout_userAuthGroup {
 			// if no uid is set, we have a new record.
 			// for this new record, the access is already checked in the new content element wizard
 			// so first, we dont have to check againg, second, we can´t check if we don´t have an uid
-		if ($params['table'] !== 'tt_content' || !isset($params['idOrRow']['uid'])) {
+		if ($params['table'] !== 'tt_content'
+				|| !isset($params['idOrRow']['uid'])
+				|| $this->checkIfTranslationPage($params['idOrRow']['pid'])) {
 			return TRUE;
 		}
-
 			// get templavoila field name
 		$fieldName = tx_gobackendlayout_static::getFieldName($params['idOrRow']);
 		$tvTemplateObject = $params['idOrRow']['tx_templavoila_to'] ? (int) $params['idOrRow']['tx_templavoila_to'] : 0;
 
 		return tx_gobackendlayout_static::checkFieldAccess($fieldName, $params['idOrRow']['CType'], $tvTemplateObject);
+	}
+
+	/**
+	 * This function checks if we are on a translation page (go_lll label page)
+	 *
+	 * @param	int	$pid: pid to check
+	 *
+	 * @return	boolean	TRUE, we are on the translation page
+	 */
+	protected function checkIfTranslationPage($pid) {
+		$return = FALSE;
+
+		if (t3lib_extMgm::isLoaded('go_lll')) {
+			$this->go_lllBElib = t3lib_div::makeInstance('tx_golll_belib');
+			$return |= $pid == $this->go_lllBElib->getTranslationPageUID();
+		}
+
+		return $return;
 	}
 }
 

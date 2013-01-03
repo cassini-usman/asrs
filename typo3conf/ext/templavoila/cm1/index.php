@@ -32,18 +32,14 @@
 
 	// DEFAULT initialization of a module [BEGIN]
 unset($MCONF);
-require ('conf.php');
+require (dirname(__FILE__) . '/conf.php');
 require ($BACK_PATH.'init.php');
-require ($BACK_PATH.'template.php');
+require_once ($BACK_PATH.'template.php');
 $LANG->includeLLFile('EXT:templavoila/cm1/locallang.xml');
 require_once (PATH_t3lib.'class.t3lib_scbase.php');
 
-
-require_once (t3lib_extMgm::extPath('templavoila') . 'classes/class.tx_templavoila_div.php');
-
 require_once (t3lib_extMgm::extPath('templavoila').'cm1/class.tx_templavoila_cm1_dsedit.php');
 require_once (t3lib_extMgm::extPath('templavoila').'cm1/class.tx_templavoila_cm1_etypes.php');
-
 
 require_once(t3lib_extMgm::extPath('templavoila').'class.tx_templavoila_htmlmarkup.php');
 require_once(PATH_t3lib.'class.t3lib_tcemain.php');
@@ -150,7 +146,9 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 	var $staticDS = FALSE;		// Boolean; if true DS records are file based
 
 	static $gnyfStyleBlock = '
+	.gnyfBox { position:relative; }
 	.gnyfElement {	color: black; font-family:monospace;font-size:12px !important; line-height:1.3em !important; font-weight:normal; text-transform:none; letter-spacing:auto; cursor: pointer; margin: 0; padding:0 7px; overflow: hidden; text-align: center; position: absolute;  border-radius: 0.4em; -o-border-radius: 0.4em; -moz-border-radius: 0.4em; -webkit-border-radius: 0.4em; background-color: #ffffff;	}
+	.dso_table .gnyfElement { position: relative; }
 	span.gnyfElement:hover {	z-index: 100;	box-shadow: rgba(0, 0, 0, 0.5) 0 0 4px 2px;	-o-box-shadow: rgba(0, 0, 0, 0.5) 0 0 4px 2px;	-moz-box-shadow: rgba(0, 0, 0, 0.5) 0 0 4px 2px;	-webkit-box-shadow: rgba(0, 0, 0, 0.5) 0 0 4px 2px;	}
 	a > span.gnyfElement, td > span.gnyfElement {	position:relative;	}
 	a > .gnyfElement:hover, td > .gnyfElement:hover  { box-shadow: none;	-o-box-shadow: none;	-moz-box-shadow: none;	-webkit-box-shadow: none;	}
@@ -366,7 +364,7 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 		$this->doc->styleSheetFile2 = t3lib_extMgm::extRelPath($this->extKey)."cm1/styles.css";
 
 			// General GPvars for module mode:
-		$this->displayFile = t3lib_div::_GP('file');
+		$this->displayFile = tx_templavoila_file::filename(t3lib_div::_GP('file'));
 		$this->displayTable = t3lib_div::_GP('table');
 		$this->displayUid = t3lib_div::_GP('uid');
 		$this->displayPath = t3lib_div::_GP('htmlPath');
@@ -592,7 +590,7 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 			if ($this->_load_ds_xml_to) {
 				$toREC = t3lib_BEfunc::getRecordWSOL('tx_templavoila_tmplobj', $this->_load_ds_xml_to);
 				if ($this->staticDS) {
-					$dsREC['dataprot'] = t3lib_div::getURL(PATH_site . $toREC['datastructure']);
+					$dsREC['dataprot'] = t3lib_div::getURL(t3lib_div::getFileAbsFileName($toREC['datastructure']));
 				} else {
 					$dsREC = t3lib_BEfunc::getRecordWSOL('tx_templavoila_datastructure', $toREC['datastructure']);
 				}
@@ -751,7 +749,7 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 
 					if ($this->staticDS) {
 						$title = preg_replace('|[/,\."\']+|', '_', $this->_saveDSandTO_title) . ' (' . ($this->_saveDSandTO_type == 1 ? 'page' : 'fce') . ').xml';
-						$path = PATH_site . ($this->_saveDSandTO_type == 2 ? $this->extConf['staticDS.']['path_fce'] : $this->extConf['staticDS.']['path_page']) . $title;
+						$path = t3lib_div::getFileAbsFileName($this->_saveDSandTO_type == 2 ? $this->extConf['staticDS.']['path_fce'] : $this->extConf['staticDS.']['path_page']) . $title;
 						t3lib_div::writeFile($path, $dataProtXML);
 						$newID = substr($path, strlen(PATH_site));
 					} else {
@@ -1050,7 +1048,7 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 					$content.='
 						<h3>' . $GLOBALS['LANG']->getLL('createDSTO') . ':</h3>
 						'.$this->cshItem('xMOD_tx_templavoila','mapping_file_createDSTO',$this->doc->backPath,'|<br/>').'
-						<table border="0" cellpadding="2" cellspacing="2">
+						<table border="0" cellpadding="2" cellspacing="2" class="dso_table">
 							<tr>
 								<td class="bgColor5"><strong>' . $GLOBALS['LANG']->getLL('titleDSTO') . ':</strong></td>
 								<td class="bgColor4"><input type="text" name="_saveDSandTO_title" /></td>
@@ -1169,7 +1167,7 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 					-->
 					<div id="c-ds">
 						<h4>' . $GLOBALS['LANG']->getLL('renderDSO_dataStructure') . ':</h4>
-						<table border="0" cellspacing="2" cellpadding="2">
+						<table border="0" cellspacing="2" cellpadding="2" class="dso_table">
 									<tr class="bgColor5">
 										<td nowrap="nowrap"><strong>' . $GLOBALS['LANG']->getLL('renderDSO_dataElement') . ':</strong>'.
 											$this->cshItem('xMOD_tx_templavoila','mapping_head_dataElement',$this->doc->backPath,'',TRUE).
@@ -1232,7 +1230,7 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 					-->
 					<div id="c-to">
 						<h4>' . $GLOBALS['LANG']->getLL('renderDSO_usedTO') . ':</h4>
-						<table border="0" cellpadding="2" cellspacing="2">
+						<table border="0" cellpadding="2" cellspacing="2" class="dso_table">
 						'.implode('',$tRows).'
 						</table>
 					</div>';
@@ -1850,12 +1848,12 @@ class tx_templavoila_cm1 extends t3lib_SCbase {
 		}
 
 			// Create Data Structure table:
-		$content.='
+		$content='
 
 			<!--
 				Data Structure table:
 			-->
-			<table border="0" cellspacing="2" cellpadding="2">
+			<table border="0" cellspacing="2" cellpadding="2" class="dso_table">
 			<tr class="bgColor5">
 				<td nowrap="nowrap"><strong>' . $GLOBALS['LANG']->getLL('mapDataElement') . ':</strong>' .
 					$this->cshItem('xMOD_tx_templavoila','mapping_head_dataElement',$this->doc->backPath, '', TRUE) .

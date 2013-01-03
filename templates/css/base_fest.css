@@ -87,27 +87,3 @@ body {
 .clearall {
 	display: inline-table;
 }
-
-/**
- * Hide from IE Mac
- */
-
-.clearall {
-	display: block;
-}
-
-/**
- * ... for IE5 + IE6/Win | to activate the hasLayout
- */
-
-* html .clearall {
-	background:none;
-}
-
-/**
- * End hide from IE Mac
- */
-
-/**
- *
- */

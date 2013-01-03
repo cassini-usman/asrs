@@ -5,6 +5,11 @@ if (!defined ('TYPO3_MODE'))  die ('Access denied.');
 // unserializing the configuration so we can use it here:
 $_EXTCONF = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['templavoila']);
 
+	// Fix misbehaviour of the 6.x autoloader
+if (!class_exists('tx_templavoila_div')) {
+	require_once(t3lib_extMgm::extPath($_EXTKEY) . 'classes/class.tx_templavoila_div.php');
+}
+
 if (TYPO3_MODE=='BE') {
 
 		// Adding click menu item:
@@ -60,7 +65,7 @@ $TCA['tx_templavoila_tmplobj'] = Array (
 		'iconfile' => t3lib_extMgm::extRelPath($_EXTKEY).'icon_to.gif',
 		'selicon_field' => 'previewicon',
 		'selicon_field_path' => 'uploads/tx_templavoila',
-		'type' => 'parent',
+		'type' => 'parent', // kept to make sure the user is force to reload the form
 		'versioningWS' => TRUE,
 		'origUid' => 't3_origuid',
 		'shadowColumnsForNewPlaceholders' => 'title,datastructure,rendertype,sys_language_uid,parent,rendertype_ref',

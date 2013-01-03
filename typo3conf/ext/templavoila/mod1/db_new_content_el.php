@@ -36,9 +36,9 @@
  */
 
 unset($MCONF);
-require ('conf.php');
+require (dirname(__FILE__) . '/conf.php');
 require ($BACK_PATH.'init.php');
-require ($BACK_PATH.'template.php');
+require_once ($BACK_PATH.'template.php');
 
 	// Unset MCONF/MLANG since all we wanted was back path etc. for this particular script.
 unset($MCONF);
@@ -227,8 +227,6 @@ class tx_templavoila_dbnewcontentel {
 						// href URI for icon/title:
 					$newRecordLink = 'index.php?'.$this->linkParams().'&createNewRecord='.rawurlencode($this->parentRecord).$wInfo['params'];
 
-						// Icon:
-					$iInfo = @getimagesize($wInfo['icon']);
 					$content .= $this->elementWrapper['wizardPart'][0] . '<a href="' . htmlspecialchars($newRecordLink) . '">
 						<img' . t3lib_iconWorks::skinImg($this->doc->backPath, $wInfo['icon'], '') . ' alt="" /></a>' . $this->elementWrapper['wizardPart'][1];
 
@@ -459,7 +457,7 @@ class tx_templavoila_dbnewcontentel {
 			if ($toObj->isPermittedForUser()) {
 				$tmpFilename = $toObj->getIcon();
 				$returnElements['fce.']['elements.']['fce_' . $toObj->getKey() . '.'] = array(
-					'icon'        => (@is_file(PATH_site . substr($tmpFilename, 3))) ? $tmpFilename : ('../' . t3lib_extMgm::siteRelPath('templavoila') . 'res1/default_previewicon.gif'),
+					'icon'        => (@is_file(t3lib_div::getFileAbsFileName(substr($tmpFilename, 3)))) ? $tmpFilename : ('../' . t3lib_extMgm::siteRelPath('templavoila') . 'res1/default_previewicon.gif'),
 					'description' => $toObj->getDescription() ? htmlspecialchars($toObj->getDescription()) : $GLOBALS['LANG']->getLL('template_nodescriptionavailable'),
 					'title'       => $toObj->getLabel(),
 					'params'      => $this->getDsDefaultValues( $toObj )

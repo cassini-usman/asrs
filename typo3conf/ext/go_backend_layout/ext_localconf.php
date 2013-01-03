@@ -27,6 +27,11 @@ $TYPO3_CONF_VARS['SC_OPTIONS']['templavoila']['db_new_content_el']['wizardItemsH
 $TYPO3_CONF_VARS['SC_OPTIONS']['templavoila']['db_new_content_el']['wizardItemsHook'][] = 'tx_gobackendlayout_manipulateWizardItems';
 
 
+ /*
+ * redirect to the edit view of an go_lll_piLabel element if the user wants to to create it again
+ */
+$TYPO3_CONF_VARS['EXTCONF']['templavoila']['mod1']['handleIncomingCommands'][] = 'tx_gobackendlayout_handleIncomingCommands';
+
 /*
  * hook for ajax requests in page module (templavoila)
  */
@@ -59,14 +64,39 @@ $TYPO3_CONF_VARS['BE']['XCLASS']['ext/templavoila/mod1/class.tx_templavoila_mod1
  * show dam thumbnails in db_list view
  */
 $TYPO3_CONF_VARS['BE']['XCLASS']['typo3/class.db_list_extra.inc'] = t3lib_extMgm::extPath('go_backend_layout') . 'xclass/class.ux_db_list_extra.php';
+
 /*
  * language switch for pages and pages_language_overlay
  */
 $TYPO3_CONF_VARS['BE']['XCLASS']['typo3/alt_doc.php'] = t3lib_extMgm::extPath('go_backend_layout') . 'xclass/ux_alt_doc.php';
 
 /*
+ * render_framework_subElements xclassed to add the inherit notification
+ */
+$TYPO3_CONF_VARS['BE']['XCLASS']['ext/templavoila/mod1/index.php'] = t3lib_extMgm::extPath('go_backend_layout') . 'xclass/class.ux_tx_templavoila_module1.php';
+
+
+/*
  * pageTSconfig
  */
+/*
+ * add header to new content element wizard
+ */
+t3lib_extMgm::addPageTSConfig('
+templavoila.wizards.newContentElement.wizardItems.common {
+	elements {
+		header {
+			icon = gfx/c_wiz/regular_header.gif
+			title = LLL:EXT:cms/layout/locallang_db_new_content_el.xml:common_headerOnly_title
+			description = LLL:EXT:cms/layout/locallang_db_new_content_el.xml:common_headerOnly_description
+			tt_content_defValues {
+				CType = header
+			}
+		}
+	}
+	show := addToList(header)
+}
+');
 /*
  * render new content element wizard with tabs
  */
