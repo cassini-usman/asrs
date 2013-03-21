@@ -6,7 +6,7 @@ class Gosign
 # After you have configured capistrano, you canuncomment or remove the
 # "abort()"-call. Note that you also need to configure the stages located
 # in config/deploy/.
-abort("Please configure capistrano first!")
+# abort("Please configure capistrano first!")
 
 # Default permissions which are set on each deploy (by "deploy:permissions")
 # These may be overriden in the stage configuration.
