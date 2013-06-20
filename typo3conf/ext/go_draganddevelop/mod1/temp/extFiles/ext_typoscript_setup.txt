@@ -1,0 +1,2 @@
+
+#page.includeCSS.go_teaser_piBoxTeaser = EXT:go_teaser/res/piBoxTeaser.css

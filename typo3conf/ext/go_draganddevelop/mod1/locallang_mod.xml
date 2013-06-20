@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;web_txgolanguageM1&quot; - header, description</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="mlang_tabs_tab">Drag And Develop</label>
+			<label index="mlang_labels_tablabel">Development of Extension in Sec</label>
+			<label index="mlang_labels_tabdescr">Develop Extensions</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="mlang_tabs_tab">Webseitensprachen</label>
+			<label index="mlang_labels_tablabel">Aktivierung der Webseitensprachen</label>
+			<label index="mlang_labels_tabdescr">Aktiviere und deaktiviere bestimmte Sprachen im Frontend</label>
+		</languageKey>
+	</data>
+</T3locallang>
